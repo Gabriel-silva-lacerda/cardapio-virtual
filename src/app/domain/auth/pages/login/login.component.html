@@ -1,1 +1,12 @@
-<p>auth works!</p>
+<form [formGroup]="loginForm">
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" id="email" name="email" formControlName="email">
+  </div>
+  <div class="form-group">
+    <label for="password">Senha</label>
+    <input type="password" class="form-control" id="password" name="password" formControlName="password" required>
+  </div>
+  <a routerLink="/auth/forgot-password">Esqueceu a senha?</a>
+</form>
+<button type="submit" class="btn btn-primary" (click)="login()">Login</button>
