@@ -1,0 +1,17 @@
+<form [formGroup]="form" >
+  <ng-container *ngFor="let field of fields">
+    <label>{{ field.label }}</label>
+    <input
+      [type]="field.type"
+      [formControlName]="field.name"
+    />
+    <div *ngIf="form.get(field.name)?.invalid && form.get(field.name)?.touched">
+      <span *ngFor="let error of getErrorsMessages(field.name)">
+        {{ error }}
+      </span>
+    </div>
+    <ng-container *ngIf="field.showForgotPassword && field.type === 'password'">
+      <a [routerLink]="field.forgotPasswordLink"> Esqueceu sua senha? </a>
+    </ng-container>
+  </ng-container>
+</form>
