@@ -1,25 +1,10 @@
-<div class="flex flex-col justify-center items-center min-h-screen bg-[#0a0a0a]">
-  <div class="border !border-[#333] rounded-md w-[300px] shadow-md relative">
-    <h1 class="text-white border-b border-[#333] px-4 py-4 w-full">
-      Cardápio Virtual
+<div class="flex flex-col justify-center items-center min-h-screen bg-primary ">
+  <div class="px-4 py-4 w-full bg-primary rounded-t-lg flex-1 flex items-end">
+    <h1 class="text-white text-title3">
+      {{ title$ | async }}
     </h1>
+  </div>
+  <div class="bg-white-light flex-1 w-full">
     <router-outlet />
   </div>
 </div>
-
- <!-- <div
-      class="
-      absolute
-      top-[-17px]
-      left-1/2 transform
-      -translate-x-1/2 w-20
-      h-4
-      bg-transparent
-      rounded-t-md
-      shadow-lg
-      border
-      ">
-    </div> -->
-
-
-    <!-- <img class="absolute top-[-42px] w-[50px] left-[50%]" src="assets/images/icons/bandeja.png" alt="imagem"> -->

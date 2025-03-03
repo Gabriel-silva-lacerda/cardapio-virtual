@@ -8,6 +8,8 @@
   "commit-message-editor.dynamicTemplate": [
     "{type}{scope}{breaking_change}: {description}{taskid}"
   ],
+  "scss.lint.unknownAtRules": "ignore",
+
   "commit-message-editor.tokens": [
     {
       "label": "Type",

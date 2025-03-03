@@ -1,4 +1,6 @@
 <div class="px-5 py-6">
   <app-dynamic-form [fields]="loginFields" buttonText="Login" (submitEvent)="login()" />
-  <app-rings [rings]="rings" />
+  <a class="link" routerLink="/auth/forgot-password">
+    Esqueceu sua senha?
+  </a>
 </div>

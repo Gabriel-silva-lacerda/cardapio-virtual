@@ -6,12 +6,11 @@ import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
-import { RingsComponent } from "../../../../core/shared/components/rings/rings.component";
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [RouterLink, DynamicFormComponent, RingsComponent],
+  imports: [RouterLink, DynamicFormComponent],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })

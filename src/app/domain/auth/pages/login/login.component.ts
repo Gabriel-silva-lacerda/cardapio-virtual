@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
@@ -8,12 +8,11 @@ import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-fo
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { ButtonModule } from 'primeng/button';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { RingsComponent } from "../../../../core/shared/components/rings/rings.component";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, DynamicFormComponent, ButtonModule, RingsComponent],
+  imports: [CommonModule, DynamicFormComponent, ButtonModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
