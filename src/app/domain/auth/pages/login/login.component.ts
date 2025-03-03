@@ -1,31 +1,32 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { DynamicFormComponent } from '@shared/dynamic-form/dynamic-form.component';
-import { iDynamicField } from '@shared/dynamic-form/interfaces/dynamic-filed';
+import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
+import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
+import { ButtonModule } from 'primeng/button';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { RingsComponent } from "../../../../core/shared/components/rings/rings.component";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, DynamicFormComponent],
+  imports: [CommonModule, DynamicFormComponent, ButtonModule, RingsComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
 
+  protected loadingService = inject(LoadingService);
+
   private supabase = injectSupabase();
   private router = inject(Router);
   private toastr = inject(ToastrService);
+
+  public rings = new Array(6);
 
   loginFields: iDynamicField[] = [
     {
@@ -45,6 +46,7 @@ export class LoginComponent {
   ];
 
   public async login() {
+    this.loadingService.showLoading();
     if (!this.dynamicForm.form.valid) {
       return;
     }
@@ -60,6 +62,7 @@ export class LoginComponent {
       return;
     }
 
+    this.loadingService.hideLoading();
     this.toastr.success('Login realizado com sucesso!', 'Sucesso!');
 
     this.router.navigate(['/']);

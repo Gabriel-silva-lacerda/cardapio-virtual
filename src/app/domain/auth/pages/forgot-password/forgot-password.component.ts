@@ -1,22 +1,17 @@
-import { NgIf } from '@angular/common';
 import { Component, inject, ViewChild } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { DynamicFormComponent } from '@shared/dynamic-form/dynamic-form.component';
+import { Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
-import { iDynamicField } from '@shared/dynamic-form/interfaces/dynamic-filed';
+import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
+import { RingsComponent } from "../../../../core/shared/components/rings/rings.component";
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [NgIf, RouterLink, DynamicFormComponent],
+  imports: [RouterLink, DynamicFormComponent, RingsComponent],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })
@@ -36,6 +31,8 @@ export class ForgotPasswordComponent {
       validators: [Validators.required, Validators.email],
     },
   ];
+
+  public rings = new Array(5)
 
   public async submit() {
     this.loadingService.showLoading();

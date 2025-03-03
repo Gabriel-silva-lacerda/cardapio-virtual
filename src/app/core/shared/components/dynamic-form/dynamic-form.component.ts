@@ -1,19 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ERROR_MESSAGES, ErrorMessages } from './errors/form-errors';
-import { iDynamicField } from '@shared/dynamic-form/interfaces/dynamic-filed';
+import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { RouterLink } from '@angular/router';
+import { InputTextModule } from 'primeng/inputtext';
+import { fadeIn } from '@shared/utils/animations.util';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { LoadingComponent } from "../loading/loading.component";
 
 @Component({
   selector: 'app-dynamic-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RouterLink,
+    InputTextModule,
+    LoadingComponent
+],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
+  animations: [fadeIn],
 })
 export class DynamicFormComponent implements OnInit {
   @Input() fields: iDynamicField[] = [];
+  @Input() buttonText!: string;
+  @Output() submitEvent = new EventEmitter();
+
+  protected loadingService = inject(LoadingService);
 
   private fb = inject(FormBuilder);
 
@@ -45,4 +60,7 @@ export class DynamicFormComponent implements OnInit {
         : `Erro desconhecido`;
     });
   }
+
+  submit = () => this.submitEvent.emit();
+
 }

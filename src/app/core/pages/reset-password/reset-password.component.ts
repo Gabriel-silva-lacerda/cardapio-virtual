@@ -7,14 +7,15 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
-import { iDynamicField } from '@shared/dynamic-form/interfaces/dynamic-filed';
+import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { ToastrService } from 'ngx-toastr';
-import { DynamicFormComponent } from '@shared/dynamic-form/dynamic-form.component';
+import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
+import { RingsComponent } from "../../shared/components/rings/rings.component";
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, DynamicFormComponent],
+  imports: [ReactiveFormsModule, DynamicFormComponent, RingsComponent],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
 })
@@ -25,6 +26,7 @@ export class ResetPasswordComponent {
   private router = inject(Router);
   private toastr = inject(ToastrService);
 
+  public rings = new Array(3);
   public resetFields: iDynamicField[] = [
     {
       name: 'password',
