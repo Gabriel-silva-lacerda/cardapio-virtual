@@ -62,7 +62,6 @@ export class LoginComponent {
     }
 
     this.loadingService.hideLoading();
-    this.toastr.success('Login realizado com sucesso!', 'Sucesso!');
 
     this.router.navigate(['/']);
   }

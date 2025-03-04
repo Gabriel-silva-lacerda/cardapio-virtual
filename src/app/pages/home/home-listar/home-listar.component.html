@@ -1,0 +1,12 @@
+<div class="min-h-screen " [@fade]>
+  <app-header-page [isHome]="true" />
+
+  <div class="h-[70%] mt-10">
+    <app-category />
+
+    <span class="text-gray-600 text-title5 font-medium block px-3 my-2">Cardápio</span>
+    @for (food of foods; track $index) {
+      <app-food-menu [food]="food" />
+    }
+  </div>
+</div>

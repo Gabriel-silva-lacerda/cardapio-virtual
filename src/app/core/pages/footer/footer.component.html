@@ -1,0 +1,13 @@
+
+
+@if (footerService.showFooter()) {
+
+  <footer class="flex justify-between p-4 border fixed bottom-0 w-full">
+    @for (link of links ; track $index) {
+    <a [routerLink]="link.path" [ngClass]="{ 'text-primary': isActive(link.path) }">
+      {{ link.label }}
+    </a>
+    }
+  </footer>
+}
+

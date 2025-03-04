@@ -1,3 +1,4 @@
+import { HomeListarComponent } from './pages/home/home-listar/home-listar.component';
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -16,5 +17,15 @@ export const routes: Routes = [
       }
     ],
   },
-
+  {
+    path: '',
+    loadComponent: () => import('./core/pages/main/main.component').then((m) => m.MainComponent),
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./core/pages/main/main.routes').then((m) => m.mainRoutes),
+      },
+    ]
+  }
 ];

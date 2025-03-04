@@ -1,0 +1,17 @@
+<div class="h-[30%] relative ">
+  @if(isHome) {
+    <div class="bg-primary text-white px-3 py-10">
+      <span class="text-text3">Olá,</span>
+      <h1 class="text-title3">Seja Bem-vindo</h1>
+    </div>
+  } @else {
+    <div class="bg-primary text-white px-3 py-10 flex justify-between items-center">
+      <a [routerLink]="'/'" class="text-text1"><</a>
+      <h1 class="text-title3">{{ title }}</h1>
+    </div>
+  }
+
+  <div class="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full px-3">
+    <input type="text" placeholder="Qual comida você está procurando?" class="input-primary w-full" />
+  </div>
+</div>

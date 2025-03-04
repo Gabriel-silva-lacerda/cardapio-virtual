@@ -13,4 +13,8 @@ import { TitleService } from '@shared/services/title/title.service';
 export class AuthComponent  {
   private titleService = inject(TitleService);
   public title$ = this.titleService.title$;
+
+  ngOnInt() {
+    console.log(this.title$)
+  }
 }
