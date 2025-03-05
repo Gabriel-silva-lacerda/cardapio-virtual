@@ -12,6 +12,5 @@ export interface iDynamicField {
   validators?: any[];
   showForgotPassword?: boolean;
   forgotPasswordLink?: string;
-  buttonText?: string;
 }
 

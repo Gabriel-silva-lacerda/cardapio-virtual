@@ -9,7 +9,7 @@ import { FooterService } from '@shared/services/title/footer.service';
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss'
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent {
   private router = inject(Router);
   public footerService = inject(FooterService)
 
@@ -19,27 +19,6 @@ export class FooterComponent implements OnInit {
     { path: '/pedidos', label: 'Carrinho' },
     { path: '/pedidos', label: 'Pedidos' },
   ];
-
-
-  ngOnInit() {
-
-    this.router.events.subscribe((event) => {
-      console.log(event);
-
-      if (event instanceof NavigationEnd) {
-        const showFooter = this.shouldShowFooter(event.url);
-        console.log(showFooter);
-
-        this.footerService.setShowFooter(showFooter);
-      }
-    });
-  }
-
-  private shouldShowFooter(url: string): boolean {
-    // Defina as rotas que devem exibir o footer
-    const routesWithFooter = ['/', '/categoria', '/contact'];
-    return routesWithFooter.includes(url);
-  }
 
   isActive(path: string): boolean {
     return this.router.url === path;

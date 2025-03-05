@@ -2,10 +2,11 @@ import { FoodDetailsComponent } from './../components/food-details/food-details.
 import { Component, inject } from '@angular/core';
 import { fade } from '@shared/utils/animations.util';
 import { ActivatedRoute } from '@angular/router';
+import { FooterFoodComponent } from "../components/footer-food/footer-food.component";
 
 @Component({
   selector: 'app-food-menu-list',
-  imports: [FoodDetailsComponent],
+  imports: [FoodDetailsComponent, FooterFoodComponent],
   templateUrl: './selected-food-list.page.html',
   styleUrl: './selected-food-list.page.scss',
   animations: [fade],

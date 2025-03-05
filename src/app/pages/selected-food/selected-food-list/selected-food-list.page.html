@@ -1,3 +1,5 @@
-<div class="min-h-screen" [@fade]>
-  <app-food-details [food]="food" [additionalItems]="additionalItems" />
+<div class="overflow-auto" [@fade]>
+  <app-food-details [food]="food" [additionalItems]="additionalItems"
+    (additionalItemAndPriceChange)="footer.updateAdditionsTotal($event)" />
+  <app-footer-food #footer [food]="food" />
 </div>

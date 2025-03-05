@@ -18,6 +18,5 @@ export const authRoutes: Routes = [
     path: 'forgot-password',
     loadComponent: () =>  import('./pages/forgot-password/forgot-password.component').then((m) => m.ForgotPasswordComponent),
     canActivate: [isLoggedGuard],
-
   }
 ];

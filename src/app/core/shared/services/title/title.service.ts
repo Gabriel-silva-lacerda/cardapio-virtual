@@ -1,6 +1,5 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +12,8 @@ export class TitleService {
   };
 
   private router = inject(Router);
-  private titleSubject = new BehaviorSubject<string>('Bem-vindo!');
-  public title$ = this.titleSubject.asObservable();
+  private titleSignal = signal<string>('Bem-vindo!');
+  public title = this.titleSignal.asReadonly();
 
   constructor() {
     this.router.events.subscribe((event) => {
@@ -26,6 +25,6 @@ export class TitleService {
 
   private updateTitle() {
     const url = this.router.url;
-    this.titleSubject.next(this.titles[url] || 'Bem-vindo!');
+    this.titleSignal.set(this.titles[url] || 'Bem-vindo!');
   }
 }

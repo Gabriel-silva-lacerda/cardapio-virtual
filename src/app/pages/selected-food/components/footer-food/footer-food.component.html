@@ -1,0 +1,10 @@
+<footer class="flex justify-between p-4 border fixed bottom-0 w-full bg-white-light">
+  <div class="flex items-center gap-2">
+    <button (click)="decreaseProductCount()" class="px-2 py-1 text-xl text-black rounded">-</button>
+    <span class="min-w-[20px] text-center text-lg text-black">{{ productCount }}</span>
+    <button (click)="increaseProductCount()" class="px-2 py-1 text-xl text-primary rounded">+</button>
+  </div>
+  <button class="bg-primary text-white rounded px-4 py-2" (click)="addToCart()">
+    Carrinho {{ totalPrice | currency: 'BRL' }}
+  </button>
+</footer>

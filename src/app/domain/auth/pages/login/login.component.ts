@@ -2,7 +2,6 @@ import { Component, inject, ViewChild } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
-import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
@@ -23,7 +22,6 @@ export class LoginComponent {
 
   private supabase = injectSupabase();
   private router = inject(Router);
-  private toastr = inject(ToastrService);
 
   public rings = new Array(6);
 
