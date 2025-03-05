@@ -1,8 +1,13 @@
 import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
 import { fade } from '@shared/utils/animations.util';
+import { iFood } from '@shared/interfaces/food.interface';
+import { FoodService } from '@shared/services/food/food.service';
+import { firstValueFrom } from 'rxjs';
+import { CategoryService } from '../../home/services/category.service';
+import { iCategory } from '../../home/interfaces/category.interface';
 
 @Component({
   selector: 'app-selected-category-list',
@@ -13,60 +18,35 @@ import { fade } from '@shared/utils/animations.util';
 })
 export class SelectedCategoryListPage {
   private route = inject(ActivatedRoute);
+  private foodService = inject(FoodService);
+  private categoryService = inject(CategoryService);
 
-  public type!: string | null;
-  public food!: any;
-  public foods = [
-    {
-      id: 1,
-      name: 'Marmita de Frango',
-      description: 'Frango grelhado com arroz e feijão',
-      price: 15.99,
-      imgUrl: 'assets/images/image1.webp',
-      type: 'marmita'
-    },
-    {
-      id: 2,
-      name: 'Sobremesa de Chocolate',
-      description: 'Chocolate com frutas vermelhas',
-      price: 8.5,
-      imgUrl: 'assets/images/image2.webp',
-      type: 'sobremesa'
-    },
-    {
-      id: 3,
-      name: 'Coca-cola',
-      description: 'Coca-cola de 300ml',
-      price: 22.0,
-      imgUrl: 'assets/images/image3.jpg',
-      type: 'bebida'
-    },
-  ]
-
-  public title!: string;
+  public foods = signal<iFood[] | null>(null);
+  public title = signal<string>('');
+  public id!: string | null;
 
   ngOnInit(): void {
-    this.getParam();
+    this.getRouteId();
   }
 
-  private getParam(): void {
-    this.route.paramMap.subscribe(params => {
-      this.type = params.get('type');
-      if (this.type) {
-        this.getFood();
-      }
-    });
-  }
+  private async getRouteId(): Promise<void> {
+     this.id = await firstValueFrom(this.route.paramMap).then(params => params.get('id'));
 
-  public getFood(): void {
-    this.food = this.foods.find(
-      (food) => food.type === (this.type as unknown as string)
-    );
+     if (this.id)
+       this.getFoodsByCategory(this.id);
+   }
 
-    if (this.food) {
-      this.title =
-        this.food.type.charAt(0).toUpperCase() + this.food.type.slice(1) + 's';
+  public async getFoodsByCategory(id: string) {
+    const foods = await this.foodService.getFoodsByCategory(id);
+    const category = await this.categoryService.getById<iCategory>(id);
+
+    if (!category) {
+      console.error('Categoria não encontrada');
+      return;
     }
+    
+    this.title.set(category.name);
+    this.foods.set(foods)
   }
 
 }

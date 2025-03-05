@@ -1,17 +1,27 @@
 <div class="px-3">
   <ul class="flex flex-col gap-3">
 
-    <li [routerLink]="['/cardapio', food?.id]"
+    <li (click)="cartItem ? openFoodDetailsDialog() : null" [routerLink]="!cartItem ? ['/cardapio', food?.id] : null"
       class="flex mb-4 h-[6.4rem] border cursor-pointer border-gray-300 bg-white-light rounded-md shadow-sm items-center gap-2 pe-2">
-      <img class="w-24 h-full object-cover border border-l rounded-md" [src]="food?.imgUrl" alt="{{ food?.name }}">
+      <img class="w-24 h-full object-cover border border-l rounded-md" [src]="foodDetails?.imageUrl" alt="{{ foodDetails?.name }}">
       <div class="flex flex-col justify-between gap-3 flex-1 ">
-        <div class="flex flex-col gap-1 max-w-52">
-          <span class="text-black-dark">{{ food?.name }}</span>
-          <span class="text-text6 text-gray-700">{{ food?.description }}</span>
+        <div class="flex justify-between">
+          <div class="flex flex-col gap-1 max-w-52">
+            <span class="text-black-dark">{{ foodDetails?.name }}</span>
+            <span class="text-text6 text-gray-700">{{ foodDetails?.description }}</span>
+          </div>
+
+          @if(cartItem) {
+            <div><button>Lixeira</button></div>
+          }
         </div>
-        <span class="flex justify-end text-green-500">{{ food?.price | currency: 'BRL' }}</span>
+        <div class="flex flex-row-reverse justify-between">
+          @if(cartItem) {
+            <span >Qtd: {{ foodDetails?.quantity }}</span>
+          }
+          <span class="flex justify-end text-green-500">{{ foodDetails?.price | currency: 'BRL' }}</span>
+        </div>
       </div>
     </li>
-
   </ul>
 </div>

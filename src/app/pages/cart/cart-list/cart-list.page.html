@@ -1,0 +1,9 @@
+<div class="min-h-screen" [@fade]>
+  <app-header-page [showInput]="false" title="Carrinho" />
+  <div class="h-[70%] mt-10">
+    @for (cart of this.carts(); track $index) {
+    <app-food-menu [isInCart]="true" [cartItem]="cart" />
+    }
+  </div>
+  <app-footer-cart [carts]="this.carts()" />
+</div>

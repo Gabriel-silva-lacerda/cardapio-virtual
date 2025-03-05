@@ -11,4 +11,5 @@ import { RouterLink } from '@angular/router';
 export class HeaderPageComponent {
   @Input() title!: string;
   @Input() isHome: boolean = false;
+  @Input() showInput: boolean = true;
 }

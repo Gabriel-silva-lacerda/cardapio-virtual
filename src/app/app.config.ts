@@ -1,4 +1,10 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  LOCALE_ID,
+  provideAppInitializer,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -7,6 +13,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideToastr } from 'ngx-toastr';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import localePt from '@angular/common/locales/pt';
+import { registerLocaleData } from '@angular/common';
+registerLocaleData(localePt);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,8 +26,12 @@ export const appConfig: ApplicationConfig = {
     provideToastr(),
     providePrimeNG({
       theme: {
-          preset: Aura
-      }
-  })
+        preset: Aura,
+      },
+    }),
+    {
+      provide: LOCALE_ID,
+      useValue: 'pt-BR',
+    },
   ],
 };

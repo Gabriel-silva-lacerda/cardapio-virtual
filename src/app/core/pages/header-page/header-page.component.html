@@ -11,7 +11,9 @@
     </div>
   }
 
-  <div class="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full px-3">
-    <input type="text" placeholder="Qual comida você está procurando?" class="input-primary w-full" />
-  </div>
+  @if(showInput) {
+    <div class="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full px-3">
+      <input type="text" placeholder="Qual comida você está procurando?" class="input-primary w-full" />
+    </div>
+  }
 </div>

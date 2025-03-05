@@ -1,42 +1,39 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CategoryComponent } from '../components/category/category.component';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
 import { fade } from '@shared/utils/animations.util';
 import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
-import { SelectdFoodListPage } from '../../selected-food/selected-food-list/selected-food-list.page';
+import { FoodService } from '../../../core/shared/services/food/food.service';
+import { CategoryService } from '../services/category.service';
+import { iCategory } from '../interfaces/category.interface';
+import { iFood } from '@shared/interfaces/food.interface';
 
 @Component({
   selector: 'app-home-listar',
-  imports: [CategoryComponent, FoodMenuComponent, HeaderPageComponent, SelectdFoodListPage],
+  imports: [CategoryComponent, FoodMenuComponent, HeaderPageComponent],
   templateUrl: './home-listar.component.html',
   styleUrl: './home-listar.component.scss',
-  animations: [fade]
+  animations: [fade],
 })
-export class HomeListarComponent {
-  public foods = [
-    {
-      id: 1,
-      name: 'Marmita de Frango',
-      description: 'Frango grelhado com arroz e feijão',
-      price: 15.99,
-      imgUrl: 'assets/images/image1.webp',
-      type: 'marmita'
-    },
-    {
-      id: 2,
-      name: 'Sobremesa de Chocolate',
-      description: 'Chocolate com frutas vermelhas',
-      price: 8.5,
-      imgUrl: 'assets/images/image2.webp',
-      type: 'sobremesa'
-    },
-    {
-      id: 3,
-      name: 'Coca-cola',
-      description: 'Coca-cola de 300ml',
-      price: 22.0,
-      imgUrl: 'assets/images/image3.jpg',
-      type: 'bebida'
-    },
-  ]
+export class HomeListarComponent implements OnInit {
+  public foodService = inject(FoodService);
+  public categoryService = inject(CategoryService);
+
+  public foods = signal<iFood[]>([]);
+  public categories = signal<iCategory[]>([]);
+
+  ngOnInit() {
+    this.getAllFoodAndCategories();
+  }
+
+  private async getAllFoodAndCategories() {
+    const [foods, categories] = await Promise.all([
+      this.foodService.getAllFoods(),
+      this.categoryService.getAll<iCategory>(),
+    ]);
+
+    this.foods.set(foods);
+    this.categories.set(categories);
+  }
+
 }

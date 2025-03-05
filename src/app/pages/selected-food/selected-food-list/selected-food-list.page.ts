@@ -1,86 +1,60 @@
 import { FoodDetailsComponent } from './../components/food-details/food-details.component';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { fade } from '@shared/utils/animations.util';
 import { ActivatedRoute } from '@angular/router';
 import { FooterFoodComponent } from "../components/footer-food/footer-food.component";
+import { FoodService } from '@shared/services/food/food.service';
+import { iFood } from '@shared/interfaces/food.interface';
+import { ExtraService } from '../services/extra.service';
+import { iExtra } from '../interfaces/extra.interface';
+import { firstValueFrom } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-food-menu-list',
-  imports: [FoodDetailsComponent, FooterFoodComponent],
+  imports: [FoodDetailsComponent, FooterFoodComponent, FormsModule],
   templateUrl: './selected-food-list.page.html',
   styleUrl: './selected-food-list.page.scss',
   animations: [fade],
 })
 export class SelectdFoodListPage {
   private route = inject(ActivatedRoute);
+  private foodService = inject(FoodService);
+  private extraService = inject(ExtraService);
+  private toastr = inject(ToastrService);
 
-
-  public food!: any;
-
-  public additionalItems: { [key: string]: { name: string; price: number }[] } = {
-    marmita: [
-      { name: 'Arroz extra', price: 2.50 },
-      { name: 'Feijão extra', price: 2.00 },
-      { name: 'Salada', price: 3.00 },
-    ],
-    sobremesa: [
-      { name: 'Calda de chocolate', price: 1.50 },
-      { name: 'Granulado', price: 1.00 },
-      { name: 'Frutas', price: 3.50 },
-    ],
-    bebida: [
-      { name: 'Gelo extra', price: 0.50 },
-      { name: 'Limão', price: 1.00 },
-      { name: 'Canudo', price: 0.30 },
-    ],
-  };
-
-
-  public foods = [
-    {
-      id: 1,
-      name: 'Marmita de Frango',
-      description: 'Frango grelhado com arroz e feijão',
-      price: 15.99,
-      imgUrl: 'assets/images/image1.webp',
-      type: 'marmita'
-    },
-    {
-      id: 2,
-      name: 'Sobremesa de Chocolate',
-      description: 'Chocolate com frutas vermelhas',
-      price: 8.5,
-      imgUrl: 'assets/images/image2.webp',
-      type: 'sobremesa'
-    },
-    {
-      id: 3,
-      name: 'Coca-cola',
-      description: 'Coca-cola de 300ml',
-      price: 22.0,
-      imgUrl: 'assets/images/image3.jpg',
-      type: 'bebida'
-    },
-
-  ];
+  public food = signal<iFood | null>(null);
+  public extras = signal<iExtra[]>([]);
 
   public id!: string | null;
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      this.id = params.get('id');
-
-      if (this.id) {
-        this.getFood();
-      }
-    });
+  ngOnInit() {
+    this.getRouteId();
   }
 
-  getFood() {
-    this.food = this.foods.find(
-      (food) => food.id == (this.id as unknown as number)
-    );
+  private async getRouteId(): Promise<void> {
+    this.id = await firstValueFrom(this.route.paramMap).then(params => params.get('id'));
+
+    if (this.id)
+      this.loadFoodAndExtras(this.id);
+  }
+
+  private async loadFoodAndExtras(foodId: string) {
+    try {
+      const [food, extras] = await Promise.all([
+        this.foodService.getFoodById(foodId),
+        this.extraService.getExtrasByFoodId(foodId),
+      ]);
+
+      this.food.set(food);
+      this.extras.set(extras);
+    } catch (error) {
+      this.toastr.error('Erro ao carregar comida e extras:', 'Erro');
+    }
+  }
+
+  onSubmit() {
+
   }
 }
