@@ -38,6 +38,7 @@ export class FoodMenuComponent implements OnChanges {
     if (!foodData) return null;
 
     this.cachedFoodDetails = {
+      id: foodData.id,
       name: foodData.name,
       description: foodData.description,
       price: foodData.price,
@@ -52,12 +53,7 @@ export class FoodMenuComponent implements OnChanges {
   openFoodDetailsDialog(): void {
     if(!this.cartItem) return;
     this.dialog.open(FoodDialogComponent, {
-      data: {
-        name: this.cartItem.food.name,
-        description: this.cartItem.food?.description,
-        price: this.cartItem.food?.price,
-        imageUrl: this.cartItem.food?.image_url,
-      }
+      data: this.cartItem
     });
   }
 }

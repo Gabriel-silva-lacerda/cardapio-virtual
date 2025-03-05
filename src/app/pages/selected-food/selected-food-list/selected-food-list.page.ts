@@ -10,6 +10,8 @@ import { iExtra } from '../interfaces/extra.interface';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { iCartItem } from '@shared/interfaces/cart.interface';
 
 @Component({
   selector: 'app-food-menu-list',
@@ -23,21 +25,38 @@ export class SelectdFoodListPage {
   private foodService = inject(FoodService);
   private extraService = inject(ExtraService);
   private toastr = inject(ToastrService);
+  private localStorageService = inject(LocalStorageService);
+  public carts = this.localStorageService.getSignal<iCartItem[]>('cart', []);
 
   public food = signal<iFood | null>(null);
   public extras = signal<iExtra[]>([]);
 
   public id!: string | null;
+  public idItem!: string | null;
+
+  public selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
+  public observations = '';
+  public productCount = signal<number>(1)
+
+
+  public isIdItem = false;
 
   ngOnInit() {
     this.getRouteId();
   }
 
   private async getRouteId(): Promise<void> {
-    this.id = await firstValueFrom(this.route.paramMap).then(params => params.get('id'));
-
+    const params = await firstValueFrom(this.route.paramMap);
+    this.id = params.get('id');
+    this.idItem = params.get('idItem');
+    this.isIdItem = false;
     if (this.id)
       this.loadFoodAndExtras(this.id);
+
+    if (this.idItem) {
+      this.loadCartItemData(this.idItem);
+      this.isIdItem = true;
+    }
   }
 
   private async loadFoodAndExtras(foodId: string) {
@@ -54,7 +73,12 @@ export class SelectdFoodListPage {
     }
   }
 
-  onSubmit() {
-
+  private loadCartItemData(idItem: string) {
+    const cartItem = this.carts().find((item:any) => item.id === idItem);
+    if (cartItem) {
+      this.selectedAdditions.set(cartItem.extras);
+      this.observations = cartItem.observations || '';
+      this.productCount.set(cartItem.quantity);
+    }
   }
 }

@@ -4,3 +4,8 @@
 
 <p>{{ data.description }}</p>
 <p><strong>Preço:</strong> {{ data.price | currency: 'BRL' }}</p>
+<!-- <app-food-details [food]="data.food" [extras]="data.extras"
+(additionalItemAndPriceChange)="footer.updateAdditionsTotal($event)"
+(observationsChange)="footer.observations = $event"
+/>
+<app-footer-food #footer [food]="data.food" /> -->

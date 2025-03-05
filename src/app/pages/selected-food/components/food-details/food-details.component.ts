@@ -15,8 +15,8 @@ export class FoodDetailsComponent {
   @Output() additionalItemAndPriceChange = new EventEmitter<any>();
   @Output() observationsChange = new EventEmitter<string>(); // Emitir as observações
 
-  public selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
-  public observations = signal<string>('')
+  @Input() public selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
+  @Input() public observations: string = '';
 
   // Função para aumentar a quantidade de adicionais
   public increaseAddition(item: { id: number; name: string; price: number }): void {
@@ -48,7 +48,7 @@ export class FoodDetailsComponent {
   }
 
   updateObservations() {
-    this.observationsChange.emit(this.observations()); // Emite as observações para o componente pai
+    this.observationsChange.emit(this.observations); // Emite as observações para o componente pai
   }
 
   private updateTotalAdditions(): void {
@@ -56,7 +56,7 @@ export class FoodDetailsComponent {
       return sum + (item.quantity * item.price);
     }, 0);
 
-    this.additionalItemAndPriceChange.emit({ totalAdditions, selectedAdditions: this.selectedAdditions(), observations: this.observations() });
+    this.additionalItemAndPriceChange.emit({ totalAdditions, selectedAdditions: this.selectedAdditions(), observations: this.observations });
   }
 
 }

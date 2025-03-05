@@ -1,4 +1,5 @@
 export interface FoodDetails {
+  id: number | undefined;
   name: string;
   description?: string;
   price: number;

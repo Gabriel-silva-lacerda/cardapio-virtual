@@ -17,4 +17,7 @@ export class CartListPage {
   private localStorageService = inject(LocalStorageService);
   public carts = this.localStorageService.getSignal<iCartItem[]>('cart', []);
 
+  constructor() {
+    console.log(this.carts());
+  }
 }
