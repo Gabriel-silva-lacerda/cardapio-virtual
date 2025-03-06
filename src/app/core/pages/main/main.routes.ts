@@ -30,7 +30,7 @@ export const mainRoutes: Routes = [
       ),
   },
   {
-    path: 'cardapio/:id/:idItem',
+    path: 'cardapio/:id/:itemId',
     loadComponent: () =>
       import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
         (m) => m.SelectdFoodListPage

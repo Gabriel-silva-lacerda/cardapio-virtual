@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, Input, signal, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
+import { iCartItem } from '@shared/interfaces/cart.interface';
 import { iFood } from '@shared/interfaces/food.interface';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ToastrService } from 'ngx-toastr';
@@ -16,22 +17,17 @@ export class FooterFoodComponent {
   @Input() food!: iFood | null;
   @Input() selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
   @Input() observations = '';
-  @Input() textButton = 'Carrinho'
-  @Input() public totalPrice = signal(0);
+  @Input() totalPrice = signal(0);
+  @Input() productCount = signal(1);
+  @Input() newItem = false;
+  @Input() idItem!: string | null;
 
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private localStorageService = inject(LocalStorageService);
 
-  @Input() isEdit = false;
-  @Input() public productCount = signal(1);
-
-  @Input() idItem!: string | null;
-  // Inicializa o totalPrice com o preço da comida ao carregar o componente
   ngOnChanges(changes: SimpleChanges) {
     if (changes['food']?.currentValue) {
-      console.log(this.totalPrice());
-
       this.updateTotalPrice();
     }
   }
@@ -72,13 +68,7 @@ export class FooterFoodComponent {
   }
 
   public addToCart(): void {
-    let cartItemId: string | null;
-
-    if (this.isEdit) {
-      cartItemId = this.idItem; // Se for edição, mantemos o mesmo id
-    } else {
-      cartItemId = `cart-item-${Date.now()}`; // Se for criação, geramos um novo id
-    }
+    const cartItemId = this.newItem ? `cart-item-${Date.now()}` : this.idItem;
 
     const cartItem = {
       id: cartItemId,
@@ -92,55 +82,48 @@ export class FooterFoodComponent {
     const currentCart = this.localStorageService.getItem<any[]>('cart') || [];
     const existingItemIndex = currentCart.findIndex(item => item.food.id === this.food?.id);
 
-    console.log(currentCart);
-    console.log(this.isEdit);
-
-  if (this.isEdit) {
-    console.log("teste");
-      // Variável para verificar se estamos em modo de edição
-    // const existingItemIndex = currentCart.findIndex(item => item.id === this.food?.id);  // `editingItemId` pode ser o id do item que estamos editando
-
-    if (existingItemIndex !== -1) {
-      // Substitui o item atual com as novas informações de edição
+    if (!this.newItem && existingItemIndex !== -1) {
+      // Editando um item já existente
       currentCart[existingItemIndex] = {
-        ...currentCart[existingItemIndex], // Mantém o item antigo
-        quantity: this.productCount(), // Atualiza a quantidade
-        extras: this.selectedAdditions(), // Atualiza os adicionais
-        totalPrice: this.totalPrice(), // Atualiza o preço total
-        observations: this.observations, // Atualiza as observações
+        ...currentCart[existingItemIndex], // Mantém dados antigos
+        ...cartItem, // Sobrescreve com novos valores
       };
-    }
 
-    console.log("Atualizado", currentCart);
-    this.localStorageService.setItem('cart', currentCart);
-    this.router.navigate(['/cart']);
-
-  } else {  // Se não estamos em modo de edição, adiciona o item ao carrinho normalmente
-    const existingItemIndex = currentCart.findIndex(item => item.food.id === this.food?.id);
-
-    if (existingItemIndex !== -1) {
-      // Atualiza a quantidade do item existente e o totalPrice
-      currentCart[existingItemIndex].quantity += this.productCount();
-      currentCart[existingItemIndex].totalPrice = currentCart[existingItemIndex].quantity * currentCart[existingItemIndex].food.price;
-
-      // Mescla os adicionais
-      const existingAdditions = currentCart[existingItemIndex].extras || {};
-      const updatedAdditions = this.selectedAdditions();
-      Object.keys(updatedAdditions).forEach(key => {
-        existingAdditions[key] = updatedAdditions[key as any];
-      });
-      currentCart[existingItemIndex].extras = existingAdditions;
-      currentCart[existingItemIndex].observations = this.observations;
-
+      this.toastr.success('Produto atualizado: ', this.food?.name)
+      this.router.navigate(['/cart']);
+    } else if (existingItemIndex !== -1) {
+      // Item já existe, atualiza quantidade, preço total e adicionais
+      this.updateExistingItem(currentCart[existingItemIndex], cartItem);
+      this.router.navigate(['/']);
+      this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name)
     } else {
-      // Se o item não existir, adiciona o novo item
+      // Novo item, adiciona ao carrinho
       currentCart.push(cartItem);
+      this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name)
+      this.router.navigate(['/']);
     }
 
     this.localStorageService.setItem('cart', currentCart);
-
-    console.log('Produto adicionado ao carrinho:', cartItem);
-    this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name)
-    this.router.navigate(['/']);
   }
-}}
+
+  private updateExistingItem(existingItem: any, newItem: any): void {
+    existingItem.quantity += newItem.quantity;
+    existingItem.totalPrice = existingItem.quantity * existingItem.food.price;
+
+    // Atualiza os adicionais, somando quantidades
+    Object.keys(newItem.extras).forEach(key => {
+      if (existingItem.extras[key]) {
+        existingItem.extras[key].quantity += newItem.extras[key].quantity;
+      } else {
+        existingItem.extras[key] = newItem.extras[key];
+      }
+    });
+
+    // Concatena observações se existirem
+    if (newItem.observations) {
+      existingItem.observations = existingItem.observations
+        ? `${existingItem.observations} | ${newItem.observations}`
+        : newItem.observations;
+    }
+  }
+}

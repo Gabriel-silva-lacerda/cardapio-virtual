@@ -32,14 +32,14 @@ export class SelectdFoodListPage {
   public extras = signal<iExtra[]>([]);
 
   public id!: string | null;
-  public idItem!: string | null;
+  public itemId!: string | null;
 
   public selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
   public observations = '';
   public productCount = signal<number>(1)
 
 
-  public isIdItem = false;
+  public newItem = false;
 
   ngOnInit() {
     this.getRouteId();
@@ -47,15 +47,18 @@ export class SelectdFoodListPage {
 
   private async getRouteId(): Promise<void> {
     const params = await firstValueFrom(this.route.paramMap);
-    this.id = params.get('id');
-    this.idItem = params.get('idItem');
-    this.isIdItem = false;
-    if (this.id)
-      this.loadFoodAndExtras(this.id);
+    console.log(params);
 
-    if (this.idItem) {
-      this.loadCartItemData(this.idItem);
-      this.isIdItem = true;
+    this.id = params.get('id');
+    this.itemId = params.get('itemId');
+    if (this.id) {
+      this.newItem = true;
+      this.loadFoodAndExtras(this.id);
+    }
+
+    if (this.itemId) {
+      this.newItem = false;
+      this.loadCartItemData(this.itemId);
     }
   }
 
@@ -73,9 +76,11 @@ export class SelectdFoodListPage {
     }
   }
 
-  private loadCartItemData(idItem: string) {
-    const cartItem = this.carts().find((item:any) => item.id === idItem);
+  private loadCartItemData(itemId: string) {
+    const cartItem = this.carts().find((item:any) => item.id === itemId);
     if (cartItem) {
+      console.log("LoadCartItem");
+
       this.selectedAdditions.set(cartItem.extras);
       this.observations = cartItem.observations || '';
       this.productCount.set(cartItem.quantity);
