@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
-import { fade } from '@shared/utils/animations.util';
+import { fade } from '@shared/utils/animations.utils';
 import { CartComponent } from '@shared/components/cart/cart.component';
 
 @Component({
@@ -10,7 +10,4 @@ import { CartComponent } from '@shared/components/cart/cart.component';
   templateUrl: './main.component.html',
   animations: [fade],
 })
-export class MainComponent {
-
-
-}
+export class MainComponent {}

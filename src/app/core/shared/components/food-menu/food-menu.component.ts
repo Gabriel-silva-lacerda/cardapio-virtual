@@ -1,50 +1,87 @@
-import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { CurrencyPipe, NgClass, NgIf } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { iFood } from '@shared/interfaces/food.interface';
 import { iCartItem } from '@shared/interfaces/cart.interface';
 import { FoodDetails } from '@shared/interfaces/food-datails.interface';
-import { MatDialog } from '@angular/material/dialog';
+import { DayOfWeek } from '@shared/enums/day-of-week.enum';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { DayOfWeekTranslatePipe } from 'src/app/widget/pipes/day-of-week-translate.pipe';
+import {
+  getCurrentDayOfWeek,
+  getUnavailableItemMessage,
+} from '@shared/utils/day.utils';
+import { FoodService } from '@shared/services/food/food.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-food-menu',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [
+    CurrencyPipe,
+    NgClass,
+    NgIf,
+    MatTooltipModule,
+    DayOfWeekTranslatePipe,
+    MatSnackBarModule,
+    RouterLink,
+  ],
   templateUrl: './food-menu.component.html',
   styleUrl: './food-menu.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FoodMenuComponent implements OnChanges {
+export class FoodMenuComponent implements OnInit, OnChanges {
   @Input() food!: iFood;
   @Input() cartItem?: iCartItem;
   @Input() isInCart = false;
 
+  private foodService = inject(FoodService);
   private cachedFoodDetails: FoodDetails | null = null;
+  public tooltipMessage: string = '';
+
+  ngOnInit(): void {
+    this.updateTooltipMessage();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['food'] || changes['cartItem'] ) {
+    if (changes['food'] || changes['cartItem']) {
       this.cachedFoodDetails = null;
+      this.updateTooltipMessage();
     }
   }
 
-  get foodDetails() {
-    if (this.cachedFoodDetails) {
-      return this.cachedFoodDetails;
+  get foodDetails(): FoodDetails | null {
+    if (!this.cachedFoodDetails) {
+      const foodData = this.cartItem ? this.cartItem.food : this.food;
+      this.cachedFoodDetails = this.foodService.getFoodDetails(
+        foodData,
+        this.cartItem
+      );
     }
-
-    const foodData =  this.cartItem ? this.cartItem.food : this.food;
-    if (!foodData) return null;
-
-    this.cachedFoodDetails = {
-      id: foodData.id,
-      name: foodData.name,
-      description: foodData.description,
-      price: foodData.price,
-      imageUrl: foodData.image_url,
-      quantity: this.cartItem ? this.cartItem.quantity : undefined,
-      totalPrice: this.cartItem ? this.cartItem.totalPrice : undefined
-    };
-
     return this.cachedFoodDetails;
   }
 
+  public getCurrentDayOfWeek(): DayOfWeek {
+    return getCurrentDayOfWeek();
+  }
+
+  public getDayClass(dayOfWeek: DayOfWeek | undefined): string {
+    return dayOfWeek === this.getCurrentDayOfWeek()
+      ? 'text-green-500'
+      : 'text-yellow-500';
+  }
+
+  private updateTooltipMessage(): void {
+    this.tooltipMessage =
+      this.foodDetails?.day_of_week === this.getCurrentDayOfWeek()
+        ? ''
+        : getUnavailableItemMessage(this.foodDetails?.day_of_week);
+  }
 }

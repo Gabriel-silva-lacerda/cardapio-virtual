@@ -1,13 +1,21 @@
 import { ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Inject, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Inject,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ERROR_MESSAGES, ErrorMessages } from './errors/form-errors';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { InputTextModule } from 'primeng/inputtext';
-import { fadeIn } from '@shared/utils/animations.util';
+import { fadeIn } from '@shared/utils/animations.utils';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { LoadingComponent } from "../loading/loading.component";
+import { LoadingComponent } from '../loading/loading.component';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -16,8 +24,8 @@ import { LoadingComponent } from "../loading/loading.component";
     ReactiveFormsModule,
     CommonModule,
     InputTextModule,
-    LoadingComponent
-],
+    LoadingComponent,
+  ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
   animations: [fadeIn],
@@ -61,5 +69,4 @@ export class DynamicFormComponent implements OnInit {
   }
 
   submit = () => this.submitEvent.emit();
-
 }

@@ -3,6 +3,7 @@ import { iFood } from '@shared/interfaces/food.interface';
 import { environment } from 'src/environments/environment.development';
 import { BaseService } from '../base/base.service';
 import { iExtra } from 'src/app/pages/selected-food/interfaces/extra.interface';
+import { iCartItem } from '@shared/interfaces/cart.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -61,5 +62,20 @@ export class FoodService extends BaseService {
     this.selectedAdditions.set({});
     this.observations.set('');
     this.productCount.set(1);
+  }
+
+  getFoodDetails(food: iFood, cartItem?: iCartItem) {
+    if (!food) return null;
+
+    return {
+      id: food.id,
+      name: food.name,
+      description: food.description,
+      price: food.price,
+      imageUrl: food.image_url,
+      quantity: cartItem ? cartItem.quantity : undefined,
+      totalPrice: cartItem ? cartItem.totalPrice : undefined,
+      day_of_week: food.day_of_week,
+    };
   }
 }

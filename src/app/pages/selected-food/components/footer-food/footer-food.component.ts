@@ -1,21 +1,31 @@
-import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, Input, OnInit, signal, SimpleChanges } from '@angular/core';
+import { CurrencyPipe, NgClass } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { iCartItem } from '@shared/interfaces/cart.interface';
 import { iFood } from '@shared/interfaces/food.interface';
 import { FoodService } from '@shared/services/food/food.service';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../services/cart/cart.service';
+import { getCurrentDayOfWeek, getUnavailableItemMessage } from '@shared/utils/day.utils';
+import { DayOfWeek } from '@shared/enums/day-of-week.enum';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-footer-food',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, MatTooltip, NgClass],
   templateUrl: './footer-food.component.html',
   styleUrl: './footer-food.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FooterFoodComponent {
+export class FooterFoodComponent implements OnInit, OnChanges {
   @Input() food!: iFood | null;
   @Input() newItem = false;
   @Input() idItem!: string | null;
@@ -30,40 +40,65 @@ export class FooterFoodComponent {
   public productCount = this.foodService.productCount;
   public totalPrice = signal(0);
 
+  public tooltipMessage = '';
+
   constructor() {
     effect(() => {
-      this.totalPrice.set((this.food?.price || 0) * this.foodService.productCount() + this.foodService.totalAddition());
+      this.totalPrice.set(
+        (this.food?.price || 0) * this.foodService.productCount() +
+          this.foodService.totalAddition()
+      );
     });
+  }
+
+  ngOnInit(): void {
+    this.updateTooltipMessage();
   }
 
   ngOnChanges(): void {
     this.updateTotalPrice();
+    this.updateTooltipMessage();
   }
 
   public increaseProductCount(): void {
-    this.productCount.update(count => count + 1);
+    this.productCount.update((count) => count + 1);
     this.updateTotalPrice();
   }
 
   public decreaseProductCount(): void {
     if (this.productCount() > 1) {
-      this.productCount.update(count => count - 1);
+      this.productCount.update((count) => count - 1);
       this.updateTotalPrice();
     }
   }
 
   private updateTotalPrice(): void {
     this.totalPrice.set(
-      this.cartService.calculateTotalPrice(this.food, this.productCount(), this.selectedAdditions())
+      this.cartService.calculateTotalPrice(
+        this.food,
+        this.productCount(),
+        this.selectedAdditions()
+      )
     );
   }
 
+  private updateTooltipMessage(): void {
+    this.tooltipMessage =
+      this.food?.day_of_week === getCurrentDayOfWeek()
+        ? ''
+        : getUnavailableItemMessage(this.food?.day_of_week);
+  }
+
+  public getCurrentDayOfWeek(): DayOfWeek {
+    return getCurrentDayOfWeek();
+  }
+
   public addToCart(): void {
-    if(!this.food) return;
+    if (!this.food) return;
 
     const cartItem = {
       id: this.newItem ? `cart-item-${Date.now()}` : this.idItem,
-      food: this.food ,
+      food: this.food,
       quantity: this.productCount(),
       observations: this.observations(),
       extras: this.selectedAdditions(),
@@ -72,7 +107,7 @@ export class FooterFoodComponent {
 
     this.cartService.addOrUpdateCartItem(cartItem, this.newItem);
     this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name, {
-      positionClass: 'toast-top-left'
+      positionClass: 'toast-top-left',
     });
     this.router.navigate([this.newItem ? '/' : '/cart']);
   }

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CategoryComponent } from '../components/category/category.component';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
-import { fade } from '@shared/utils/animations.util';
+import { fade } from '@shared/utils/animations.utils';
 import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
 import { FoodService } from '../../../core/shared/services/food/food.service';
 import { CategoryService } from '../services/category.service';
@@ -35,5 +35,4 @@ export class HomeListarComponent implements OnInit {
     this.foods.set(foods);
     this.categories.set(categories);
   }
-
 }

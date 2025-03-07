@@ -2,7 +2,7 @@ import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
-import { fade } from '@shared/utils/animations.util';
+import { fade } from '@shared/utils/animations.utils';
 import { iFood } from '@shared/interfaces/food.interface';
 import { FoodService } from '@shared/services/food/food.service';
 import { firstValueFrom } from 'rxjs';
@@ -14,7 +14,7 @@ import { iCategory } from '../../home/interfaces/category.interface';
   imports: [FoodMenuComponent, HeaderPageComponent],
   templateUrl: './selected-category-list.page.html',
   styleUrl: './selected-category-list.page.scss',
-  animations: [fade]
+  animations: [fade],
 })
 export class SelectedCategoryListPage {
   private route = inject(ActivatedRoute);
@@ -30,11 +30,12 @@ export class SelectedCategoryListPage {
   }
 
   private async getRouteId(): Promise<void> {
-     this.id = await firstValueFrom(this.route.paramMap).then(params => params.get('id'));
+    this.id = await firstValueFrom(this.route.paramMap).then((params) =>
+      params.get('id')
+    );
 
-     if (this.id)
-       this.getFoodsByCategory(+this.id);
-   }
+    if (this.id) this.getFoodsByCategory(+this.id);
+  }
 
   public async getFoodsByCategory(id: number) {
     const foods = await this.foodService.getFoodsByCategory(id);
@@ -46,7 +47,6 @@ export class SelectedCategoryListPage {
     }
 
     this.title.set(category.name);
-    this.foods.set(foods)
+    this.foods.set(foods);
   }
-
 }

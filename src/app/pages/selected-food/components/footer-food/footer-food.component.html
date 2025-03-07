@@ -4,7 +4,11 @@
     <span class="min-w-[20px] text-center text-lg text-black">{{ productCount() }}</span>
     <button (click)="increaseProductCount()" class="px-2 py-1 text-xl text-primary rounded">+</button>
   </div>
-  <button class="bg-primary text-white rounded px-4 py-2" (click)="addToCart()">
+  <button class="button-primary w-52 text-text4" (click)="addToCart()"
+    [disabled]="food?.day_of_week !== getCurrentDayOfWeek()"
+    [matTooltip]="tooltipMessage"
+
+  >
     {{ newItem ? 'Carrinho' : 'Atualizar'  }} {{ totalPrice() | currency: 'BRL' }}
   </button>
 </footer>
