@@ -1,16 +1,14 @@
-import { CurrencyPipe, NgClass, registerLocaleData } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, Input, LOCALE_ID, OnChanges, SimpleChanges } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { iFood } from '@shared/interfaces/food.interface';
 import { iCartItem } from '@shared/interfaces/cart.interface';
 import { FoodDetails } from '@shared/interfaces/food-datails.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { FoodDialogComponent } from 'src/app/pages/cart/components/food-dialog/food-dialog.component';
-
 
 @Component({
   selector: 'app-food-menu',
-  imports: [CurrencyPipe, RouterLink, NgClass],
+  imports: [CurrencyPipe, RouterLink],
   templateUrl: './food-menu.component.html',
   styleUrl: './food-menu.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,7 +19,6 @@ export class FoodMenuComponent implements OnChanges {
   @Input() isInCart = false;
 
   private cachedFoodDetails: FoodDetails | null = null;
-  private dialog = inject(MatDialog);
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['food'] || changes['cartItem'] ) {
@@ -50,10 +47,4 @@ export class FoodMenuComponent implements OnChanges {
     return this.cachedFoodDetails;
   }
 
-  openFoodDetailsDialog(): void {
-    if(!this.cartItem) return;
-    this.dialog.open(FoodDialogComponent, {
-      data: this.cartItem
-    });
-  }
 }

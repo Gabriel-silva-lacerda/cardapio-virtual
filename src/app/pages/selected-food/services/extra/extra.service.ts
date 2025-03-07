@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '@shared/services/base/base.service';
-import { iExtra } from '../interfaces/extra.interface';
+import { iExtra } from '../../interfaces/extra.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExtraService extends BaseService {
-
   constructor() {
-    super('')
+    super('');
   }
 
   async getExtrasByFoodId(foodId: string): Promise<iExtra[]> {
@@ -18,23 +17,28 @@ export class ExtraService extends BaseService {
       .eq('food_id', foodId);
 
     if (error) {
-      this.toastr.error(`Erro ao buscar os extras para o alimento com ID ${foodId}:`, error.message);
+      this.toastr.error(
+        `Erro ao buscar os extras para o alimento com ID ${foodId}:`,
+        error.message
+      );
       return [];
     }
 
     const extraIds = data.map((item) => item.extra_id);
 
-    if (extraIds.length === 0)
-      return [];
+    if (extraIds.length === 0) return [];
 
-
-    const { data: extras, error: extrasError } = await this.supabaseService.supabase
-      .from('extras')
-      .select('*')
-      .in('id', extraIds);
+    const { data: extras, error: extrasError } =
+      await this.supabaseService.supabase
+        .from('extras')
+        .select('*')
+        .in('id', extraIds);
 
     if (extrasError) {
-      this.toastr.error(`Erro ao buscar os detalhes dos extras:`, extrasError.message);
+      this.toastr.error(
+        `Erro ao buscar os detalhes dos extras:`,
+        extrasError.message
+      );
       return [];
     }
 

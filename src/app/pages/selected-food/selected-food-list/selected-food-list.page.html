@@ -1,13 +1,5 @@
 <div class="overflow-auto" [@fade]>
-  <app-food-details [food]="food()" [extras]="extras()" [selectedAdditions]="selectedAdditions"
-    [observations]="observations" (additionalItemAndPriceChange)="footer.updateAdditionsTotal($event)"
-    (observationsChange)="footer.observations = $event" />
+  <app-food-details [food]="food()" [extras]="extras()" />
 
-  <app-footer-food #footer
-   [food]="food()"
-   [selectedAdditions]="selectedAdditions"
-   [observations]="observations"
-   [productCount]="productCount"
-   [newItem]="newItem"
-   [idItem]="itemId" />
+  <app-footer-food [food]="food()" [newItem]="newItem" [idItem]="itemId" />
 </div>

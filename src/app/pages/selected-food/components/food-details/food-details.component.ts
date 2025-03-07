@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { iFood } from '@shared/interfaces/food.interface';
 import { iExtra } from '../../interfaces/extra.interface';
 import { FormsModule } from '@angular/forms';
+import { FoodService } from '@shared/services/food/food.service';
 
 @Component({
   selector: 'app-food-details',
@@ -12,11 +13,10 @@ import { FormsModule } from '@angular/forms';
 export class FoodDetailsComponent {
   @Input() food!: iFood | null;
   @Input() extras: iExtra[] = [];
-  @Output() additionalItemAndPriceChange = new EventEmitter<any>();
-  @Output() observationsChange = new EventEmitter<string>(); // Emitir as observações
 
-  @Input() public selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
-  @Input() public observations: string = '';
+  private foodService = inject(FoodService);
+  public selectedAdditions = this.foodService.selectedAdditions;
+  public observations = this.foodService.observations;
 
   // Função para aumentar a quantidade de adicionais
   public increaseAddition(item: { id: number; name: string; price: number }): void {
@@ -47,16 +47,12 @@ export class FoodDetailsComponent {
     this.updateTotalAdditions();
   }
 
-  updateObservations() {
-    this.observationsChange.emit(this.observations); // Emite as observações para o componente pai
-  }
-
   private updateTotalAdditions(): void {
     let totalAdditions = Object.values(this.selectedAdditions()).reduce((sum, item) => {
       return sum + (item.quantity * item.price);
     }, 0);
 
-    this.additionalItemAndPriceChange.emit({ totalAdditions, selectedAdditions: this.selectedAdditions(), observations: this.observations });
+    this.foodService.totalAddition.set(totalAdditions);
   }
 
 }

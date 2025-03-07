@@ -5,7 +5,7 @@ export interface iCartItem {
   id: string | null;
   food: iFood;
   quantity: number;
-  totalPrice: number;
-  extras: any;
   observations?: string;
+  extras: { [key: string]: iExtra };
+  totalPrice: number;
 }

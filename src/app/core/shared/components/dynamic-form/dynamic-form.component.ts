@@ -1,3 +1,4 @@
+import { ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Inject, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -43,7 +44,7 @@ export class DynamicFormComponent implements OnInit {
       this.fields.reduce((acc, field) => {
         acc[field.name] = ['', field.validators || []];
         return acc;
-      }, {} as any)
+      }, {} as { [key: string]: [string, ValidatorFn | ValidatorFn[]] })
     );
   }
 

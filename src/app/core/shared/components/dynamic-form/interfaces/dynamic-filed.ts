@@ -1,3 +1,4 @@
+import { ValidatorFn } from "@angular/forms";
 import { eDynamicField } from "../enums/dynamic-field.enum";
 
 export interface TypeControl {
@@ -9,7 +10,7 @@ export interface iDynamicField {
   name: string;
   label: string;
   type: string;
-  validators?: any[];
+  validators?: ValidatorFn | ValidatorFn[];
   showForgotPassword?: boolean;
   forgotPasswordLink?: string;
 }

@@ -33,10 +33,10 @@ export class SelectedCategoryListPage {
      this.id = await firstValueFrom(this.route.paramMap).then(params => params.get('id'));
 
      if (this.id)
-       this.getFoodsByCategory(this.id);
+       this.getFoodsByCategory(+this.id);
    }
 
-  public async getFoodsByCategory(id: string) {
+  public async getFoodsByCategory(id: number) {
     const foods = await this.foodService.getFoodsByCategory(id);
     const category = await this.categoryService.getById<iCategory>(id);
 
@@ -44,7 +44,7 @@ export class SelectedCategoryListPage {
       console.error('Categoria não encontrada');
       return;
     }
-    
+
     this.title.set(category.name);
     this.foods.set(foods)
   }

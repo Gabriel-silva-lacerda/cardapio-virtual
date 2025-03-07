@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart.interface';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { FooterService } from '@shared/services/title/footer.service';
+import { FooterService } from '@shared/services/footer/footer.service';
 
 @Component({
   selector: 'app-footer',

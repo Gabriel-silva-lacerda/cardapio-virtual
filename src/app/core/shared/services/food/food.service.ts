@@ -9,6 +9,11 @@ import { iExtra } from 'src/app/pages/selected-food/interfaces/extra.interface';
 })
 export class FoodService extends BaseService {
 
+  public selectedAdditions = signal<{ [key: number]: iExtra }>({});
+  public observations = signal<string>('');
+  public productCount = signal<number>(1);
+  public totalAddition = signal<number>(0)
+
   constructor() {
     super('foods');
   }
@@ -39,7 +44,7 @@ export class FoodService extends BaseService {
     };
   }
 
-  async getFoodsByCategory(categoryId: string): Promise<iFood[] | null>  {
+  async getFoodsByCategory(categoryId: number): Promise<iFood[] | null>  {
     const foods = await this.getByField<iFood>('category_id', categoryId);
 
     if (!foods) return [];
@@ -50,5 +55,11 @@ export class FoodService extends BaseService {
         ? `${environment.SUPABASE_URL}/${food.image_url}`
         : null,
     }));
+  }
+
+  public resetFoodValues() {
+    this.selectedAdditions.set({});
+    this.observations.set('');
+    this.productCount.set(1);
   }
 }

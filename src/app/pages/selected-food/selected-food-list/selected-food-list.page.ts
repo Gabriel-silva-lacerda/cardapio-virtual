@@ -2,10 +2,10 @@ import { FoodDetailsComponent } from './../components/food-details/food-details.
 import { Component, inject, signal } from '@angular/core';
 import { fade } from '@shared/utils/animations.util';
 import { ActivatedRoute } from '@angular/router';
-import { FooterFoodComponent } from "../components/footer-food/footer-food.component";
+import { FooterFoodComponent } from '../components/footer-food/footer-food.component';
 import { FoodService } from '@shared/services/food/food.service';
 import { iFood } from '@shared/interfaces/food.interface';
-import { ExtraService } from '../services/extra.service';
+import { ExtraService } from '../services/extra/extra.service';
 import { iExtra } from '../interfaces/extra.interface';
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
@@ -24,7 +24,6 @@ export class SelectdFoodListPage {
   private route = inject(ActivatedRoute);
   private foodService = inject(FoodService);
   private extraService = inject(ExtraService);
-  private toastr = inject(ToastrService);
   private localStorageService = inject(LocalStorageService);
   public carts = this.localStorageService.getSignal<iCartItem[]>('cart', []);
 
@@ -34,11 +33,6 @@ export class SelectdFoodListPage {
   public id!: string | null;
   public itemId!: string | null;
 
-  public selectedAdditions = signal<{ [key: number]: { id: number; name: string; price: number; quantity: number } }>({});
-  public observations = '';
-  public productCount = signal<number>(1)
-
-
   public newItem = false;
 
   ngOnInit() {
@@ -47,13 +41,13 @@ export class SelectdFoodListPage {
 
   private async getRouteId(): Promise<void> {
     const params = await firstValueFrom(this.route.paramMap);
-    console.log(params);
-
     this.id = params.get('id');
     this.itemId = params.get('itemId');
+
     if (this.id) {
       this.newItem = true;
-      this.loadFoodAndExtras(this.id);
+      this.foodService.resetFoodValues();
+      await this.loadFoodAndExtras(this.id);
     }
 
     if (this.itemId) {
@@ -63,27 +57,21 @@ export class SelectdFoodListPage {
   }
 
   private async loadFoodAndExtras(foodId: string) {
-    try {
-      const [food, extras] = await Promise.all([
-        this.foodService.getFoodById(foodId),
-        this.extraService.getExtrasByFoodId(foodId),
-      ]);
+    const [food, extras] = await Promise.all([
+      this.foodService.getFoodById(foodId),
+      this.extraService.getExtrasByFoodId(foodId),
+    ]);
 
-      this.food.set(food);
-      this.extras.set(extras);
-    } catch (error) {
-      this.toastr.error('Erro ao carregar comida e extras:', 'Erro');
-    }
+    this.food.set(food);
+    this.extras.set(extras);
   }
 
   private loadCartItemData(itemId: string) {
-    const cartItem = this.carts().find((item:any) => item.id === itemId);
+    const cartItem = this.carts().find((item) => item.id === itemId);
     if (cartItem) {
-      console.log("LoadCartItem");
-
-      this.selectedAdditions.set(cartItem.extras);
-      this.observations = cartItem.observations || '';
-      this.productCount.set(cartItem.quantity);
+      this.foodService.selectedAdditions.set(cartItem.extras);
+      this.foodService.observations.set(cartItem.observations || '');
+      this.foodService.productCount.set(cartItem.quantity);
     }
   }
 }
