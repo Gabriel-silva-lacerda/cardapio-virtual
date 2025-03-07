@@ -1,12 +1,13 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { iFood } from '@shared/interfaces/food.interface';
 import { iExtra } from '../../interfaces/extra.interface';
 import { FormsModule } from '@angular/forms';
 import { FoodService } from '@shared/services/food/food.service';
+import { BackButtonComponent } from "../../../../core/shared/components/back-button/back-button.component";
 
 @Component({
   selector: 'app-food-details',
-  imports: [FormsModule],
+  imports: [FormsModule, BackButtonComponent],
   templateUrl: './food-details.component.html',
   styleUrl: './food-details.component.scss',
 })

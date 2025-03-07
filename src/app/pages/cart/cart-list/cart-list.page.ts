@@ -16,8 +16,4 @@ import { FooterCartComponent } from "../components/footer-cart/footer-cart.compo
 export class CartListPage {
   private localStorageService = inject(LocalStorageService);
   public carts = this.localStorageService.getSignal<iCartItem[]>('cart', []);
-
-  constructor() {
-    // console.log(this.carts());
-  }
 }

@@ -15,22 +15,15 @@ export const mainRoutes: Routes = [
         '../../../pages/selected-category/selected-category-list/selected-category-list.page'
       ).then((m) => m.SelectedCategoryListPage),
   },
-  // {
-  //   path: 'cardapio',
-  //   loadComponent: () =>
-  //     import('../../../pages/food-menu/food-menu-list/food-menu-list.page').then(
-  //       (m) => m.FoodMenuListPage
-  //     ),
-  // },
   {
-    path: 'cardapio/:id',
+    path: 'food/:id',
     loadComponent: () =>
       import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
         (m) => m.SelectdFoodListPage
       ),
   },
   {
-    path: 'cardapio/:id/:itemId',
+    path: 'food/:id/:itemId',
     loadComponent: () =>
       import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
         (m) => m.SelectdFoodListPage

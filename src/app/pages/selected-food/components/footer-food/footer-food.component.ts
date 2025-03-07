@@ -71,7 +71,9 @@ export class FooterFoodComponent {
     };
 
     this.cartService.addOrUpdateCartItem(cartItem, this.newItem);
-    this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name);
+    this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name, {
+      positionClass: 'toast-top-left'
+    });
     this.router.navigate([this.newItem ? '/' : '/cart']);
   }
 }

@@ -3,5 +3,5 @@
     <span>Total</span>
     <span class="text-green-500">{{ total | currency: 'BRL' }}</span>
   </div>
-  <button class="button-primary text-text4">Finalizar Pedido</button>
+  <button class="button-primary text-text4" [disabled]="!carts.length">Finalizar Pedido</button>
 </footer>

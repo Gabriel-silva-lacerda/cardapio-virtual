@@ -4,6 +4,12 @@
     @for (cart of this.carts(); track $index) {
     <app-food-menu [isInCart]="true" [cartItem]="cart" />
     }
+
+    @if(this.carts().length === 0) {
+      <div class="flex items-center justify-self-center">
+          Sem itens no carrinho :(
+      </div>
+    }
   </div>
   <app-footer-cart [carts]="this.carts()" />
 </div>

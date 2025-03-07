@@ -1,4 +1,5 @@
 <div class="h-[30%] relative ">
+  <!-- <app-back-button /> -->
   @if(isHome) {
     <div class="bg-primary text-white px-3 py-10">
       <span class="text-text3">Olá,</span>
@@ -6,7 +7,7 @@
     </div>
   } @else {
     <div class="bg-primary text-white px-3 py-10 flex justify-between items-center">
-      <a [routerLink]="'/'" class="text-text1"><</a>
+      <app-back-button customClass="text-text1" />
       <h1 class="text-title3">{{ title }}</h1>
     </div>
   }
