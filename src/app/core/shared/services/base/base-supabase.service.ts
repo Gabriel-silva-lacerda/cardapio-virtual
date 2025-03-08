@@ -9,7 +9,7 @@ export abstract class BaseSupabaseService {
   protected supabaseService = inject(SupabaseService);
   protected table!: string;
   public toastr = inject(ToastrService);
-  
+
   async getAll<T>(table: string, selectFields: string = '*'): Promise<T[]> {
     const { data, error } = await this.supabaseService.supabase.from(table).select(selectFields);
     if (error) {
@@ -33,7 +33,7 @@ export abstract class BaseSupabaseService {
     const { data, error } = await this.supabaseService.supabase
       .from(table)
       .select(selectFields)
-      .eq(field, value); // Filtra pela chave e valor fornecidos
+      .eq(field, value);
 
     if (error) {
       this.toastr.error(`Erro ao buscar registros na tabela ${table} com ${field} = ${value}:`, error.message);
@@ -45,7 +45,7 @@ export abstract class BaseSupabaseService {
 
   // Método para inserir um novo registro
   async insert<T>(table: string, item: Partial<T>): Promise<T> {
-    const { data, error } = await this.supabaseService.supabase.from(this.table).insert([item]).single();
+    const { data, error } = await this.supabaseService.supabase.from(table).insert([item]).select().single();
     if (error) {
       this.toastr.error(`Erro ao inserir na tabela ${table}:`, error.message);
       throw new Error(error.message);

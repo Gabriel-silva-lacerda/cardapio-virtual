@@ -15,7 +15,8 @@ import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import localePt from '@angular/common/locales/pt';
 import { registerLocaleData } from '@angular/common';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { ErrorInterceptor } from '@shared/interceptors/error-interceptor';
 registerLocaleData(localePt);
 
 export const appConfig: ApplicationConfig = {
@@ -26,6 +27,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideToastr(),
     provideHttpClient(withFetch()),
+    provideHttpClient(
+      withInterceptors([ErrorInterceptor])
+    ),
     providePrimeNG({
       theme: {
         preset: Aura,

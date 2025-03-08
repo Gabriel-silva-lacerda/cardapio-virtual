@@ -62,6 +62,8 @@ export class SuccessfulPaymentPage implements OnInit, OnDestroy {
         newStatus
       );
 
+      this.localStorageService.removeItem('cart');
+
       this.localStorageService.setItem(
         `order_${this.externalReference}_updated`,
         true

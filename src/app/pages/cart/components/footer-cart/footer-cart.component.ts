@@ -24,7 +24,7 @@ export class FooterCartComponent implements OnInit {
     this.total = this.carts.reduce((accum, item) => accum + item.totalPrice, 0);
   }
 
-  async finalizar() {
+  async finalizePurchase() {
     const order = {
       user_id: this.authService.currentUser()?.id,
       items: transformCartItemsToOrderItems(this.carts),
@@ -35,15 +35,21 @@ export class FooterCartComponent implements OnInit {
 
     console.log('Footer Cart', preferenceItems);
 
+    const body = {
+      items: preferenceItems,
+      externalReference: orderId.toString(),
+      backUrls: {
+        success: 'http://localhost:4200/successes-payment',
+        pending: 'http://localhost:4200/',
+        failure: 'http://localhost:4200/',
+      },
+    };
+
     this.paymentService
-      .createPreference(preferenceItems, orderId.toString())
+      .post<{ initPoint: string }>(body, 'Payment/create-preference')
       .subscribe({
         next: (response: { initPoint: string}) => {
           window.location.href = response.initPoint ;
-        },
-        error: (err) => {
-          console.error('Erro ao criar preferência de pagamento:', err);
-          alert('Ocorreu um erro ao processar o pagamento. Tente novamente.');
         },
       });
   }

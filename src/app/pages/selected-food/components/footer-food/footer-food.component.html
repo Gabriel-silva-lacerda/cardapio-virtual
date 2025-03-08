@@ -4,8 +4,9 @@
     <span class="min-w-[20px] text-center text-lg text-black">{{ productCount() }}</span>
     <button (click)="increaseProductCount()" class="px-2 py-1 text-xl text-primary rounded">+</button>
   </div>
+      <!-- [disabled]="food?.day_of_week !== getCurrentDayOfWeek()" -->
   <button class="button-primary w-52 text-text4" (click)="addToCart()"
-    [disabled]="food?.day_of_week !== getCurrentDayOfWeek()"
+
     [matTooltip]="tooltipMessage"
 
   >
