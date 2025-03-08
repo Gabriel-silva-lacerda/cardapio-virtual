@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BaseService } from '@shared/services/base/base.service';
+import { BaseSupabaseService } from '@shared/services/base/base-supabase.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class CategoryService extends BaseService {
-  constructor() {
-    super('categories')
-  }
+export class CategoryService extends BaseSupabaseService {
+
 }

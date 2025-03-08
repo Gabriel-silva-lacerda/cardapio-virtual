@@ -36,4 +36,8 @@ export const mainRoutes: Routes = [
         (m) => m.CartListPage
       ),
   },
+  {
+    path: 'successes-payment',
+    loadComponent: () => import('../successful-payment/successful-payment.page').then((m) => m.SuccessfulPaymentPage),
+  }
 ];

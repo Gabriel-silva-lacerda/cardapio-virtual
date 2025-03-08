@@ -39,7 +39,7 @@ export class SelectedCategoryListPage {
 
   public async getFoodsByCategory(id: number) {
     const foods = await this.foodService.getFoodsByCategory(id);
-    const category = await this.categoryService.getById<iCategory>(id);
+    const category = await this.categoryService.getById<iCategory>('categories', id);
 
     if (!category) {
       console.error('Categoria não encontrada');

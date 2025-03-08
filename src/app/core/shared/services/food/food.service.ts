@@ -1,26 +1,21 @@
 import { Injectable, signal } from '@angular/core';
 import { iFood } from '@shared/interfaces/food.interface';
 import { environment } from 'src/environments/environment.development';
-import { BaseService } from '../base/base.service';
+import { BaseSupabaseService } from '../base/base-supabase.service';
 import { iExtra } from 'src/app/pages/selected-food/interfaces/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FoodService extends BaseService {
-
+export class FoodService extends BaseSupabaseService {
   public selectedAdditions = signal<{ [key: number]: iExtra }>({});
   public observations = signal<string>('');
   public productCount = signal<number>(1);
-  public totalAddition = signal<number>(0)
-
-  constructor() {
-    super('foods');
-  }
+  public totalAddition = signal<number>(0);
 
   async getAllFoods(): Promise<iFood[]> {
-    const foods = await this.getAll<iFood>();
+    const foods = await this.getAll<iFood>('foods');
 
     const updateFood = foods.map((food) => ({
       ...food,
@@ -33,7 +28,7 @@ export class FoodService extends BaseService {
   }
 
   async getFoodById(id: string): Promise<iFood | null> {
-    const food = await this.getById<iFood>(id);
+    const food = await this.getById<iFood>('foods', id);
 
     if (!food) return null;
 
@@ -45,12 +40,12 @@ export class FoodService extends BaseService {
     };
   }
 
-  async getFoodsByCategory(categoryId: number): Promise<iFood[] | null>  {
-    const foods = await this.getByField<iFood>('category_id', categoryId);
+  async getFoodsByCategory(categoryId: number): Promise<iFood[] | null> {
+    const foods = await this.getByField<iFood>('foods', 'category_id', categoryId);
 
     if (!foods) return [];
 
-    return foods.map(food => ({
+    return foods.map((food) => ({
       ...food,
       image_url: food.image_url
         ? `${environment.SUPABASE_URL}/${food.image_url}`

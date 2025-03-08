@@ -29,7 +29,7 @@ export class HomeListarComponent implements OnInit {
   private async getAllFoodAndCategories() {
     const [foods, categories] = await Promise.all([
       this.foodService.getAllFoods(),
-      this.categoryService.getAll<iCategory>(),
+      this.categoryService.getAll<iCategory>('categories'),
     ]);
 
     this.foods.set(foods);

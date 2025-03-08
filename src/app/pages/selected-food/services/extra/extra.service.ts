@@ -1,15 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BaseService } from '@shared/services/base/base.service';
+import { BaseSupabaseService } from '@shared/services/base/base-supabase.service';
 import { iExtra } from '../../interfaces/extra.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ExtraService extends BaseService {
-  constructor() {
-    super('');
-  }
-
+export class ExtraService extends BaseSupabaseService {
   async getExtrasByFoodId(foodId: string): Promise<iExtra[]> {
     const { data, error } = await this.supabaseService.supabase
       .from('food_extras')

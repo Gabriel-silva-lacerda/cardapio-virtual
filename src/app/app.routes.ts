@@ -27,5 +27,6 @@ export const routes: Routes = [
           import('./core/pages/main/main.routes').then((m) => m.mainRoutes),
       },
     ]
-  }
+  },
+
 ];
