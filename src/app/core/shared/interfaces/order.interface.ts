@@ -5,4 +5,6 @@ export interface iOrder {
   status: string;
   payment_status: string;
   external_reference: string | null;
+  delivery_address_id: number | null;
+  delivery: boolean;
 }

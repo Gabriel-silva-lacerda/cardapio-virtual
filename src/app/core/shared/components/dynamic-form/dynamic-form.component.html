@@ -4,9 +4,24 @@
       <label class="text-gray-500 text-text4 mb-1" for="{{ field.name }}">
         {{ field.label }}
       </label>
-      <input id="{{ field.name }}" [type]="field.type" [formControlName]="field.name"
+      <input *ngIf="field.type !== 'select'" id="{{ field.name }}" [type]="field.type" [formControlName]="field.name"
         class="input-primary py-3"
-        [ngClass]="{ 'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched }" />
+        [ngStyle]="{ 'padding': field.padding }"
+        [ngClass]="{ 'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched }"
+        [mask]="field.mask || ''"
+        (ngModelChange)="field.onChange && field.onChange($event, form)"
+        />
+
+      <select *ngIf="field.type === 'select'" id="{{ field.name }}" [formControlName]="field.name"
+        class="input-primary py-3" [ngClass]="{
+          'input-error':
+            form.get(field.name)?.invalid && form.get(field.name)?.touched
+        }">
+        <option value="">Selecione...</option>
+        <option *ngFor="let option of field.options" [value]="option">
+          {{ option }}
+        </option>
+      </select>
     </div>
 
     <div class="mt-[-10px]" *ngIf="form.get(field.name)?.invalid && form.get(field.name)?.touched" [@fadeIn]>
@@ -17,11 +32,11 @@
   </ng-container>
 
 
-  <button type="submit" class="button-primary flex items-center justify-center gap-2" (click)="submit()"
+  <!-- <button type="submit" class="button-primary flex items-center justify-center gap-2" (click)="submit()"
     [disabled]="form.invalid || loadingService.loading()">
     {{ buttonText }}
     <ng-container *ngIf="loadingService.loading()">
       <app-loading />
     </ng-container>
-  </button>
+  </button> -->
 </form>

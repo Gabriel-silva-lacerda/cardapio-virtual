@@ -37,7 +37,15 @@ export const mainRoutes: Routes = [
       ),
   },
   {
-    path: 'successes-payment',
+    path: 'sucesso-pagamento',
     loadComponent: () => import('../successful-payment/successful-payment.page').then((m) => m.SuccessfulPaymentPage),
+  },
+  {
+    path: 'pedente-pagamento',
+    loadComponent: () => import('../peding-payment/peding-payment.page').then((m) => m.PedingPaymentPage),
+  },
+  {
+    path: 'falha-pagamento',
+    loadComponent: () => import('../fail-payment/fail-payment.page').then((m) => m.FailPaymentPage),
   }
 ];

@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ToastrService } from 'ngx-toastr';
+import { LoadingService } from '../loading/loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +9,13 @@ import { ToastrService } from 'ngx-toastr';
 export abstract class BaseSupabaseService {
   protected supabaseService = inject(SupabaseService);
   protected table!: string;
-  public toastr = inject(ToastrService);
+  private loadingService = inject(LoadingService);
 
+  public toastr = inject(ToastrService);
   async getAll<T>(table: string, selectFields: string = '*'): Promise<T[]> {
+    this.loadingService.showLoading();
     const { data, error } = await this.supabaseService.supabase.from(table).select(selectFields);
+    this.loadingService.hideLoading();
     if (error) {
       this.toastr.error(`Erro ao buscar registros da tabela ${table}:`, error.message);
       throw new Error(error.message);
@@ -45,7 +49,9 @@ export abstract class BaseSupabaseService {
 
   // Método para inserir um novo registro
   async insert<T>(table: string, item: Partial<T>): Promise<T> {
+    this.loadingService.showLoading();
     const { data, error } = await this.supabaseService.supabase.from(table).insert([item]).select().single();
+    this.loadingService.hideLoading();
     if (error) {
       this.toastr.error(`Erro ao inserir na tabela ${table}:`, error.message);
       throw new Error(error.message);

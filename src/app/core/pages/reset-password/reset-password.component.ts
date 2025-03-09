@@ -10,12 +10,11 @@ import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { ToastrService } from 'ngx-toastr';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
-import { RingsComponent } from "../../shared/components/rings/rings.component";
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, DynamicFormComponent, RingsComponent],
+  imports: [ReactiveFormsModule, DynamicFormComponent],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
 })

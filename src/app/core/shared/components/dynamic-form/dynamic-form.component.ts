@@ -15,7 +15,7 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { InputTextModule } from 'primeng/inputtext';
 import { fadeIn } from '@shared/utils/animations.utils';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { LoadingComponent } from '../loading/loading.component';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -24,7 +24,7 @@ import { LoadingComponent } from '../loading/loading.component';
     ReactiveFormsModule,
     CommonModule,
     InputTextModule,
-    LoadingComponent,
+    NgxMaskDirective,
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -34,6 +34,7 @@ export class DynamicFormComponent implements OnInit {
   @Input() fields: iDynamicField[] = [];
   @Input() buttonText!: string;
   @Output() submitEvent = new EventEmitter();
+  @Output() fieldChangeEvent = new EventEmitter<{ fieldName: string; value: string }>();
 
   protected loadingService = inject(LoadingService);
 
@@ -66,6 +67,28 @@ export class DynamicFormComponent implements OnInit {
         ? errorFn(control.errors?.[errorKey])
         : `Erro desconhecido`;
     });
+  }
+
+  disableFields(fieldNames: string[]) {
+    fieldNames.forEach((fieldName) => {
+      this.form.get(fieldName)?.disable();
+    });
+  }
+
+  enableFields(fieldNames: string[]) {
+    fieldNames.forEach((fieldName) => {
+      this.form.get(fieldName)?.enable();
+    });
+  }
+
+  clearFields(fieldNames: string[]) {
+    const clearValues = fieldNames.reduce((acc, fieldName) => {
+      acc[fieldName] = null;
+      return acc;
+    }, {} as { [key: string]: any });
+
+    this.form.patchValue(clearValues);
+    this.enableFields(fieldNames);
   }
 
   submit = () => this.submitEvent.emit();

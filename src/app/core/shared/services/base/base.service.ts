@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment.development';
+import { LoadingService } from '../loading/loading.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export abstract class BaseService {
   protected http: HttpClient = inject(HttpClient);
   protected toastr: ToastrService = inject(ToastrService);
   protected apiUrl: string = environment.API_URL;
+  private loadingService = inject(LoadingService);
 
   // Método genérico para GET (buscar todos os itens)
   get<T>(path?: string): Observable<T[]> {
@@ -37,12 +39,14 @@ export abstract class BaseService {
 
   // Método genérico para POST (criar um novo item)
   post<T>(body: any, path?: string): Observable<T> {
+    this.loadingService.showLoading();
     const url = path ? `${this.apiUrl}/${path}` : this.apiUrl;
     return this.http.post<T>(url, body).pipe(
       catchError((error) => {
         this.toastr.error('Erro ao criar item.', 'Erro');
         return throwError(() => error);
-      })
+      }),
+      finalize(() => this.loadingService.hideLoading())
     );
   }
 

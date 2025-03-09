@@ -1,30 +1,52 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { iInsertOrder } from '@shared/interfaces/insert-order.interface';
 import { iOrder } from '@shared/interfaces/order.interface';
 import { iOrderItem } from '@shared/interfaces/order-item.interface';
 import { iOrderItemExtra } from '@shared/interfaces/order-item-extra.interface';
 
+interface teste {
+  id: number;
+  order_id: number,
+  // name: string,
+  cep: string,
+  street: string,
+  number: number,
+  neighborhood: string,
+  complement: string | null
+}
 @Injectable({
   providedIn: 'root',
 })
 export class OrderService extends BaseSupabaseService {
-  async createOrder(order: iInsertOrder) {
+  showPayment = signal(false);
+
+  async createOrder(order: iInsertOrder, orderAddress: any) {
     const orderData = await this.insert<iOrder>('orders', {
       user_id: order.user_id,
       status: 'pending',
       payment_status: 'pending',
       external_reference: null,
+      delivery_address_id: null,
+      delivery: orderAddress.delivery
     });
 
     const orderId = orderData.id;
 
-    //   const { error: updateError } = await this.supabaseService.supabase
-    //   .from('orders')
-    //   .update({ external_reference: orderId })
-    //   .eq('id', orderId);
+    await this.update("orders", orderId, { external_reference: orderId });
 
-    // if (updateError) throw updateError;
+    if (orderAddress.delivery) {
+      const addressData = await this.insert<teste>('delivery_addresses', {
+        order_id: orderId,
+        cep: orderAddress.address.cep,
+        street: orderAddress.address.street,
+        number: orderAddress.address.number,
+        neighborhood: orderAddress.address.neighborhood,
+        complement: orderAddress.address.complement || null 
+      });
+  
+      await this.update("orders", orderId, { delivery_address_id: addressData.id });
+    }
 
     for (const item of order.items) {
       const itemData = await this.insert<iOrderItem>('order_items', {

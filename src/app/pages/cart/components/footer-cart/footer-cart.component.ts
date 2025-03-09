@@ -5,52 +5,41 @@ import { PaymentService } from '../../services/payment.service';
 import { OrderService } from '../../../../core/shared/services/order/order.service';
 import { createPreferenceItems, transformCartItemsToOrderItems } from '@shared/utils/oder.utils';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PaymentComponent } from '../payment/payment.component';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { PaymentAddressDialogComponent } from '../payment-address-dialog/payment-address-dialog.component';
 
 @Component({
   selector: 'app-footer-cart',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, LoadingComponent],
   templateUrl: './footer-cart.component.html',
   styleUrl: './footer-cart.component.scss',
 })
 export class FooterCartComponent implements OnInit {
   @Input() carts!: iCartItem[];
-  private paymentService = inject(PaymentService);
-  private orderService = inject(OrderService);
-  private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
+  public loadingService = inject(LoadingService);
 
   public total!: number;
 
   ngOnInit(): void {
     this.total = this.carts.reduce((accum, item) => accum + item.totalPrice, 0);
+    this.openAddressDialog();
   }
 
-  async finalizePurchase() {
-    const order = {
-      user_id: this.authService.currentUser()?.id,
-      items: transformCartItemsToOrderItems(this.carts),
-    };
+  openAddressDialog() {
+    const dialogRef = this.dialog.open(PaymentAddressDialogComponent, {
+      width: '400px',
+      data: this.carts
+    });
 
-    const { orderId } = await this.orderService.createOrder(order);
-    const preferenceItems  = createPreferenceItems(this.carts, orderId);
-
-    console.log('Footer Cart', preferenceItems);
-
-    const body = {
-      items: preferenceItems,
-      externalReference: orderId.toString(),
-      backUrls: {
-        success: 'http://localhost:4200/successes-payment',
-        pending: 'http://localhost:4200/',
-        failure: 'http://localhost:4200/',
-      },
-    };
-
-    this.paymentService
-      .post<{ initPoint: string }>(body, 'Payment/create-preference')
-      .subscribe({
-        next: (response: { initPoint: string}) => {
-          window.location.href = response.initPoint ;
-        },
-      });
+    dialogRef.afterClosed().subscribe(async (selectedPayment) => {
+      if (selectedPayment) {
+        dialogRef.close();
+      }
+    });
   }
+
 }

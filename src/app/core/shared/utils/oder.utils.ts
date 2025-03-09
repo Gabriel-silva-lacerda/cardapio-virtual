@@ -6,8 +6,8 @@ export const transformCartItemsToOrderItems = (cartItems: any[]) => {
     quantity: item.quantity,
     observations: item.observations,
     extras: Object.keys(item.extras).map((extraId) => ({
-      extra_id: parseInt(extraId),
-      extra_quantity: item.extras[extraId],
+      extra_id: +extraId,
+      extra_quantity: item.extras[extraId].quantity,
     })),
   }));
 };

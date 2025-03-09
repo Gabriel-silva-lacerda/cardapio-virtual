@@ -1,4 +1,4 @@
-import { ValidatorFn } from "@angular/forms";
+import { FormGroup, ValidatorFn } from "@angular/forms";
 import { eDynamicField } from "../enums/dynamic-field.enum";
 
 export interface TypeControl {
@@ -13,5 +13,9 @@ export interface iDynamicField {
   validators?: ValidatorFn | ValidatorFn[];
   showForgotPassword?: boolean;
   forgotPasswordLink?: string;
+  onChange?: (data: unknown | null | object | boolean | string | number, form: FormGroup) => void;
+  options?: string[];
+  mask?: string; 
+  padding?: string;
 }
 

@@ -5,9 +5,9 @@ export function mapPaymentStatus(collectionStatus: string): string {
       case 'pending':
         return 'pending';
       case 'failure':
-        return 'failure';
+        return 'rejected';
       default:
-        return 'pending';
+        return 'rejected';
     }
   }
 
