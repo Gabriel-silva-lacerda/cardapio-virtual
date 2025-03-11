@@ -1,18 +1,25 @@
 <div class="min-h-screen " [@fade]>
   <app-header-page [isHome]="true" />
 
-  <div class="h-[70%] mt-10 ">
-    <span class="text-gray-600 text-title5 font-medium mb-2 block px-3">Categorias</span>
-    <div class="flex gap-4 overflow-auto px-3">
+  <div class="h-[70%] mt-10   px-3">
+    <span class="text-gray-600 text-title5 font-medium mb-2 block ">Categorias</span>
+    <div class="flex gap-4 overflow-auto">
       @for (category of this.categories(); track $index) {
       <app-category [category]="category" />
+      } @empty {
+        <span>Sem Categorias para mostrar</span>
+
       }
     </div>
 
     <div>
-      <span class="text-gray-600 text-title5 font-medium block px-3 my-2">Cardápio</span>
+      <span class="text-gray-600 text-title5 font-medium block  my-2">Cardápio</span>
       @for (food of this.foods(); track $index) {
       <app-food-menu [food]="food" />
+      } @empty {
+        <span>
+          Sem Comidas para mostrar
+        </span>
       }
     </div>
   </div>

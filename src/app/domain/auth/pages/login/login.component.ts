@@ -1,14 +1,16 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { CommonModule } from '@angular/common';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { ButtonModule } from 'primeng/button';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { CompanyService } from '@shared/services/company/company.service';
+import { ToastrService } from 'ngx-toastr';
+import { ErrorHandlerService } from '@shared/services/error-handler/error-handler.service';
 
 @Component({
   selector: 'app-login',
@@ -22,12 +24,15 @@ export class LoginComponent {
 
   protected loadingService = inject(LoadingService);
 
+  private companyService = inject(CompanyService);
   private localStorageService = inject(LocalStorageService);
   private supabase = injectSupabase();
   private router = inject(Router);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  private toastrService = inject(ToastrService);
+  private errorHandler = inject(ErrorHandlerService);
 
-  loginFields: iDynamicField[] = [
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public loginFields: iDynamicField[] = [
     {
       name: 'email',
       label: 'Email',
@@ -53,18 +58,52 @@ export class LoginComponent {
     }
 
     const { email, password } = this.dynamicForm.form.value;
-    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+    const companyName = this.companyName();
 
-    if (error) {
-      console.error('Erro ao fazer login:', error.message);
+    if (!companyName) {
+      this.toastrService.error('Empresa não informada.', 'Erro');
+      this.localStorageService.clearSupabaseAuthToken();
       this.loadingService.hideLoading();
       return;
     }
 
-    // Verificar se o usuário tem a flag first_login no metadata
+    const company = await this.companyService.getByField<any>('companies', 'unique_url', companyName);
+
+    if (!company) {
+      this.toastrService.error('Empresa não encontrada.', 'Erro');
+      this.localStorageService.clearSupabaseAuthToken();
+      this.loadingService.hideLoading();
+      return;
+    }
+
+    const companyId = company.id;
+
+    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      this.errorHandler.handleError(error.message)
+      this.loadingService.hideLoading();
+      return;
+    }
+
     const { data: userData, error: userError } = await this.supabase.auth.getUser();
+
     if (userError || !userData?.user) {
-      console.error('Erro ao obter dados do usuário:', userError?.message);
+      this.toastrService.error('Erro ao obter dados do usuário.', 'Erro');
+      this.localStorageService.clearSupabaseAuthToken();
+
+      this.loadingService.hideLoading();
+      return;
+    }
+
+    const userId = userData.user.id;
+
+    const userCompany = await this.companyService.getByField<any>('user_companies', 'user_id', userId);
+
+    if (!userCompany || userCompany.company_id !== companyId) {
+      this.toastrService.error('Usuário não tem acesso a esta empresa.', 'Erro');
+      this.localStorageService.clearSupabaseAuthToken();
+
       this.loadingService.hideLoading();
       return;
     }
@@ -76,7 +115,7 @@ export class LoginComponent {
     if (firstLogin) {
       this.router.navigate(['/auth/reset-password']);
     } else {
-      this.router.navigate(['/app'], { queryParams: { empresa: this.companyName() } });
+      this.router.navigate(['/app'], { queryParams: { empresa: companyName } });
     }
   }
 }

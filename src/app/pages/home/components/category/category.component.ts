@@ -1,8 +1,7 @@
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { Component, inject, Input } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { iCategory } from '../../interfaces/category.interface';
-import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-category',

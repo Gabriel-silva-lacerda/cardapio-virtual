@@ -3,7 +3,6 @@ import { Component, inject } from '@angular/core';
 import { iCartItem } from '@shared/interfaces/cart.interface';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { RouterLink } from '@angular/router';
-import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-cart',
@@ -13,7 +12,8 @@ import { CompanyService } from '@shared/services/company/company.service';
 })
 export class CartComponent {
   private localStorageService = inject(LocalStorageService);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+
   public showItemService = inject(ShowItemService);
   public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
 }

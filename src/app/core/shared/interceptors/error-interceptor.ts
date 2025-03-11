@@ -6,17 +6,15 @@ import { ToastrService } from 'ngx-toastr';
 import { catchError, throwError } from 'rxjs';
 
 export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
-  const toastr = inject(ToastrService); // Injeta o ToastrService
+  const toastr = inject(ToastrService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       let errorMessage = 'Ocorreu um erro inesperado. Tente novamente mais tarde.';
 
       if (error.error instanceof ErrorEvent) {
-        // Erro do lado do cliente
         errorMessage = `Erro: ${error.error.message}`;
       } else {
-        // Erro do lado do servidor
         switch (error.status) {
           case 400:
             errorMessage = 'Requisição inválida. Verifique os dados enviados.';
@@ -36,10 +34,8 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // Exibe a mensagem de erro usando o Toastr
       toastr.error(errorMessage, 'Erro');
 
-      // Propaga o erro para que os serviços possam tratá-lo individualmente
       return throwError(() => error);
     })
   );

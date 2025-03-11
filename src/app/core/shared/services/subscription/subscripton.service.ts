@@ -22,19 +22,14 @@ export class SubscriptonService {
  async registerCompanyWithSubscription(companyData: any) {
   try {
 
-    // 2️⃣ Cria a empresa
     const company = await this.createCompany(companyData);
 
-    // 3️⃣ Cria o usuário administrador
-    const user = await this.createAdminUser(companyData.email, company.fullName);
+    const user = await this.createAdminUser(companyData.email, company.fullName, company.unique_url);
 
-    // 4️⃣ Vincula o usuário à empresa
     await this.linkUserToCompany(user.userId, company.id);
 
-    // 5️⃣ Cria a assinatura do plano
     await this.createSubscription(company.id, companyData.plan_id);
 
-    // 6️⃣ Envia e-mail com credenciais
     await this.sendWelcomeEmail(companyData, company, user.password);
 
     return { success: true, message: 'Plano comprado com sucesso!' };
@@ -72,7 +67,7 @@ private async createCompany(companyData: any) {
 }
 
 // Cria o usuário administrad
-private async createAdminUser(email: string, fullName: string): Promise<{ userId: string, password: string }> {
+private async createAdminUser(email: string, fullName: string, companyName: string): Promise<{ userId: string, password: string }> {
   const password = this.generateRandomPassword(); // Gera a senha manualmente
 
   if (!this.validateEmail(email)) {
@@ -85,8 +80,9 @@ private async createAdminUser(email: string, fullName: string): Promise<{ userId
     options: {
       data: {
         full_name: fullName,
-        first_login: true
+        first_login: true,
       },
+    emailRedirectTo: `http://localhost:4200/auth?empresa=${companyName}`
     },
   });
 
@@ -99,6 +95,19 @@ private async createAdminUser(email: string, fullName: string): Promise<{ userId
   }
 
   if (!data?.user) throw new Error('Usuário não retornado pelo Supabase.');
+
+  // Atualizar informações na tabela "users" ao invés de inserir
+  const { error: updateError } = await this.supabaseService.supabase
+    .from('users')
+    .update({
+      full_name: fullName,
+    })
+    .eq('id', data?.user.id); // Atualiza apenas o usuário correto
+
+  if (updateError) {
+    throw new Error(`Erro ao atualizar usuário na tabela users: ${updateError.message}`);
+  }
+
 
   return { userId: data.user.id, password }; // Retorna o ID do usuário e a senha
 }
@@ -136,7 +145,7 @@ private async createSubscription(companyId: number, planId: number) {
 
 // Envia e-mail de boas-vindas
 public async sendWelcomeEmail(companyData: any, company: any, password: string) {
-  const companyUrl = `https://meusistema.com/empresa/${company.unique_url}`;
+  const companyUrl = `http://localhost:4200/auth?empresa=${company.unique_url}`;
   const emailMessage = `
     <h2>Bem-vindo ao nosso sistema!</h2>
     <p>Olá, ${companyData.name}!</p>

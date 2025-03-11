@@ -47,4 +47,15 @@ export class LocalStorageService {
     localStorage.clear();
     this.storageSignals.forEach((sig) => sig.set(null));
   }
+
+  public clearSupabaseAuthToken() {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+
+      if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        localStorage.removeItem(key);
+        console.log(`Token removido: ${key}`);
+      }
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({

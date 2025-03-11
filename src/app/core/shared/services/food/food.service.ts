@@ -14,17 +14,28 @@ export class FoodService extends BaseSupabaseService {
   public productCount = signal<number>(1);
   public totalAddition = signal<number>(0);
 
-  async getAllFoods(): Promise<iFood[]> {
-    const foods = await this.getAll<iFood>('foods');
+  async getFoodsByCompany(companyId: number): Promise<iFood[]> {
+    try {
+      // Usa o método getAllByField para buscar alimentos pelo company_id
+      const foods = await this.getAllByField<iFood>(
+        'foods', // Nome da tabela
+        'company_id', // Campo para filtrar
+        companyId // Valor do campo
+      );
 
-    const updateFood = foods.map((food) => ({
-      ...food,
-      image_url: food.image_url
-        ? `${environment.SUPABASE_URL}/${food.image_url}`
-        : null,
-    }));
+      // Atualiza as URLs das imagens
+      const updatedFoods = foods.map((food) => ({
+        ...food,
+        image_url: food.image_url
+          ? `${environment.SUPABASE_URL}/${food.image_url}`
+          : null,
+      }));
 
-    return updateFood;
+      return updatedFoods;
+    } catch (error) {
+      console.error('Erro ao buscar alimentos:', error);
+      return [];
+    }
   }
 
   async getFoodById(id: string): Promise<iFood | null> {
@@ -71,6 +82,15 @@ export class FoodService extends BaseSupabaseService {
       quantity: cartItem ? cartItem.quantity : undefined,
       totalPrice: cartItem ? cartItem.totalPrice : undefined,
       day_of_week: food.day_of_week,
+    };
+  }
+
+  private updateFoodImageUrl(food: iFood): iFood {
+    return {
+      ...food,
+      image_url: food.image_url
+        ? `${environment.SUPABASE_URL}/${food.image_url}`
+        : null,
     };
   }
 }

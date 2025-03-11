@@ -17,7 +17,6 @@ import { CartService } from '../../services/cart/cart.service';
 import { getCurrentDayOfWeek, getUnavailableItemMessage } from '@shared/utils/day.utils';
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltip } from '@angular/material/tooltip';
-import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({

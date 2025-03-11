@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CategoryComponent } from '../components/category/category.component';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
@@ -7,6 +8,7 @@ import { FoodService } from '../../../core/shared/services/food/food.service';
 import { CategoryService } from '../services/category.service';
 import { iCategory } from '../interfaces/category.interface';
 import { iFood } from '@shared/interfaces/food.interface';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-home-listar',
@@ -16,20 +18,42 @@ import { iFood } from '@shared/interfaces/food.interface';
   animations: [fade],
 })
 export class HomeListarComponent implements OnInit {
+  private authService = inject(AuthService);
+
   public foodService = inject(FoodService);
   public categoryService = inject(CategoryService);
-
   public foods = signal<iFood[]>([]);
   public categories = signal<iCategory[]>([]);
 
   ngOnInit() {
-    this.getAllFoodAndCategories();
+    this.waitForUser()
   }
 
-  private async getAllFoodAndCategories() {
+  private async waitForUser() {
+    await this.authService.load();
+
+    const user = this.authService.currentUser();
+    if (!user) {
+      return;
+    }
+
+    this.getCompanyId(user.id);
+  }
+
+  async getCompanyId(userId: string | undefined) {
+    const { company_id } = await this.categoryService.getByField<{ company_id: string }>(
+      'user_companies',
+      'user_id',
+      userId as string
+    );
+
+    this.getAllFoodAndCategories(company_id);
+  }
+
+  private async getAllFoodAndCategories(companyId: string) {
     const [foods, categories] = await Promise.all([
-      this.foodService.getAllFoods(),
-      this.categoryService.getAll<iCategory>('categories'),
+      this.foodService.getFoodsByCompany(+companyId),
+      this.categoryService.getAllByField<iCategory>('categories', 'company_id', companyId)
     ]);
 
     this.foods.set(foods);

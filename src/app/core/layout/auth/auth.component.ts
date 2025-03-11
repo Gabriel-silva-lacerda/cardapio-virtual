@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
-import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { TitleService } from '@shared/services/title/title.service';
 
@@ -13,18 +12,17 @@ import { TitleService } from '@shared/services/title/title.service';
 })
 export class AuthComponent  {
   public titleService = inject(TitleService);
-  private companyService = inject(CompanyService);
+  private route = inject(ActivatedRoute);
   private localStorageService = inject(LocalStorageService);
-  empresa: string | null = null;
-  constructor(private route: ActivatedRoute) {}
+
+  public companyName: string = '';
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      this.empresa = params['empresa'];
-      if (this.empresa) {
-        this.companyService.companyName.set(this.empresa);
-        this.localStorageService.setItem('companyName', this.empresa);
-        console.log('Empresa:', this.empresa); // Aqui você pode fazer algo com o nome da empresa
+      const paramCompanyName = params['empresa'];
+      this.companyName = paramCompanyName.charAt(0).toUpperCase() + paramCompanyName.slice(1).toLowerCase();
+      if (this.companyName) {
+        this.localStorageService.setItem('companyName', paramCompanyName);
       }
     });
   }

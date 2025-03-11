@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -16,15 +17,23 @@ export class TitleService {
   public title = this.titleSignal.asReadonly();
 
   constructor() {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.updateTitle();
-      }
-    });
+    this.updateTitle(this.router.url);
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.updateTitle(event.url);
+        }
+      });
   }
 
-  private updateTitle() {
-    const url = this.router.url;
-    this.titleSignal.set(this.titles[url] || 'Bem-vindo!');
+  private updateTitle(url: string) {
+    const cleanUrl = this.getCleanUrl(url);
+    this.titleSignal.set(this.titles[cleanUrl] || 'Bem-vindo!');
+  }
+
+  private getCleanUrl(url: string): string {
+    return url.split('?')[0].split('#')[0];
   }
 }

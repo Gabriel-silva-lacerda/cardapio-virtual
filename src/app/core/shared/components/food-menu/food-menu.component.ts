@@ -20,8 +20,7 @@ import {
   getUnavailableItemMessage,
 } from '@shared/utils/day.utils';
 import { FoodService } from '@shared/services/food/food.service';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { CompanyService } from '@shared/services/company/company.service';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({

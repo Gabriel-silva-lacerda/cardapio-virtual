@@ -40,7 +40,11 @@ export class FooterComponent implements OnInit, OnDestroy  {
 
     this.links.forEach(link => {
       const fullPath = link.path.startsWith('/app') ? link.path : `/app/${link.path}`;
+      console.log(fullPath);
+
       this.activeLinks[link.path] = cleanUrl === fullPath;
+      console.log(this.activeLinks);
+
     });
   }
 

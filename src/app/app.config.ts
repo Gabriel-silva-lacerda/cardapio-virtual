@@ -29,10 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(AuthService).load()),
     provideAnimationsAsync(),
     provideToastr(),
-    provideHttpClient(withFetch()),
-    provideHttpClient(
-      withInterceptors([ErrorInterceptor])
-    ),
+    provideHttpClient(withFetch(),  withInterceptors([ErrorInterceptor])),
     providePrimeNG({
       theme: {
         preset: Aura,

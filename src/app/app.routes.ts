@@ -8,7 +8,7 @@ export const routes: Routes = [
     path: 'auth',
     loadComponent: () =>
       import('./core/layout/auth/auth.component').then((m) => m.AuthComponent),
-    canActivate: [AuthParamGuard],
+    // canActivate: [AuthParamGuard],
     children: [
       {
         path: '',
