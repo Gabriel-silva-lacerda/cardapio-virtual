@@ -1,5 +1,5 @@
 @if(showItemService.showItem()) {
-  <div class="cart-count fixed top-1 z-10 right-2 w-20 flex align-center justify-end cursor-pointer" routerLink="/cart">
+  <div class="cart-count fixed top-1 z-10 right-2 w-20 flex align-center justify-end cursor-pointer" routerLink="cart" [queryParams]="{ empresa: companyName() }">
     <i class="fa-solid fa-cart-shopping mt-2 transform text-[20px] text-white-light"></i>
 
     @if(this.cart() && this.cart().length > 0) {

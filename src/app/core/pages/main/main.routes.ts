@@ -9,6 +9,13 @@ export const mainRoutes: Routes = [
       ),
   },
   {
+    path: 'perfil',
+    loadComponent: () =>
+      import('../../../pages/perfil/perfil-list/perfil-list.page').then(
+        (m) => m.PerfilListPage
+      ),
+  },
+  {
     path: 'categoria/:id',
     loadComponent: () =>
       import(

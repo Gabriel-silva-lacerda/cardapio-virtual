@@ -1,6 +1,12 @@
 <div class="px-5 py-6">
   <app-dynamic-form [fields]="loginFields" buttonText="Login" (submitEvent)="login()" />
-  <a class="link" routerLink="/auth/forgot-password">
+
+  <button class="button-primary" (click)="login()">
+    <!-- [disabled]="isButtonDisabled" -->
+    Login
+  </button>
+
+  <a class="link" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
     Esqueceu sua senha?
   </a>
 </div>

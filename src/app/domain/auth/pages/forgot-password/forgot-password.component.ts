@@ -6,6 +6,8 @@ import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
+import { CompanyService } from '@shared/services/company/company.service';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -19,6 +21,7 @@ export class ForgotPasswordComponent {
 
   private supabase = injectSupabase();
   private toastr = inject(ToastrService);
+  private localStorageService = inject(LocalStorageService);
 
   protected loadingService = inject(LoadingService);
 
@@ -31,7 +34,7 @@ export class ForgotPasswordComponent {
     },
   ];
 
-  public rings = new Array(5)
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
 
   public async submit() {
     this.loadingService.showLoading();

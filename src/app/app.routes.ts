@@ -1,11 +1,14 @@
-import { HomeListarComponent } from './pages/home/home-listar/home-listar.component';
+import { AuthAccessGuard } from './core/guards/authAccessGuard';
+import { AuthGuard } from './core/guards/authGuard';
 import { Routes } from '@angular/router';
+import { AuthParamGuard } from './core/guards/authParamGuad';
 
 export const routes: Routes = [
-
   {
     path: 'auth',
-    loadComponent: () => import('./core/layout/auth/auth.component').then((m) => m.AuthComponent),
+    loadComponent: () =>
+      import('./core/layout/auth/auth.component').then((m) => m.AuthComponent),
+    canActivate: [AuthParamGuard],
     children: [
       {
         path: '',
@@ -14,23 +17,35 @@ export const routes: Routes = [
       },
       {
         path: 'reset-password',
-        loadComponent: () => import('./core/pages/reset-password/reset-password.component').then((m) => m.ResetPasswordComponent),
-      }
+        loadComponent: () =>
+          import('./core/pages/reset-password/reset-password.component').then(
+            (m) => m.ResetPasswordComponent
+          ),
+          // canActivate: [AuthAccessGuard]
+      },
     ],
   },
   {
     path: '',
-    loadComponent: () => import('./core/pages/main/main.component').then((m) => m.MainComponent),
+    redirectTo: 'planos',
+    pathMatch: 'full',
+  },
+  {
+    path: 'planos',
+    loadChildren: () =>
+      import('./core/pages/plans/plans.routes').then((m) => m.plansRoutes),
+  },
+  {
+    path: 'app',
+    loadComponent: () =>
+      import('./core/pages/main/main.component').then((m) => m.MainComponent),
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
         loadChildren: () =>
           import('./core/pages/main/main.routes').then((m) => m.mainRoutes),
       },
-      {
-        path: 'planos', // Rota pública para a landing page de planos
-        loadChildren: () => import('./core/pages/plans/plans.routes').then((m) => m.plansRoutes),
-      },
-    ]
+    ],
   },
 ];

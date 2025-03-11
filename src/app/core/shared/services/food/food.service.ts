@@ -41,7 +41,7 @@ export class FoodService extends BaseSupabaseService {
   }
 
   async getFoodsByCategory(categoryId: number): Promise<iFood[] | null> {
-    const foods = await this.getByField<iFood>('foods', 'category_id', categoryId);
+    const foods = await this.getAllByField<iFood>('foods', 'category_id', categoryId);
 
     if (!foods) return [];
 

@@ -1,7 +1,8 @@
 <div class="px-3">
   <ul class="flex flex-col gap-3">
 
-    <li [routerLink]="cartItem?.id ? ['/food', foodDetails?.id, cartItem?.id] : ['/food', foodDetails?.id]"
+    <li [routerLink]="cartItem?.id ? ['/app/food', foodDetails?.id, cartItem?.id] : ['/app/food', foodDetails?.id]"
+      [queryParams]="{ empresa: companyName() }"
       class="flex mb-4 h-[6.4rem] border cursor-pointer border-gray-300 bg-white-light rounded-md shadow-sm items-center gap-2 pe-2"
       [ngClass]="{' h-[8.4rem]': cartItem?.id }"
       >

@@ -27,7 +27,6 @@ export class SubscriptionPage {
   private toastr = inject(ToastrService);
   private paymentService = inject(PaymentService);
   private subscriptionService = inject(SubscriptonService);
-  private emailService = inject(EmailService);
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
@@ -133,8 +132,6 @@ export class SubscriptionPage {
   async getPlanById(planId: string) {
     const plan = await this.plansService.getById<Plans>('plans', +planId);
     this.plan.set(plan as unknown as Plans);
-
-
   }
 
   async searchCep(value: string, form: FormGroup) {
@@ -200,21 +197,21 @@ export class SubscriptionPage {
       };
       console.log(companyData);
 
-      // const teste = await this.subscriptionService.registerCompanyWithSubscription(companyData);
+      const teste = await this.subscriptionService.registerCompanyWithSubscription(companyData);
       // this.subscriptionService.teste();
       // this.subscriptionService.sendWelcomeEmail('gabrielp_lacerda@hotmail.com', 'teste', 'teste')
-      const companyData2 = {
-        name: 'Minha Empresa',
-        email: 'gabrielp_lacerda@hotmail.com',
-      };
+      // const companyData2 = {
+      //   name: 'Minha Empresa',
+      //   email: 'gabrielp_lacerda@hotmail.com',
+      // };
 
-      const company = {
-        unique_url: 'minha-empresa',
-      };
+      // const company = {
+      //   unique_url: 'minha-empresa',
+      // };
 
-      const password = 'senhaGeradaAleatoria123'; // A senha gerada para o administrador
+      // const password = 'senhaGeradaAleatoria123'; // A senha gerada para o administrador
 
-      this.emailService.sendWelcomeEmail(companyData2, company, password);
+      // this.emailService.sendWelcomeEmail(companyData2, company, password);
       // console.log(teste);
 
       // const preferenceItems = createPreferenceItems(carts, orderId);

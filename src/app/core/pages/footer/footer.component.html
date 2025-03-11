@@ -1,7 +1,7 @@
 @if (showItemService.showItem()) {
 <footer class="flex justify-between p-4 border fixed bottom-0 w-full bg-white-light">
   @for (link of links ; track $index) {
-  <a [routerLink]="link.path" class="relative" [ngClass]="{ 'text-primary': isActive(link.path) }">
+  <a [routerLink]="link.path" [queryParams]="{empresa: companyName() }" class="relative" [ngClass]="{ 'text-primary': activeLinks[link.path] }">
     {{ link.label }}
   </a>
   <!-- @if(link.label === 'Carrinho'  && this.cart().length > 0) {

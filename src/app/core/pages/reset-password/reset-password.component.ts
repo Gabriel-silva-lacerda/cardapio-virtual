@@ -10,6 +10,8 @@ import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { ToastrService } from 'ngx-toastr';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
+import { CompanyService } from '@shared/services/company/company.service';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -24,8 +26,9 @@ export class ResetPasswordComponent {
   private supabase = injectSupabase();
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  private localStorageService = inject(LocalStorageService);
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
 
-  public rings = new Array(3);
   public resetFields: iDynamicField[] = [
     {
       name: 'password',
@@ -44,6 +47,7 @@ export class ResetPasswordComponent {
     const { password } = this.dynamicForm.form.value;
     const { error } = await this.supabase.auth.updateUser({
       password: password,
+      data: { first_login: false }
     });
 
     if (error) {
@@ -53,6 +57,6 @@ export class ResetPasswordComponent {
 
     this.dynamicForm.form.reset();
     this.toastr.success('Senha atualizada com sucesso!', 'Sucesso!');
-    this.router.navigate(['/']);
+    this.router.navigate(['/auth'], { queryParams: { empresa: this.companyName() } });
   }
 }

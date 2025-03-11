@@ -21,6 +21,8 @@ import {
 } from '@shared/utils/day.utils';
 import { FoodService } from '@shared/services/food/food.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { CompanyService } from '@shared/services/company/company.service';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-food-menu',
@@ -44,7 +46,10 @@ export class FoodMenuComponent implements OnInit, OnChanges {
 
   private foodService = inject(FoodService);
   private cachedFoodDetails: FoodDetails | null = null;
+  private localStorageService = inject(LocalStorageService);
+
   public tooltipMessage: string = '';
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
 
   ngOnInit(): void {
     this.updateTooltipMessage();

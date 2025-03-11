@@ -6,7 +6,7 @@ import emailjs from '@emailjs/browser';
   providedIn: 'root',
 })
 export class EmailService {
-  sendWelcomeEmail(companyData: any, company: any, password: string) {
+  sendEmail(companyData: any, company: any, password: string) {
     const companyUrl = `https://meusistema.com/empresa/${company.unique_url}`;
 
     const templateParams = {

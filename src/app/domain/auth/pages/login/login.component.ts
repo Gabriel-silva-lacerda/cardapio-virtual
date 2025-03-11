@@ -7,6 +7,8 @@ import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-fo
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { ButtonModule } from 'primeng/button';
 import { LoadingService } from '@shared/services/loading/loading.service';
+import { CompanyService } from '@shared/services/company/company.service';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-login',
@@ -20,10 +22,10 @@ export class LoginComponent {
 
   protected loadingService = inject(LoadingService);
 
+  private localStorageService = inject(LocalStorageService);
   private supabase = injectSupabase();
   private router = inject(Router);
-
-  public rings = new Array(6);
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
 
   loginFields: iDynamicField[] = [
     {
@@ -44,23 +46,37 @@ export class LoginComponent {
 
   public async login() {
     this.loadingService.showLoading();
+
     if (!this.dynamicForm.form.valid) {
+      this.loadingService.hideLoading();
       return;
     }
 
     const { email, password } = this.dynamicForm.form.value;
-    const { error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      console.error('Error logging in:', error.message);
+      console.error('Erro ao fazer login:', error.message);
+      this.loadingService.hideLoading();
       return;
     }
 
+    // Verificar se o usuário tem a flag first_login no metadata
+    const { data: userData, error: userError } = await this.supabase.auth.getUser();
+    if (userError || !userData?.user) {
+      console.error('Erro ao obter dados do usuário:', userError?.message);
+      this.loadingService.hideLoading();
+      return;
+    }
+
+    const firstLogin = userData.user.user_metadata?.['first_login'];
+
     this.loadingService.hideLoading();
 
-    this.router.navigate(['/']);
+    if (firstLogin) {
+      this.router.navigate(['/auth/reset-password']);
+    } else {
+      this.router.navigate(['/app'], { queryParams: { empresa: this.companyName() } });
+    }
   }
 }

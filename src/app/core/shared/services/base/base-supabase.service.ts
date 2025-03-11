@@ -33,7 +33,7 @@ export abstract class BaseSupabaseService {
     return data as T;
   }
 
-  async getByField<T>(table: string, field: string, value: string | number, selectFields: string = '*'): Promise<T[]> {
+  async getAllByField<T>(table: string, field: string, value: string | number, selectFields: string = '*'): Promise<T[]> {
     const { data, error } = await this.supabaseService.supabase
       .from(table)
       .select(selectFields)
@@ -45,6 +45,20 @@ export abstract class BaseSupabaseService {
     }
 
     return data as T[];
+  }
+
+  async getByField<T>(table: string, field: string, value: string | number, selectFields: string = '*'): Promise<T> {
+    const { data, error } = await this.supabaseService.supabase
+      .from(table)
+      .select(selectFields)
+      .eq(field, value).single();
+
+    if (error) {
+      this.toastr.error(`Erro ao buscar registros na tabela ${table} com ${field} = ${value}:`, error.message);
+      throw new Error(error.message);
+    }
+
+    return data as T;
   }
 
   // Método para inserir um novo registro

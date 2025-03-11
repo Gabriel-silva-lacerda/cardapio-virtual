@@ -7,6 +7,7 @@ import { EmailService } from '../email.service';
 })
 export class SubscriptonService {
   private supabaseService = inject(SupabaseService);
+  private emailService = inject(EmailService);
 
   validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,6 +85,7 @@ private async createAdminUser(email: string, fullName: string): Promise<{ userId
     options: {
       data: {
         full_name: fullName,
+        first_login: true
       },
     },
   });
@@ -149,11 +151,11 @@ public async sendWelcomeEmail(companyData: any, company: any, password: string) 
   `;
 
   try {
-    // await this.emailService.sendEmail(
-    //   companyData.email,
-    //   'Bem-vindo ao nosso sistema!',
-    //   emailMessage
-    // );
+    await this.emailService.sendEmail(
+      companyData,
+      company,
+      password
+    );
     console.log('E-mail de boas-vindas enviado com sucesso.');
   } catch (error) {
     console.error('Erro ao enviar e-mail de boas-vindas:', error);
@@ -163,10 +165,5 @@ public async sendWelcomeEmail(companyData: any, company: any, password: string) 
 
   generateUniqueUrl(companyName: string): string {
     return companyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  }
-
-  async teste () {
-
-
   }
 }
