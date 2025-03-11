@@ -2,6 +2,7 @@ import { HomeListarComponent } from './pages/home/home-listar/home-listar.compon
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+
   {
     path: 'auth',
     loadComponent: () => import('./core/layout/auth/auth.component').then((m) => m.AuthComponent),
@@ -26,7 +27,10 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./core/pages/main/main.routes').then((m) => m.mainRoutes),
       },
+      {
+        path: 'planos', // Rota pública para a landing page de planos
+        loadChildren: () => import('./core/pages/plans/plans.routes').then((m) => m.plansRoutes),
+      },
     ]
   },
-
 ];

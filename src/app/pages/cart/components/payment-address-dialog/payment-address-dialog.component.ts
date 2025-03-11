@@ -55,7 +55,6 @@ export class PaymentAddressDialogComponent implements OnInit {
           this.dynamicForm.clearFields(['street', 'neighborhood', 'city', 'state']);
          else
           this.cepSubject.next(cep as string);
-
       },
       mask: '00000-000',
       padding: '10px'

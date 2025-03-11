@@ -27,6 +27,6 @@ export class AuthService {
 
   public async purgeAndRedirect() {
     await this.supabase.auth.signOut();
-    this.router.navigate(['/auth']);
+    // this.router.navigate(['/auth']);
   }
 }

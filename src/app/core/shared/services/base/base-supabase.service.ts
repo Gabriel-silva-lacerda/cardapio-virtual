@@ -24,7 +24,7 @@ export abstract class BaseSupabaseService {
   }
 
   // Método para obter um único registro pelo ID
-  async getById<T>(table: string, id: number | string, selectFields: string = '*'): Promise<T | null> {
+  async getById<T>(table: string, id: number | string | null, selectFields: string = '*'): Promise<T | null> {
     const { data, error } = await this.supabaseService.supabase.from(table).select(selectFields).eq('id', id).single();
     if (error) {
       this.toastr.error(`Erro ao buscar item na tabela ${table} com ID ${id}:`, error.message);

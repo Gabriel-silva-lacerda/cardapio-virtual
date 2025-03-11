@@ -1,0 +1,12 @@
+<app-dynamic-form [fields]="addressFields" />
+
+<div>
+  <span>{{ plan().name }}</span>
+  <span>{{ plan().price }}</span>
+
+</div>
+
+<button class="button-primary text-text4 w-1/2" (click)="onSubmit()">
+  <!-- [disabled]="isButtonDisabled" -->
+  Finalizar compra
+</button>

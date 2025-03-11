@@ -1,0 +1,9 @@
+<div class="flex gap-5 flex-col">
+  @for (plan of plans(); track $index) {
+    <div class="flex flex-col justify-center gap-2 border border-gray-800">
+      <span class="text-center">{{ plan?.name }}</span>
+      <span class="text-center">{{ plan?.price }}</span>
+      <button class="border bg-black text-white" (click)="goToCheckout(plan)">Comprar</button>
+    </div>
+  }
+</div>
