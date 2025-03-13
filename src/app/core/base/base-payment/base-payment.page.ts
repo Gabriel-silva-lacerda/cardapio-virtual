@@ -16,9 +16,9 @@ export abstract class BasePaymentPage {
   protected router = inject(Router);
   protected orderService = inject(OrderService);
   protected localStorageService = inject(LocalStorageService);
-  private countdownSubscription: Subscription | null = null;
   protected collectionStatus: string | null = null;
   protected externalReference: string | null = null;
+  private countdownSubscription: Subscription | null = null;
 
   public countdown: number = 10;
   public error: boolean = false;

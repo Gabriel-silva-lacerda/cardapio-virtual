@@ -54,5 +54,5 @@ export const mainRoutes: Routes = [
   {
     path: 'falha-pagamento',
     loadComponent: () => import('../fail-payment/fail-payment.page').then((m) => m.FailPaymentPage),
-  }
+  },
 ];

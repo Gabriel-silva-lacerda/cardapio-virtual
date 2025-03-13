@@ -11,5 +11,9 @@ export const plansRoutes: Routes = [
     path: 'pagamento/:id',
     loadComponent: () => import('./subscription/subscription.page').then((m) => m.SubscriptionPage),
     canActivate: [isLoggedGuard]
-  }
+  },
+  {
+    path: 'sucesso-pagamento/:id',
+    loadComponent: () => import('../successfull-payment-plan/successfull-payment-plan.page').then((m) => m.SuccessfullPaymentPlanPage),
+  },
 ];

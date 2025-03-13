@@ -1,6 +1,6 @@
 import cepPromise from 'cep-promise';
 import { Component, computed, inject, signal, ViewChild } from '@angular/core';
-import { FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { debounceTime, firstValueFrom, Subject, takeUntil } from 'rxjs';
@@ -13,10 +13,11 @@ import { ToastrService } from 'ngx-toastr';
 import { PaymentService } from 'src/app/pages/cart/services/payment.service';
 import { SubscriptonService } from '@shared/services/subscription/subscripton.service';
 import { EmailService } from '@shared/services/email.service';
+import { CheckoutService } from '@shared/services/checkout.service';
 
 @Component({
   selector: 'app-subscription',
-  imports: [DynamicFormComponent],
+  imports: [DynamicFormComponent, FormsModule],
   templateUrl: './subscription.page.html',
   styleUrl: './subscription.page.scss',
 })
@@ -27,6 +28,7 @@ export class SubscriptionPage {
   private toastr = inject(ToastrService);
   private paymentService = inject(PaymentService);
   private subscriptionService = inject(SubscriptonService);
+  private checkoutService = inject(CheckoutService);
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
@@ -179,76 +181,26 @@ export class SubscriptionPage {
 
   async onSubmit() {
     // if (this.dynamicForm.form.valid) {
-      const formData = this.dynamicForm.form.getRawValue();
+    const formData = this.dynamicForm.form.getRawValue();
 
-      // Exemplo de dados capturados
-      const companyData = {
-        fullName: formData.fullName,
-        name: formData.name,
-        email: formData.email,
-        cep: formData.cep,
-        street: formData.street,
-        number: formData.number,
-        neighborhood: formData.neighborhood,
-        complement: formData.complement,
-        city: formData.city,
-        state: formData.state,
-        plan_id: this.plan().id, // ID do plano selecionado
-      };
-      console.log(companyData);
+    // Exemplo de dados capturados
+    const companyData = {
+      fullName: formData.fullName,
+      name: formData.name,
+      email: formData.email,
+      cep: formData.cep,
+      street: formData.street,
+      number: formData.number,
+      neighborhood: formData.neighborhood,
+      complement: formData.complement,
+      city: formData.city,
+      state: formData.state,
+      plan_id: this.plan().id,
+    };
+    console.log(companyData);
 
-      const teste = await this.subscriptionService.registerCompanyWithSubscription(companyData);
-      // this.subscriptionService.teste();
-      // this.subscriptionService.sendWelcomeEmail('gabrielp_lacerda@hotmail.com', 'teste', 'teste')
-      // const companyData2 = {
-      //   name: 'Minha Empresa',
-      //   email: 'gabrielp_lacerda@hotmail.com',
-      // };
+    const { companyId } =await this.subscriptionService.registerCompanyWithSubscription(companyData);
 
-      // const company = {
-      //   unique_url: 'minha-empresa',
-      // };
-
-      // const password = 'senhaGeradaAleatoria123'; // A senha gerada para o administrador
-
-      // this.emailService.sendWelcomeEmail(companyData2, company, password);
-      // console.log(teste);
-
-      // const preferenceItems = createPreferenceItems(carts, orderId);
-
-      // const planArray = computed(() => {
-      //   const item = this.plan();
-      //   return [
-      //     {
-      //       id: item.id.toString(),
-      //       title: item.name,
-      //       quantity: 1,
-      //       unitPrice: item.price,
-      //       currencyId: 'BRL'
-      //     }
-      //   ];
-      // });
-
-      // console.log(planArray());
-
-      // const body = {
-      //   items: planArray(),
-      //   // externalReference: orderId.toString(),
-      //   backUrls: {
-      //     success: 'http://localhost:4200/sucesso-pagamento',
-      //     pending: 'http://localhost:4200/pendente-pagamento',
-      //     failure: 'http://localhost:4200/falha-pagamento',
-      //   },
-      // };
-
-      // console.log(body);
-
-      //  this.paymentService.post<{ initPoint: string }>(body, 'Payment/create-preference')
-      //   .subscribe({
-      //     next: (response: { initPoint: string }) => {
-      //       window.location.href = response.initPoint;
-      //     },
-      //   });
-    }
-
+    this.checkoutService.createCheckoutSession(this.plan().price_id, companyId);
+  }
 }

@@ -15,10 +15,9 @@ export class SubscriptonService {
   }
 
   private generateRandomPassword(): string {
-    return Math.random().toString(36).slice(-10); // Gera uma senha de 10 caracteres
+    return Math.random().toString(36).slice(-10);
   }
 
-  // Criar empresa, usuário e assinatura em um único método
  async registerCompanyWithSubscription(companyData: any) {
   try {
 
@@ -32,13 +31,12 @@ export class SubscriptonService {
 
     await this.sendWelcomeEmail(companyData, company, user.password);
 
-    return { success: true, message: 'Plano comprado com sucesso!' };
+    return { success: true, message: 'Plano comprado com sucesso!', companyId: company.id };
   } catch (error: any) {
     return { success: false, message: error.message };
   }
 }
 
-// Cria a empresa
 private async createCompany(companyData: any) {
   const uniqueUrl = this.generateUniqueUrl(companyData.name);
 
@@ -66,9 +64,8 @@ private async createCompany(companyData: any) {
   return data;
 }
 
-// Cria o usuário administrad
 private async createAdminUser(email: string, fullName: string, companyName: string): Promise<{ userId: string, password: string }> {
-  const password = this.generateRandomPassword(); // Gera a senha manualmente
+  const password = this.generateRandomPassword();
 
   if (!this.validateEmail(email)) {
     throw new Error('Endereço de e-mail inválido');
@@ -76,7 +73,7 @@ private async createAdminUser(email: string, fullName: string, companyName: stri
 
   const { data, error } = await this.supabaseService.supabase.auth.signUp({
     email,
-    password, // Passa a senha gerada manualmente
+    password,
     options: {
       data: {
         full_name: fullName,
@@ -96,23 +93,21 @@ private async createAdminUser(email: string, fullName: string, companyName: stri
 
   if (!data?.user) throw new Error('Usuário não retornado pelo Supabase.');
 
-  // Atualizar informações na tabela "users" ao invés de inserir
   const { error: updateError } = await this.supabaseService.supabase
     .from('users')
     .update({
       full_name: fullName,
     })
-    .eq('id', data?.user.id); // Atualiza apenas o usuário correto
+    .eq('id', data?.user.id);
 
   if (updateError) {
     throw new Error(`Erro ao atualizar usuário na tabela users: ${updateError.message}`);
   }
 
 
-  return { userId: data.user.id, password }; // Retorna o ID do usuário e a senha
+  return { userId: data.user.id, password };
 }
 
-// Vincula o usuário à empresa
 private async linkUserToCompany(userId: string, companyId: number) {
   const { error } = await this.supabaseService.supabase
     .from('user_companies')
@@ -121,11 +116,10 @@ private async linkUserToCompany(userId: string, companyId: number) {
   if (error) throw new Error(`Erro ao vincular usuário à empresa: ${error.message}`);
 }
 
-// Cria a assinatura do plano
 private async createSubscription(companyId: number, planId: number) {
   const startDate = new Date();
   const endDate = new Date();
-  endDate.setMonth(startDate.getMonth() + 1); // 1 mês de duração
+  endDate.setMonth(startDate.getMonth() + 1);
 
   const { error } = await this.supabaseService.supabase
     .from('subscriptions')
@@ -143,7 +137,6 @@ private async createSubscription(companyId: number, planId: number) {
 }
 
 
-// Envia e-mail de boas-vindas
 public async sendWelcomeEmail(companyData: any, company: any, password: string) {
   const companyUrl = `http://localhost:4200/auth?empresa=${company.unique_url}`;
   const emailMessage = `
@@ -163,7 +156,8 @@ public async sendWelcomeEmail(companyData: any, company: any, password: string) 
     await this.emailService.sendEmail(
       companyData,
       company,
-      password
+      password,
+      companyUrl
     );
     console.log('E-mail de boas-vindas enviado com sucesso.');
   } catch (error) {

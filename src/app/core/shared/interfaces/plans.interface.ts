@@ -3,4 +3,5 @@ export interface Plans {
   name: string;
   price: number;
   description: string;
+  price_id: string;
 }

@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
+import { Company } from "@shared/interfaces/company";
 import { CompanyService } from "@shared/services/company/company.service";
 
 @Injectable({
@@ -19,7 +20,7 @@ export class AuthParamGuard implements CanActivate {
 
     try {
       // Verifica se a empresa existe no Supabase pela unique_url
-      const company = await this.companyService.getByField('companies', 'unique_url', empresa, 'id');
+      const company = await this.companyService.getByField<Company>('companies', 'unique_url', empresa, 'id');
       if (company) {
         return true;
       } else {

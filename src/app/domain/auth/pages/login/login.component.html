@@ -6,7 +6,17 @@
     Login
   </button>
 
+  @if(!isEmailConfirmed()) {
+    <button [@fadeIn] class="button-primary mt-2" (click)="resendConfirmation()">
+      Reenviar código de confirmação
+    </button>
+  }
+
   <a class="link" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
     Esqueceu sua senha?
   </a>
+
+
+
+
 </div>
