@@ -1,12 +1,17 @@
-<app-dynamic-form [fields]="addressFields" />
+<div class="px-3 py-2">
+  <app-dynamic-form [fields]="addressFields" />
 
-<div>
-  <span>{{ plan().name }}</span>
-  <span>{{ plan().price }}</span>
+  <div class="flex flex-col">
+    <span>{{ plan().name }}</span>
+    <span>{{ plan().price }}</span>
 
+  </div>
+
+  <button class="button-primary text-text4" (click)="onSubmit()" [disabled]="loadingService.loading()">
+    <!-- [disabled]="isButtonDisabled" -->
+      @if(loadingService.loading()) {
+        <app-loading />
+      }
+    Finalizar compra
+  </button>
 </div>
-
-<button class="button-primary text-text4 w-1/2" (click)="onSubmit()">
-  <!-- [disabled]="isButtonDisabled" -->
-  Finalizar compra
-</button>

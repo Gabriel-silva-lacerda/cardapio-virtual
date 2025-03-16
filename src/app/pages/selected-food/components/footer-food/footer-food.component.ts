@@ -109,13 +109,13 @@ export class FooterFoodComponent implements OnInit, OnChanges {
     };
 
     this.cartService.addOrUpdateCartItem(cartItem, this.newItem);
+
     this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name, {
       positionClass: 'toast-top-left',
     });
+
     this.router.navigate([this.newItem ? '/app' : '/app/cart'], {
       queryParams: { empresa: this.companyName() }
     });
-
-
   }
 }

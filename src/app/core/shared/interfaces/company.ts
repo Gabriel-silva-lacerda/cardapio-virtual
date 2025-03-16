@@ -1,5 +1,6 @@
 export interface Company {
   account_id: string;
+  // full_name: string;
   cep: string;
   city: string;
   complement: string | null;

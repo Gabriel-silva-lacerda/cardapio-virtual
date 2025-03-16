@@ -6,10 +6,12 @@ import { filter } from 'rxjs';
   providedIn: 'root'
 })
 export class ShowItemService {
-  private showItemSignal = signal<boolean>(false);
+  private showCartSignal = signal<boolean>(false);
+  private showFooterSignal = signal<boolean>(false);
   private router = inject(Router);
 
-  public showItem = this.showItemSignal.asReadonly();
+  public showCart = this.showCartSignal.asReadonly();
+  public showFooter = this.showFooterSignal.asReadonly();
 
   constructor() {
     this.updateItemVisibility(this.router.url);
@@ -25,13 +27,12 @@ export class ShowItemService {
 
   private updateItemVisibility(url: string) {
     const cleanUrl = this.getCleanUrl(url);
-    const showItem = this.shouldShowItem(cleanUrl);
-    this.showItemSignal.set(showItem);
+    this.showCartSignal.set(this.shouldShowCart(cleanUrl));
+    this.showFooterSignal.set(this.shouldShowFooter(cleanUrl));
   }
 
   private getCleanUrl(url: string): string {
     const urlWithoutParams = url.split('?')[0].split('#')[0];
-
     const segments = urlWithoutParams.split('/').filter((segment) => segment);
     const lastSegment = segments[segments.length - 1];
 
@@ -42,8 +43,13 @@ export class ShowItemService {
     return `/${segments.join('/')}`;
   }
 
-  private shouldShowItem(url: string): boolean {
-    const routesWithItem = ['/app', '/app/categoria', '/app/perfil'];
-    return routesWithItem.includes(url);
+  private shouldShowCart(url: string): boolean {
+    const routesWithCart = ['/app', '/app/categoria'];
+    return routesWithCart.includes(url);
+  }
+
+  private shouldShowFooter(url: string): boolean {
+    const routesWithFooter = ['/app', '/app/categoria', '/app/perfil'];
+    return routesWithFooter.includes(url);
   }
 }

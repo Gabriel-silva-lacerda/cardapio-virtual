@@ -14,10 +14,12 @@ import { PaymentService } from 'src/app/pages/cart/services/payment.service';
 import { SubscriptonService } from '@shared/services/subscription/subscripton.service';
 import { EmailService } from '@shared/services/email.service';
 import { CheckoutService } from '@shared/services/checkout.service';
+import { JsonPipe } from '@angular/common';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-subscription',
-  imports: [DynamicFormComponent, FormsModule],
+  imports: [DynamicFormComponent, FormsModule, LoadingComponent],
   templateUrl: './subscription.page.html',
   styleUrl: './subscription.page.scss',
 })
@@ -132,8 +134,11 @@ export class SubscriptionPage {
   }
 
   async getPlanById(planId: string) {
-    const plan = await this.plansService.getById<Plans>('plans', +planId);
+    const plan = await this.plansService.getByField<Plans>('plans', 'id', +planId);
+
     this.plan.set(plan as unknown as Plans);
+    console.log(this.plan());
+
   }
 
   async searchCep(value: string, form: FormGroup) {
@@ -199,8 +204,15 @@ export class SubscriptionPage {
     };
     console.log(companyData);
 
-    const { companyId } =await this.subscriptionService.registerCompanyWithSubscription(companyData);
+    const data = await this.subscriptionService.registerCompanyWithSubscription(companyData);
 
-    this.checkoutService.createCheckoutSession(this.plan().price_id, companyId);
+    if(!data.success) {
+      console.log(data.message);
+    }
+
+    console.log(data.company);
+
+    if(data.company)
+    this.checkoutService.createCheckoutSession(this.plan().price_id, data?.company.id);
   }
 }

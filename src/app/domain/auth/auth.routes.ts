@@ -6,7 +6,7 @@ export const authRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./pages/login/login.component').then((m) => m.LoginComponent),
+      import('./pages/login/login.page').then((m) => m.LoginPage),
     canActivate: [isLoggedGuard],
   },
   {

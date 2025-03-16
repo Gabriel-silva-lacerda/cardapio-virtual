@@ -9,11 +9,11 @@ import { FooterCartComponent } from '../components/footer-cart/footer-cart.compo
 @Component({
   selector: 'app-cart-list',
   imports: [HeaderPageComponent, FoodMenuComponent, FooterCartComponent],
-  templateUrl: './cart-list.page.html',
-  styleUrl: './cart-list.page.scss',
+  templateUrl: './cart.page.html',
+  styleUrl: './cart.page.scss',
   animations: [fade],
 })
-export class CartListPage {
+export class CartPage {
   private localStorageService = inject(LocalStorageService);
   public carts = this.localStorageService.getSignal<iCartItem[]>('cart', []);
 }

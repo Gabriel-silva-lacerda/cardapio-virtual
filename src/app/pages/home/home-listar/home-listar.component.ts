@@ -9,6 +9,7 @@ import { CategoryService } from '../services/category.service';
 import { iCategory } from '../interfaces/category.interface';
 import { iFood } from '@shared/interfaces/food.interface';
 import { CompanyService } from '@shared/services/company/company.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home-listar',
@@ -19,35 +20,45 @@ import { CompanyService } from '@shared/services/company/company.service';
 })
 export class HomeListarComponent implements OnInit {
   private authService = inject(AuthService);
-
+  private companyService = inject(CompanyService);
+  private route = inject(ActivatedRoute);
   public foodService = inject(FoodService);
   public categoryService = inject(CategoryService);
   public foods = signal<iFood[]>([]);
   public categories = signal<iCategory[]>([]);
 
+
   ngOnInit() {
-    this.waitForUser()
+    this.waitForCompany();
   }
 
-  private async waitForUser() {
-    await this.authService.load();
+  private async waitForCompany() {
+    const unique_url = this.route.snapshot.queryParams['empresa'];
 
-    const user = this.authService.currentUser();
-    if (!user) {
+    if (!unique_url) {
+      console.error('URL da empresa não encontrada');
       return;
     }
+    const companyId = await this.getCompanyId(unique_url);
 
-    this.getCompanyId(user.id);
+    if (companyId)
+    this.getAllFoodAndCategories(companyId);
   }
 
-  async getCompanyId(userId: string | undefined) {
-    const { company_id } = await this.categoryService.getByField<{ company_id: string }>(
-      'user_companies',
-      'user_id',
-      userId as string
+  private async getCompanyId(unique_url: string): Promise<string | null> {
+    const company = await this.companyService.getByField<{ id: string }>(
+      'companies',
+      'unique_url',
+      unique_url,
+      'id'
     );
 
-    this.getAllFoodAndCategories(company_id);
+    if (!company) {
+      console.error('Empresa não encontrada');
+      return null;
+    }
+
+    return company.id;
   }
 
   private async getAllFoodAndCategories(companyId: string) {

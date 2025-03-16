@@ -12,16 +12,17 @@ import { CompanyService } from '@shared/services/company/company.service';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from '@shared/services/error-handler/error-handler.service';
 import { fadeIn } from '@shared/utils/animations.utils';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, DynamicFormComponent, ButtonModule, RouterLink],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  templateUrl: './login.page.html',
+  styleUrl: './login.page.scss',
   animations: [fadeIn]
 })
-export class LoginComponent {
+export class LoginPage {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
 
   protected loadingService = inject(LoadingService);
@@ -32,6 +33,8 @@ export class LoginComponent {
   private router = inject(Router);
   private toastrService = inject(ToastrService);
   private errorHandler = inject(ErrorHandlerService);
+  private authService = inject(AuthService);
+
   public isEmailConfirmed = signal(true);
 
   public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
@@ -120,7 +123,7 @@ export class LoginComponent {
     }
 
     const firstLogin = userData.user.user_metadata?.['first_login'];
-
+    this.authService.isLogged.set(true);
     this.loadingService.hideLoading();
 
     if (firstLogin) {

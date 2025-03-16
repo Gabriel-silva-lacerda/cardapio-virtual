@@ -12,11 +12,13 @@
     </button>
   }
 
-  <a class="link" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
-    Esqueceu sua senha?
-  </a>
-
-
-
+  <div class="flex justify-between">
+    <a class="link" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
+      Esqueceu sua senha?
+    </a>
+    <a class="link" routerLink="/app" [queryParams]="{ empresa: companyName() }">
+      Visualizar cardápio
+    </a>
+  </div>
 
 </div>

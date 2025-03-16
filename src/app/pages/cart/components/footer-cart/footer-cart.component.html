@@ -1,11 +1,12 @@
+
 <footer class=" p-4 border fixed bottom-0 w-full bg-white-light">
   <div class="flex justify-between mb-1">
     <span>Total</span>
     <span class="text-green-500">{{ total | currency: 'BRL' }}</span>
   </div>
   <button class="button-primary text-text4 flex items-center justify-center gap-2" [disabled]="!carts.length || loadingService.loading()"
-    (click)="openAddressDialog()">Finalizar
-    Pedido
+    (click)="openAddressDialog()">
+    Finalizar Pedido
     @if(loadingService.loading())
      {
     <app-loading />

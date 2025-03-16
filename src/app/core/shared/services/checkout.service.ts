@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from './base/base.service';
 import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
+import { Company } from '@shared/interfaces/company';
 
 @Injectable({
   providedIn: 'root'
@@ -10,19 +11,16 @@ import { Observable } from 'rxjs';
 export class CheckoutService extends BaseService{
   private stripePromise = loadStripe(environment.STRIPE_KEY);
 
-  async createCheckoutSession(priceId: string, companyId: number) {
-
-    // Fazendo a requisição para o backend para criar a sessão de checkout
+  async createCheckoutSession(priceId: string, companyId: number | undefined) {
     this.post<{ sessionId: string }>({ priceId, companyId },  'Payment/create-checkout-session')
       .subscribe(async (response) => {
         const stripe = await this.stripePromise;
         const { sessionId } = response;
 
-        // Redireciona o usuário para o checkout da Stripe
         const result = await stripe!.redirectToCheckout({ sessionId });
 
         if (result.error) {
-          console.error(result.error.message); // Exibe o erro, se houver
+          console.error(result.error.message);
         }
       });
   }

@@ -11,8 +11,8 @@ export const mainRoutes: Routes = [
   {
     path: 'perfil',
     loadComponent: () =>
-      import('../../../pages/perfil/perfil-list/perfil-list.page').then(
-        (m) => m.PerfilListPage
+      import('../../../pages/perfil/perfil-page/perfil.page').then(
+        (m) => m.PerfilPage
       ),
   },
   {
@@ -39,8 +39,8 @@ export const mainRoutes: Routes = [
   {
     path: 'cart',
     loadComponent: () =>
-      import('../../../pages/cart/cart-list/cart-list.page').then(
-        (m) => m.CartListPage
+      import('../../../pages/cart/cart-page/cart.page').then(
+        (m) => m.CartPage
       ),
   },
   {

@@ -25,8 +25,8 @@ export class SuccessfullPaymentPlanPage {
     const companyId = this.route.snapshot.paramMap.get('id');
 
     const stripeAccountCreated = this.localStorageService.getItem(`stripeAccountCreated-${companyId}`)
-    if (companyId && !stripeAccountCreated)
-      this.createStripeAccount(+companyId);
+    // if (companyId && !stripeAccountCreated)
+    //   this.createStripeAccount(+companyId);
   }
 
   createStripeAccount(companyId: number) {

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 
@@ -7,15 +8,29 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
 export class AuthGuard implements CanActivate {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private localStorageService = inject(LocalStorageService);
 
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
   async canActivate(): Promise<boolean> {
-    const { data } = await this.authService.supabase.auth.getSession();
+    try {
+      const { data, error } = await this.authService.supabaseService.supabase.auth.getSession();
 
-    if (!data.session) {
-      this.router.navigate(['/auth']);
-      return false;
+      if (error) {
+        console.error('Erro ao obter a sessão', error);
+        return true;
+      }
+
+      const isAuthenticated = !!data.session;
+
+      if (isAuthenticated && this.router.url === '/auth') {
+        this.router.navigate(['/app']);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error('Erro na verificação da autenticação', err);
+      return true;
     }
-
-    return true;
   }
 }

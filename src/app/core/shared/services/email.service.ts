@@ -6,26 +6,16 @@ import emailjs from '@emailjs/browser';
   providedIn: 'root',
 })
 export class EmailService {
-  sendEmail(companyData: any, company: any, password: string, companyUrl: string) {
+  sendEmail(company: any, password: string, companyUrl: string | undefined) {
     // const companyUrl = `https://meusistema.com/empresa/${company.unique_url}`;
 
     const templateParams = {
-      company_name: companyData.name,
-      company_email: companyData.email,
+      company_name: company.name,
+      company_email: company.email,
       password: password,
       company_url: companyUrl,
     };
 
-    // Substitua pelos seus IDs do serviço e template
-    emailjs
-      .send('service_ywi4056', 'template_so11dky', templateParams, 'VTt5YwaVT9XHZwD7s')
-      .then(
-        (response) => {
-          console.log('E-mail enviado com sucesso!', response);
-        },
-        (error) => {
-          console.error('Erro ao enviar e-mail:', error);
-        }
-      );
+
   }
 }

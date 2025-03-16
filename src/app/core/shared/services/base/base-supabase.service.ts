@@ -7,7 +7,7 @@ import { LoadingService } from '../loading/loading.service';
   providedIn: 'root'
 })
 export abstract class BaseSupabaseService {
-  protected supabaseService = inject(SupabaseService);
+  public supabaseService = inject(SupabaseService);
   protected table!: string;
   private loadingService = inject(LoadingService);
 
