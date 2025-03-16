@@ -9,13 +9,13 @@ import { LoadingService } from '../loading/loading.service';
 export abstract class BaseSupabaseService {
   public supabaseService = inject(SupabaseService);
   protected table!: string;
-  private loadingService = inject(LoadingService);
+  public loadingService = inject(LoadingService);
 
   public toastr = inject(ToastrService);
   async getAll<T>(table: string, selectFields: string = '*'): Promise<T[]> {
-    this.loadingService.showLoading();
+    // this.loadingService.showLoading();
     const { data, error } = await this.supabaseService.supabase.from(table).select(selectFields);
-    this.loadingService.hideLoading();
+    // this.loadingService.hideLoading();
     if (error) {
       this.toastr.error(`Erro ao buscar registros da tabela ${table}:`, error.message);
       throw new Error(error.message);
@@ -33,11 +33,11 @@ export abstract class BaseSupabaseService {
     return data as T;
   }
 
-  async getAllByField<T>(table: string, field: string, value: string | number, selectFields: string = '*'): Promise<T[]> {
+  async getAllByField<T>(table: string, field: string, value: string | number | number[], selectFields: string = '*'): Promise<T[]> {
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
-      .select(selectFields)
-      .eq(field, value);
+    .from(table)
+    .select(selectFields)
+    .eq(field, value);
 
     if (error) {
       this.toastr.error(`Erro ao buscar registros na tabela ${table} com ${field} = ${value}:`, error.message);
@@ -88,6 +88,18 @@ export abstract class BaseSupabaseService {
     const { error } = await this.supabaseService.supabase.from(table).delete().eq('id', id);
     if (error) {
       this.toastr.error(`Erro ao excluir o item ${id} na tabela ${table}:`, error.message);
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteByFilter(table: string, filter: Record<string, any>): Promise<void> {
+    const { error } = await this.supabaseService.supabase
+      .from(table)
+      .delete()
+      .match(filter);
+
+    if (error) {
+      this.toastr.error(`Erro ao excluir o item na tabela ${table}:`, error.message);
       throw new Error(error.message);
     }
   }

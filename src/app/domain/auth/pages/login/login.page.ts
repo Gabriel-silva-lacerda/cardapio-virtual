@@ -13,11 +13,12 @@ import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from '@shared/services/error-handler/error-handler.service';
 import { fadeIn } from '@shared/utils/animations.utils';
 import { AuthService } from '../../services/auth.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, DynamicFormComponent, ButtonModule, RouterLink],
+  imports: [CommonModule, DynamicFormComponent, ButtonModule, RouterLink, LoadingComponent],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
   animations: [fadeIn]
@@ -83,6 +84,7 @@ export class LoginPage {
     }
 
     const companyId = company.id;
+    this.localStorageService.setItem("companyId", companyId);
 
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
 
@@ -150,4 +152,8 @@ export class LoginPage {
     this.loadingService.hideLoading();
   }
 
+  public viewMenu() {
+    this.authService.isAdmin.set(false);
+    this.router.navigate(['/app'], { queryParams: { empresa: this.companyName() } })
+  }
 }

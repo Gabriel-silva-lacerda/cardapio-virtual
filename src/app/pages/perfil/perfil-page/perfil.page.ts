@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { SupabaseService } from '@shared/services/supabase/supabase.service';
+import { fade } from '@shared/utils/animations.utils';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
   imports: [],
   templateUrl: './perfil.page.html',
   styleUrl: './perfil.page.scss',
+  animations: [fade]
 })
 export class PerfilPage {
   private supabase = injectSupabase();
@@ -23,13 +25,10 @@ export class PerfilPage {
   public userInitialSignal = signal<string>('');
 
   async ngOnInit() {
-    await this.authService.load();
-    console.log(this.currentUser());
     this.updateUserInitial();
   }
 
   async logout() {
-
     if (this.isLogged()) {
       const { error } = await this.supabase.auth.signOut();
 

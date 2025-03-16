@@ -26,8 +26,6 @@ export class FooterComponent implements OnInit, OnDestroy {
   public activeLinks: { [key: string]: boolean } = {};
 
   async ngOnInit() {
-    await this.authService.load();
-
     this.updateActiveLinks();
 
     this.router.events

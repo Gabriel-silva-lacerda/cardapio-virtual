@@ -4,8 +4,8 @@ export const mainRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../../pages/home/home-listar/home-listar.component').then(
-        (m) => m.HomeListarComponent
+      import('../../../pages/home/home-page/home.page').then(
+        (m) => m.HomePage
       ),
   },
   {
@@ -16,11 +16,21 @@ export const mainRoutes: Routes = [
       ),
   },
   {
-    path: 'categoria/:id',
-    loadComponent: () =>
-      import(
-        '../../../pages/selected-category/selected-category-list/selected-category-list.page'
-      ).then((m) => m.SelectedCategoryListPage),
+    path: 'categorias',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('../../../pages/categories/categories-page/categories.page')
+            .then((m) => m.CategoriesPage),
+      },
+      {
+        path: 'categoria/:id',
+        loadComponent: () =>
+          import('../../../pages/selected-category/selected-category-list/selected-category-list.page')
+            .then((m) => m.SelectedCategoryListPage),
+      },
+    ],
   },
   {
     path: 'food/:id',

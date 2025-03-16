@@ -1,9 +1,11 @@
 <div class="px-5 py-6">
-  <app-dynamic-form [fields]="loginFields" buttonText="Login" (submitEvent)="login()" />
+  <app-dynamic-form #loginForm [fields]="loginFields" buttonText="Login" (submitEvent)="login()" />
 
-  <button class="button-primary" (click)="login()">
-    <!-- [disabled]="isButtonDisabled" -->
+  <button class="button-primary flex items-center justify-center gap-2" (click)="login()" [disabled]="loginForm.form.invalid || this.loadingService.loading()">
     Login
+    @if(loadingService.loading()) {
+      <app-loading />
+    }
   </button>
 
   @if(!isEmailConfirmed()) {
@@ -16,7 +18,7 @@
     <a class="link" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
       Esqueceu sua senha?
     </a>
-    <a class="link" routerLink="/app" [queryParams]="{ empresa: companyName() }">
+    <a class="link" (click)="viewMenu()">
       Visualizar cardápio
     </a>
   </div>

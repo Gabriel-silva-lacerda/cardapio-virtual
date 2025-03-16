@@ -1,0 +1,23 @@
+<div class="min-h-screen " [@fade]>
+  <app-header-page title="Categorias" />
+  <div class="h-[70%] mt-10 px-3">
+    <div class="grid grid-cols-2 gap-2">
+      @if(this.loadingService.loading()) {
+        @for (i of skeletonItems; track $index) {
+        <app-skeleton-loader>
+          <app-skeleton-categories customClass="p-7" />
+        </app-skeleton-loader>
+      }
+      } @else {
+        @for (category of this.categories(); track $index) {
+          <app-categories 
+          customClass="py-6" 
+          [category]="category"
+          [showItem]="true"
+          />
+        }
+      }
+ 
+    </div>
+  </div>
+</div>

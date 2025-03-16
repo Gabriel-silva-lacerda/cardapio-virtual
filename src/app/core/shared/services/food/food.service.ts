@@ -16,14 +16,12 @@ export class FoodService extends BaseSupabaseService {
 
   async getFoodsByCompany(companyId: number): Promise<iFood[]> {
     try {
-      // Usa o método getAllByField para buscar alimentos pelo company_id
       const foods = await this.getAllByField<iFood>(
-        'foods', // Nome da tabela
-        'company_id', // Campo para filtrar
-        companyId // Valor do campo
+        'foods',
+        'company_id',
+        companyId
       );
 
-      // Atualiza as URLs das imagens
       const updatedFoods = foods.map((food) => ({
         ...food,
         image_url: food.image_url
