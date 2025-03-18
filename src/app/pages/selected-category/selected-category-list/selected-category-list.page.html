@@ -1,8 +1,0 @@
-<div class="min-h-screen" [@fade] >
-  <app-header-page [title]="title()" />
-  <div class="h-[70%] mt-10 px-3">
-    @for (food of this.foods(); track $index) {
-      <app-food-menu [food]="food" />
-    }
-  </div>
-</div>

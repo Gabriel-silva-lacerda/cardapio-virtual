@@ -25,27 +25,40 @@ export const mainRoutes: Routes = [
             .then((m) => m.CategoriesPage),
       },
       {
-        path: 'categoria/:id',
+        path: 'comida/:id',
         loadComponent: () =>
-          import('../../../pages/selected-category/selected-category-list/selected-category-list.page')
-            .then((m) => m.SelectedCategoryListPage),
+          import('../../../pages/selected-category/food-page/food.page')
+            .then((m) => m.FoodPage),
       },
     ],
   },
   {
-    path: 'food/:id',
-    loadComponent: () =>
-      import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
-        (m) => m.SelectdFoodListPage
-      ),
+    path: 'comidas',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('../../../pages/selected-category/food-page/food.page').then(
+            (m) => m.FoodPage
+          ),
+      },
+      {
+        path: 'comida/:id',
+        loadComponent: () =>
+          import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
+            (m) => m.SelectdFoodListPage
+          ),
+      },
+      {
+        path: 'comida/:id/:itemId',
+        loadComponent: () =>
+          import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
+            (m) => m.SelectdFoodListPage
+          ),
+      },
+    ]
   },
-  {
-    path: 'food/:id/:itemId',
-    loadComponent: () =>
-      import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
-        (m) => m.SelectdFoodListPage
-      ),
-  },
+
   {
     path: 'cart',
     loadComponent: () =>

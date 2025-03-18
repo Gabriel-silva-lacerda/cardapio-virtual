@@ -40,4 +40,16 @@ export class ExtraService extends BaseSupabaseService {
 
     return extras;
   }
+
+  async getExtrasByCategory(categoryId: number): Promise<any> {
+   return this.getAllByField<any>('category_extras', 'category_id', categoryId, 'extra_id')
+    .then(async (categoryExtras) => {
+      const extraIds = categoryExtras.map((ce) => ce?.extra_id);
+      console.log(categoryExtras);
+
+      if (extraIds.length === 0) return [];
+
+      return  await this.supabaseService.supabase.from('extras').select('*').in('id', extraIds);
+   });
+  }
 }

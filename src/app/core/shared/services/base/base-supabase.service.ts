@@ -84,12 +84,14 @@ export abstract class BaseSupabaseService {
   }
 
   // Método para deletar um registro pelo ID
-  async delete(table: string, id: number | string): Promise<void> {
+  async delete(table: string, id: number | string): Promise<null> {
     const { error } = await this.supabaseService.supabase.from(table).delete().eq('id', id);
     if (error) {
       this.toastr.error(`Erro ao excluir o item ${id} na tabela ${table}:`, error.message);
       throw new Error(error.message);
     }
+
+    return error;
   }
 
   async deleteByFilter(table: string, filter: Record<string, any>): Promise<void> {

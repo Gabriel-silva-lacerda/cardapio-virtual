@@ -1,0 +1,42 @@
+<div class="min-h-screen" [@fade]>
+  <app-header-page [title]="title()" />
+
+  <div>
+
+
+    <div class="h-[70%] mt-10 px-3">
+
+      <div class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2">
+        <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="addFood()">
+          <!-- @if(isLoading()) {
+          <app-loading />
+          } @else { -->
+
+          <i class="fa-solid fa-plus"></i>
+          Adicinar
+          <!-- } -->
+        </button>
+        <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="removeFood()">
+          <!-- @if(isLoading()) {
+          <app-loading />
+          } @else { -->
+          <i class="fa-solid fa-trash"></i>
+          Excluir
+          <!-- } -->
+        </button>
+      </div>
+      @if(!this.id) {
+      @for (category of groupedFoods() | keyvalue; track category.key) {
+      <span class="text-gray-500 text-xl block ">{{ category.key }}</span>
+      @for (food of category.value; track food.id) {
+      <app-food-menu [food]="food"></app-food-menu>
+      }
+      }
+      } @else {
+      @for (food of this.foods(); track $index) {
+      <app-food-menu [food]="food" />
+      }
+      }
+    </div>
+
+  </div>

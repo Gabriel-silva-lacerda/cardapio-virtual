@@ -21,11 +21,13 @@
           <span>Sem Categorias para mostrar</span>
         }
       }
-  
     </div>
 
     <div>
-      <span class="text-gray-500 text-xl block my-2">Cardápio</span>
+      <div class="flex justify-between items-center mt-2">
+        <span class="text-gray-500 text-xl block my-2">Cardápio</span>
+        <a class="text-gray-500 py-2 text-text4" routerLink="comidas" [queryParams]="{ empresa: companyName() }">Ver mais +</a>
+      </div>
       @for (food of this.foods(); track $index) {
       <app-food-menu [food]="food" />
       } @empty {

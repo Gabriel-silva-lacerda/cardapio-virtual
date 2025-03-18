@@ -6,6 +6,7 @@ import {
   Input,
   OnChanges,
   OnInit,
+  signal,
   SimpleChanges,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -22,6 +23,8 @@ import {
 import { FoodService } from '@shared/services/food/food.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { LoadingComponent } from '../loading/loading.component';
 
 @Component({
   selector: 'app-food-menu',
@@ -33,6 +36,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
     DayOfWeekTranslatePipe,
     MatSnackBarModule,
     RouterLink,
+    LoadingComponent
   ],
   templateUrl: './food-menu.component.html',
   styleUrl: './food-menu.component.scss',

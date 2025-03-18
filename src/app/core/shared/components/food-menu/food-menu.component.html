@@ -1,5 +1,5 @@
 <ul class="flex flex-col gap-3">
-  <li [routerLink]="cartItem?.id ? ['/app/food', foodDetails?.id, cartItem?.id] : ['/app/food', foodDetails?.id]"
+  <li [routerLink]="cartItem?.id ? ['/app/comidas/comida', foodDetails?.id, cartItem?.id] : ['/app/comidas/comida', foodDetails?.id]"
     [queryParams]="{ empresa: companyName() }"
     class="flex mb-4 h-[6.4rem] border cursor-pointer rounded-md bg-white-light shadow-sm items-center gap-2 pe-2"
     [ngClass]="{' h-[8.4rem]': cartItem?.id }">
@@ -20,17 +20,19 @@
         @if(cartItem) {
         <span>Qtd: {{ foodDetails?.quantity }}</span>
         }
-        <div class="flex justify-between w-full">
-          <span [ngClass]="getDayClass(foodDetails?.day_of_week)">
-            {{ foodDetails?.day_of_week | dayOfWeekTranslate }}
-            <i *ngIf="foodDetails?.day_of_week !== getCurrentDayOfWeek()" [matTooltip]="tooltipMessage"
-              class="ml-2 fas fa-info-circle tooltip">
-            </i>
-          </span>
-          <span class="flex justify-end text-green-700 font-medium">
-            {{ foodDetails?.price | currency: 'BRL' }}
-          </span>
-        </div>
+        @if(foodDetails?.day_of_week) {
+          <div class="flex justify-between w-full">
+            <span [ngClass]="getDayClass(foodDetails?.day_of_week)">
+              {{ foodDetails?.day_of_week | dayOfWeekTranslate }}
+              <i *ngIf="foodDetails?.day_of_week !== getCurrentDayOfWeek()" [matTooltip]="tooltipMessage"
+                class="ml-2 fas fa-info-circle tooltip">
+              </i>
+            </span>
+            <span class="flex justify-end text-green-700 font-medium">
+              {{ foodDetails?.price | currency: 'BRL' }}
+            </span>
+          </div>
+        }
       </div>
     </div>
   </li>

@@ -4,7 +4,9 @@
       <label class="text-gray-500 text-text4 mb-1" for="{{ field.name }}">
         {{ field.label }}
       </label>
-      <input *ngIf="field.type !== 'select'" id="{{ field.name }}" [type]="field.type" [formControlName]="field.name"
+      <input
+        *ngIf="field.type !== 'select' && field.type !== 'file' && field.type !== 'multiselect' && field.type !== 'checkbox'"
+        id="{{ field.name }}" [type]="field.type" [formControlName]="field.name"
         class="input-primary py-3"
         [ngStyle]="{ 'padding': field.padding }"
         [ngClass]="{ 'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched }"
@@ -12,16 +14,43 @@
         (ngModelChange)="field.onChange && field.onChange($event, form)"
         />
 
+        <!-- Input para checkbox -->
+        <input *ngIf="field.type === 'checkbox'"
+          id="{{ field.name }}"
+          type="checkbox"
+          [formControlName]="field.name"
+          class="input-primary py-3"
+          (change)="field.onChange && field.onChange($event, form)"
+        />
+
+        <input *ngIf="field.type === 'file'"
+              id="{{ field.name }}"
+              type="file"
+              accept="image/*"
+              class="input-primary py-3 cursor-pointer"
+              (change)="onFileSelected($event, field)"
+        />
+
       <select *ngIf="field.type === 'select'" id="{{ field.name }}" [formControlName]="field.name"
         class="input-primary py-3" [ngClass]="{
           'input-error':
             form.get(field.name)?.invalid && form.get(field.name)?.touched
-        }">
+        }" (ngModelChange)="field.onChange && field.onChange($event, form)">
         <option value="">Selecione...</option>
-        <option *ngFor="let option of field.options" [value]="option">
-          {{ option }}
+        <option *ngFor="let option of field.options" [value]="option.value">
+          {{ option.label }}
         </option>
       </select>
+
+      <p-multiSelect *ngIf="field.type === 'multiselect'"
+        id="{{ field.name }}"
+        [options]="field.options"
+        optionLabel="label"
+        optionValue="value"
+        [formControlName]="field.name"
+        placeholder="Selecione os itens"
+        class="input-primary py-1"
+      ></p-multiSelect>
     </div>
 
     <div class="mt-[-10px]" *ngIf="form.get(field.name)?.invalid && form.get(field.name)?.touched" [@fadeIn]>
@@ -30,13 +59,4 @@
       </span>
     </div>
   </ng-container>
-
-
-  <!-- <button type="submit" class="button-primary flex items-center justify-center gap-2" (click)="submit()"
-    [disabled]="form.invalid || loadingService.loading()">
-    {{ buttonText }}
-    <ng-container *ngIf="loadingService.loading()">
-      <app-loading />
-    </ng-container>
-  </button> -->
 </form>

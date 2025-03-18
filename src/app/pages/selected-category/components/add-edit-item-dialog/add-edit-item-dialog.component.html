@@ -1,0 +1,17 @@
+<h2>{{ data?.id ? 'Editar Comida' : 'Adicionar Comida' }}</h2>
+
+<div>
+  <app-dynamic-form #formMenu [fields]="foodFields" ></app-dynamic-form>
+</div>
+
+<div>
+  <button (click)="onCancel()">Cancelar</button>
+  <button (click)="onSave()" [disabled]="formMenu.form.invalid || this.loadingService.loading()">
+
+    @if(this.loadingService.loading()) {
+      <app-loading />
+    }
+
+    Salvar
+  </button>
+</div>

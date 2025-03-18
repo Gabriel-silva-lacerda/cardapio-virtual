@@ -14,6 +14,37 @@ export class FoodService extends BaseSupabaseService {
   public productCount = signal<number>(1);
   public totalAddition = signal<number>(0);
 
+  async getAllFoodsGroupedByCategory(): Promise<{ [categoryName: string]: iFood[] }> {
+    const { data, error } = await this.supabaseService.supabase
+      .from('foods')
+      .select('*, categories(name)')
+      .order('category_id', { ascending: true });
+
+    if (error) {
+      this.toastr.error('Erro ao buscar comidas agrupadas por categoria:', error.message);
+      throw new Error(error.message);
+    }
+
+    const groupedFoods: Record<string, iFood[]> = {};
+
+    data.forEach((food: any) => {
+      const categoryName = food.categories?.name || 'Outros';
+
+      if (!groupedFoods[categoryName]) {
+        groupedFoods[categoryName] = [];
+      }
+
+      groupedFoods[categoryName].push({
+        ...food,
+        image_url: food.image_url
+          ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
+          : null,
+      });
+    });
+
+    return groupedFoods;
+  }
+
   async getFoodsByCompany(companyId: number): Promise<iFood[]> {
     try {
       const foods = await this.getAllByField<iFood>(
@@ -61,6 +92,31 @@ export class FoodService extends BaseSupabaseService {
         : null,
     }));
   }
+
+  async createFoodWithExtras(foodData: any, extraIds: number[]) {
+    const { data: food, error } = await this.supabaseService.supabase.from('foods').insert([foodData]).select().single();
+
+    if (error) {
+      throw new Error(`Erro ao criar comida: ${error.message}`);
+    }
+
+    // Se houver adicionais, relaciona na tabela food_extras
+    if (extraIds.length > 0) {
+      const foodExtras = extraIds.map(extraId => ({
+        food_id: food.id,
+        extra_id: extraId
+      }));
+
+      const { error: extrasError } = await this.supabaseService.supabase.from('food_extras').insert(foodExtras);
+
+      if (extrasError) {
+        throw new Error(`Erro ao associar adicionais: ${extrasError.message}`);
+      }
+    }
+
+    return food;
+  }
+
 
   public resetFoodValues() {
     this.selectedAdditions.set({});

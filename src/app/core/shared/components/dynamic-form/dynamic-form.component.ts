@@ -16,6 +16,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { fadeIn } from '@shared/utils/animations.utils';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { NgxMaskDirective } from 'ngx-mask';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -25,6 +26,7 @@ import { NgxMaskDirective } from 'ngx-mask';
     CommonModule,
     InputTextModule,
     NgxMaskDirective,
+    MultiSelectModule
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -33,7 +35,6 @@ import { NgxMaskDirective } from 'ngx-mask';
 export class DynamicFormComponent implements OnInit {
   @Input() fields: iDynamicField[] = [];
   @Input() buttonText!: string;
-  @Output() submitEvent = new EventEmitter();
   @Output() fieldChangeEvent = new EventEmitter<{ fieldName: string; value: string }>();
 
   protected loadingService = inject(LoadingService);
@@ -51,10 +52,26 @@ export class DynamicFormComponent implements OnInit {
   creatForm() {
     this.form = this.fb.group(
       this.fields.reduce((acc, field) => {
-        acc[field.name] = ['', field.validators || []];
+        acc[field.name] = field.type === 'multiselect'
+          ? [[], field.validators || []]
+          : ['', field.validators || []];
+
         return acc;
-      }, {} as { [key: string]: [string, ValidatorFn | ValidatorFn[]] })
+      }, {} as { [key: string]: [any, ValidatorFn | ValidatorFn[]] })
     );
+  }
+
+  onFileSelected(event: Event, field: iDynamicField) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      this.form.patchValue({ [field.name]: file.name });
+
+      if (field.onFileUpload) {
+        field.onFileUpload(file, this.form);
+      }
+    }
   }
 
   getErrorsMessages(fieldName: string): string[] {
@@ -90,6 +107,4 @@ export class DynamicFormComponent implements OnInit {
     this.form.patchValue(clearValues);
     this.enableFields(fieldNames);
   }
-
-  submit = () => this.submitEvent.emit();
 }

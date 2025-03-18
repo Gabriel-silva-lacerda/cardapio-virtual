@@ -8,33 +8,46 @@ import { FoodService } from '@shared/services/food/food.service';
 import { firstValueFrom } from 'rxjs';
 import { CategoryService } from '../../home/services/category.service';
 import { iCategory } from '../../home/interfaces/category.interface';
+import { KeyValuePipe } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
+import { DeleteItemDialogComponent } from '../components/delete-item-dialog/delete-item-dialog.component';
 
 @Component({
-  selector: 'app-selected-category-list',
-  imports: [FoodMenuComponent, HeaderPageComponent],
-  templateUrl: './selected-category-list.page.html',
-  styleUrl: './selected-category-list.page.scss',
+  selector: 'app-food-page',
+  imports: [FoodMenuComponent, HeaderPageComponent, KeyValuePipe],
+  templateUrl: './food.page.html',
+  styleUrl: './food.page.scss',
   animations: [fade],
 })
-export class SelectedCategoryListPage {
+export class FoodPage {
   private route = inject(ActivatedRoute);
   private foodService = inject(FoodService);
   private categoryService = inject(CategoryService);
+  private dialog = inject(MatDialog);
 
   public foods = signal<iFood[] | null>(null);
   public title = signal<string>('');
   public id!: string | null;
+  public groupedFoods = signal<Record<string, iFood[]>>({});
 
   ngOnInit(): void {
-    this.getRouteId();
+    this.getAllFoods();
+    // this.removeFood();
+    this.addFood();
   }
 
-  private async getRouteId(): Promise<void> {
+  private async getAllFoods(): Promise<void> {
     this.id = await firstValueFrom(this.route.paramMap).then((params) =>
       params.get('id')
     );
 
     if (this.id) this.getFoodsByCategory(+this.id);
+    else {
+      const groupedFoods = await this.foodService.getAllFoodsGroupedByCategory();
+      this.groupedFoods.set(groupedFoods);
+      this.title.set('Cardápio')
+    }
   }
 
   public async getFoodsByCategory(id: number) {
@@ -48,5 +61,31 @@ export class SelectedCategoryListPage {
 
     this.title.set(category.name);
     this.foods.set(foods);
+  }
+
+  public addFood() {
+    const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
+      width: '400px',
+      height: '800px'
+    });
+
+    dialogRef.afterClosed().subscribe(async (selectedPayment) => {
+      if (selectedPayment) {
+        this.getAllFoods();
+      }
+    });
+  }
+
+  public removeFood() {
+    const dialogRef = this.dialog.open(DeleteItemDialogComponent, {
+      width: '400px',
+      height: '660px'
+    });
+
+    dialogRef.afterClosed().subscribe(async (selectedPayment) => {
+      if (selectedPayment) {
+        this.getAllFoods();
+      }
+    });
   }
 }
