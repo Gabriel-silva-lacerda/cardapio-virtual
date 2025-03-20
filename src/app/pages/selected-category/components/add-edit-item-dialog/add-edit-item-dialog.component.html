@@ -1,17 +1,20 @@
-<h2>{{ data?.id ? 'Editar Comida' : 'Adicionar Comida' }}</h2>
+<div class="">
+  <h2 class="py-2 px-6 bg-primary text-white">{{ data.foodId ? 'Editar Item' : 'Adicionar Item' }}</h2>
 
-<div>
-  <app-dynamic-form #formMenu [fields]="foodFields" ></app-dynamic-form>
+  <div>
+    <app-dynamic-form #formMenu [fields]="foodFields" ></app-dynamic-form>
+  </div>
+
+  <div>
+    <button (click)="onCancel()">Cancelar</button>
+    <button (click)="onSave()" [disabled]="formMenu.form.invalid || this.loadingService.loading()">
+
+      @if(this.loadingService.loading()) {
+        <app-loading />
+      }
+
+      Salvar
+    </button>
+  </div>
 </div>
 
-<div>
-  <button (click)="onCancel()">Cancelar</button>
-  <button (click)="onSave()" [disabled]="formMenu.form.invalid || this.loadingService.loading()">
-
-    @if(this.loadingService.loading()) {
-      <app-loading />
-    }
-
-    Salvar
-  </button>
-</div>

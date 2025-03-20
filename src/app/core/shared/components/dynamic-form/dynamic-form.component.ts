@@ -17,6 +17,7 @@ import { fadeIn } from '@shared/utils/animations.utils';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -26,7 +27,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
     CommonModule,
     InputTextModule,
     NgxMaskDirective,
-    MultiSelectModule
+    MultiSelectModule,
+    MatTooltipModule
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -42,6 +44,9 @@ export class DynamicFormComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   public form!: FormGroup;
+  public selectedFileName!: string;
+  public imagePreviewUrl: string | null = null;
+  public isDisabled: { [key: string]: boolean } = {};
 
   constructor(@Inject(ERROR_MESSAGES) private errors: ErrorMessages) {}
 
@@ -67,6 +72,8 @@ export class DynamicFormComponent implements OnInit {
       const file = input.files[0];
 
       this.form.patchValue({ [field.name]: file.name });
+      this.selectedFileName = file.name;
+      this.imagePreviewUrl = URL.createObjectURL(file);
 
       if (field.onFileUpload) {
         field.onFileUpload(file, this.form);

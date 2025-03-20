@@ -2,17 +2,19 @@ import { CurrencyPipe, NgClass, NgIf } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnInit,
+  Output,
   signal,
   SimpleChanges,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { iFood } from '@shared/interfaces/food.interface';
 import { iCartItem } from '@shared/interfaces/cart.interface';
-import { FoodDetails } from '@shared/interfaces/food-datails.interface';
+import { iFoodDetails } from '@shared/interfaces/food-datails.interface';
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DayOfWeekTranslatePipe } from 'src/app/widget/pipes/day-of-week-translate.pipe';
@@ -46,9 +48,11 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   @Input() food!: iFood;
   @Input() cartItem?: iCartItem;
   @Input() isInCart = false;
+  @Output() editItem = new EventEmitter<number>();
+  @Output() deleteItem = new EventEmitter<any>();
 
   private foodService = inject(FoodService);
-  private cachedFoodDetails: FoodDetails | null = null;
+  private cachedFoodDetails: iFoodDetails | null = null;
   private localStorageService = inject(LocalStorageService);
 
   public tooltipMessage: string = '';
@@ -65,7 +69,7 @@ export class FoodMenuComponent implements OnInit, OnChanges {
     }
   }
 
-  get foodDetails(): FoodDetails | null {
+  get foodDetails(): iFoodDetails | null {
     if (!this.cachedFoodDetails) {
       const foodData = this.cartItem ? this.cartItem.food : this.food;
       this.cachedFoodDetails = this.foodService.getFoodDetails(
@@ -91,5 +95,13 @@ export class FoodMenuComponent implements OnInit, OnChanges {
       this.foodDetails?.day_of_week === this.getCurrentDayOfWeek()
         ? ''
         : getUnavailableItemMessage(this.foodDetails?.day_of_week);
+  }
+
+  public edit(foodId: number | undefined) {
+    this.editItem.emit(foodId as number);
+  }
+
+  public remove(food: iFoodDetails | null) {
+    this.deleteItem.emit(food);
   }
 }

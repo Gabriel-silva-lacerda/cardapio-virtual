@@ -18,5 +18,7 @@ export interface iDynamicField {
   options?: { label: string; value: any }[];
   mask?: string;
   padding?: string;
+  tooltip?: string;
+  disabled?: boolean;
 }
 

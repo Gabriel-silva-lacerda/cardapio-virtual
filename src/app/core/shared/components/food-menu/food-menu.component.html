@@ -1,5 +1,6 @@
 <ul class="flex flex-col gap-3">
-  <li [routerLink]="cartItem?.id ? ['/app/comidas/comida', foodDetails?.id, cartItem?.id] : ['/app/comidas/comida', foodDetails?.id]"
+  <li
+    [routerLink]="cartItem?.id ? ['/app/comidas/comida', foodDetails?.id, cartItem?.id] : ['/app/comidas/comida', foodDetails?.id]"
     [queryParams]="{ empresa: companyName() }"
     class="flex mb-4 h-[6.4rem] border cursor-pointer rounded-md bg-white-light shadow-sm items-center gap-2 pe-2"
     [ngClass]="{' h-[8.4rem]': cartItem?.id }">
@@ -20,20 +21,40 @@
         @if(cartItem) {
         <span>Qtd: {{ foodDetails?.quantity }}</span>
         }
-        @if(foodDetails?.day_of_week) {
-          <div class="flex justify-between w-full">
-            <span [ngClass]="getDayClass(foodDetails?.day_of_week)">
-              {{ foodDetails?.day_of_week | dayOfWeekTranslate }}
-              <i *ngIf="foodDetails?.day_of_week !== getCurrentDayOfWeek()" [matTooltip]="tooltipMessage"
-                class="ml-2 fas fa-info-circle tooltip">
-              </i>
-            </span>
-            <span class="flex justify-end text-green-700 font-medium">
-              {{ foodDetails?.price | currency: 'BRL' }}
-            </span>
-          </div>
-        }
+
+        <div class="flex justify-between w-full">
+          @if(foodDetails?.day_of_week) {
+          <span [ngClass]="getDayClass(foodDetails?.day_of_week)">
+            {{ foodDetails?.day_of_week | dayOfWeekTranslate }}
+            <i *ngIf="foodDetails?.day_of_week !== getCurrentDayOfWeek()" [matTooltip]="tooltipMessage"
+              class="ml-2 fas fa-info-circle tooltip">
+            </i>
+          </span>
+          }
+          <span class="flex justify-end text-green-700 font-medium">
+            {{ foodDetails?.price | currency: 'BRL' }}
+          </span>
+        </div>
+
       </div>
     </div>
   </li>
 </ul>
+<div class="flex gap-2 items-center">
+  <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="edit(foodDetails?.id)">
+    <!-- @if(isLoading()) {
+    <app-loading />
+    } @else { -->
+
+    <i class="fa-solid fa-plus"></i>
+    <!-- } -->
+  </button>
+  <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="remove(foodDetails)">
+    <!-- @if(isLoading()) {
+    <app-loading />
+    } @else { -->
+    <i class="fa-solid fa-trash"></i>
+
+    <!-- } -->
+  </button>
+</div>

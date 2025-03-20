@@ -7,49 +7,23 @@ import { iExtra } from '../../interfaces/extra.interface';
 })
 export class ExtraService extends BaseSupabaseService {
   async getExtrasByFoodId(foodId: string): Promise<iExtra[]> {
-    const { data, error } = await this.supabaseService.supabase
-      .from('food_extras')
-      .select('extra_id')
-      .eq('food_id', foodId);
+    const foodExtras = await this.getAllByField<{ food_id: number, extra_id: number }>('food_extras', 'food_id', foodId, 'extra_id');
 
-    if (error) {
-      this.toastr.error(
-        `Erro ao buscar os extras para o alimento com ID ${foodId}:`,
-        error.message
-      );
-      return [];
-    }
-
-    const extraIds = data.map((item) => item.extra_id);
+    const extraIds = foodExtras.map((item) => item.extra_id);
 
     if (extraIds.length === 0) return [];
 
-    const { data: extras, error: extrasError } =
-      await this.supabaseService.supabase
-        .from('extras')
-        .select('*')
-        .in('id', extraIds);
+    return this.getAllByFieldIn('extras', 'id', extraIds);
 
-    if (extrasError) {
-      this.toastr.error(
-        `Erro ao buscar os detalhes dos extras:`,
-        extrasError.message
-      );
-      return [];
-    }
-
-    return extras;
   }
 
-  async getExtrasByCategory(categoryId: number): Promise<any> {
-   return this.getAllByField<any>('category_extras', 'category_id', categoryId, 'extra_id')
+  async getExtrasByCategory(categoryId: number): Promise<iExtra[]> {
+   return this.getAllByField<{ category_id: number, extra_id: number }>('category_extras', 'category_id', categoryId, 'extra_id')
     .then(async (categoryExtras) => {
       const extraIds = categoryExtras.map((ce) => ce?.extra_id);
-      console.log(categoryExtras);
-
       if (extraIds.length === 0) return [];
 
-      return  await this.supabaseService.supabase.from('extras').select('*').in('id', extraIds);
-   });
+      return this.getAllByFieldIn('extras', 'id', extraIds);
+    });
   }
 }

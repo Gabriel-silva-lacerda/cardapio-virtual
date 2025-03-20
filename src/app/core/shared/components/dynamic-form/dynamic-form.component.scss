@@ -1,0 +1,23 @@
+::ng-deep p-multiSelect .p-multiselect-dropdown {
+  display: none;
+}
+
+::ng-deep p-multiSelect .p-multiselect-label {
+  @apply text-black !important;
+}
+
+.p-multiselect:not(.p-disabled).p-focus {
+  @apply border border-gray-300;
+}
+
+p-multiSelect {
+  @apply border;
+}
+
+::ng-deep p-multiSelect  {
+  background-image: url("../../../../../assets/icons/down-arrow.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.2rem center !important;
+  background-size: 8.8px !important;
+}
+

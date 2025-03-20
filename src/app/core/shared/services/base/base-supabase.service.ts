@@ -61,6 +61,24 @@ export abstract class BaseSupabaseService {
     return data as T;
   }
 
+  async getAllByFieldIn<T>(table: string, field: string, values: number[] | string[], selectFields: string = '*'): Promise<T[]> {
+    if (!Array.isArray(values) || values.length === 0) {
+      return [];
+    }
+
+    const { data, error } = await this.supabaseService.supabase
+      .from(table)
+      .select(selectFields)
+      .in(field, values);
+
+    if (error) {
+      this.toastr.error(`Erro ao buscar registros na tabela ${table} onde ${field} está em [${values.join(', ')}]:`, error.message);
+      throw new Error(error.message);
+    }
+
+    return data as T[];
+  }
+
   // Método para inserir um novo registro
   async insert<T>(table: string, item: Partial<T>): Promise<T> {
     this.loadingService.showLoading();

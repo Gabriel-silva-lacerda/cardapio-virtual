@@ -6,30 +6,30 @@
       </label>
       <input
         *ngIf="field.type !== 'select' && field.type !== 'file' && field.type !== 'multiselect' && field.type !== 'checkbox'"
-        id="{{ field.name }}" [type]="field.type" [formControlName]="field.name"
-        class="input-primary py-3"
+        id="{{ field.name }}" [type]="field.type" [formControlName]="field.name" class="input-primary py-3"
         [ngStyle]="{ 'padding': field.padding }"
         [ngClass]="{ 'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched }"
-        [mask]="field.mask || ''"
-        (ngModelChange)="field.onChange && field.onChange($event, form)"
-        />
+        [mask]="field.mask || ''" (ngModelChange)="field.onChange && field.onChange($event, form)" />
 
-        <!-- Input para checkbox -->
-        <input *ngIf="field.type === 'checkbox'"
-          id="{{ field.name }}"
-          type="checkbox"
-          [formControlName]="field.name"
-          class="input-primary py-3"
-          (change)="field.onChange && field.onChange($event, form)"
-        />
+      <input *ngIf="field.type === 'checkbox'" id="{{ field.name }}" type="checkbox" [formControlName]="field.name"
+        class="input-primary py-3" (change)="field.onChange && field.onChange($event, form)" />
 
-        <input *ngIf="field.type === 'file'"
-              id="{{ field.name }}"
-              type="file"
-              accept="image/*"
-              class="input-primary py-3 cursor-pointer"
-              (change)="onFileSelected($event, field)"
-        />
+      <div class="flex items-center flex-col" *ngIf="field.type === 'file'">
+        <input *ngIf="field.type === 'file'" id="{{ field.name }}" type="file" accept="image/*" class="hidden"
+          (change)="onFileSelected($event, field)" />
+
+        <label *ngIf="field.type === 'file'" for="{{ field.name }}"
+          class="input-primary py-3 cursor-pointer border rounded px-4 w-full flex justify-between items-center"
+          [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }">
+          <span>
+            {{ selectedFileName || 'Nenhum arquivo escolhido' }}
+          </span>
+          <span class="text-blue-500">Escolher</span>
+        </label>
+        <div *ngIf="imagePreviewUrl" class="image-preview">
+          <img [src]="imagePreviewUrl" alt="Prévia da Imagem" class="w-32 h-32 object-cover rounded-lg border" />
+        </div>
+      </div>
 
       <select *ngIf="field.type === 'select'" id="{{ field.name }}" [formControlName]="field.name"
         class="input-primary py-3" [ngClass]="{
@@ -42,15 +42,12 @@
         </option>
       </select>
 
-      <p-multiSelect *ngIf="field.type === 'multiselect'"
-        id="{{ field.name }}"
-        [options]="field.options"
-        optionLabel="label"
-        optionValue="value"
-        [formControlName]="field.name"
-        placeholder="Selecione os itens"
-        class="input-primary py-1"
-      ></p-multiSelect>
+      <div *ngIf="field.type === 'multiselect'" [matTooltip]="isDisabled[field.name] ? field.tooltip : ''" class="w-full">
+        <p-multiSelect  id="{{ field.name }}" [options]="field.options"
+          optionLabel="label" optionValue="value" [formControlName]="field.name" placeholder="Selecione os itens"
+          class="input-primary py-1 px-0 outline-none focus:border border-gray-50 teste w-full"
+          [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"></p-multiSelect>
+      </div>
     </div>
 
     <div class="mt-[-10px]" *ngIf="form.get(field.name)?.invalid && form.get(field.name)?.touched" [@fadeIn]>

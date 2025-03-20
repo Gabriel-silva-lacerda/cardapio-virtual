@@ -75,8 +75,8 @@ export class FoodService extends BaseSupabaseService {
     return {
       ...food,
       image_url: food.image_url
-        ? `${environment.SUPABASE_URL}/${food.image_url}`
-        : null,
+        // ? `${environment.SUPABASE_URL}/${food.image_url}`
+        // : null,
     };
   }
 
@@ -115,6 +115,77 @@ export class FoodService extends BaseSupabaseService {
     }
 
     return food;
+  }
+
+  async updateFoodWithExtras(foodId: number, foodData: any, extraIds: number[]) {
+    // Atualiza os dados do item na tabela 'foods'
+    const { error: foodError } = await this.supabaseService.supabase
+      .from('foods')
+      .update(foodData)
+      .eq('id', foodId);
+
+    if (foodError) {
+      throw new Error(`Erro ao atualizar comida: ${foodError.message}`);
+    }
+
+    // Atualiza os adicionais do item
+    // 1. Remove os adicionais antigos
+    const { error: deleteError } = await this.supabaseService.supabase
+      .from('food_extras')
+      .delete()
+      .eq('food_id', foodId);
+
+    if (deleteError) {
+      throw new Error(`Erro ao remover adicionais antigos: ${deleteError.message}`);
+    }
+
+    // 2. Insere os novos adicionais, se houver
+    if (extraIds.length > 0) {
+      const foodExtras = extraIds.map(extraId => ({
+        food_id: foodId,
+        extra_id: extraId
+      }));
+
+      const { error: insertError } = await this.supabaseService.supabase
+        .from('food_extras')
+        .insert(foodExtras);
+
+      if (insertError) {
+        throw new Error(`Erro ao associar novos adicionais: ${insertError.message}`);
+      }
+    }
+
+    return { message: 'Comida atualizada com sucesso!' };
+  }
+
+
+  async getFoodByName(name: string): Promise<any> {
+    const { data, error } = await this.supabaseService.supabase
+      .from('foods')
+      .select('*')
+      .eq('name', name)
+      .single();
+
+    if (error) {
+      this.toastr.error(`Erro ao buscar o prato pelo nome ${name}:`, error.message);
+      throw new Error(error.message);
+    }
+
+    return data;
+  }
+
+  async getAllFoodsByCompany(companyId: number): Promise<any[]> {
+    const { data, error } = await this.supabaseService.supabase
+      .from('foods')
+      .select('*')
+      .eq('company_id', companyId);
+
+    if (error) {
+      this.toastr.error('Erro ao buscar as comidas:', error.message);
+      throw new Error(error.message);
+    }
+
+    return data;
   }
 
 

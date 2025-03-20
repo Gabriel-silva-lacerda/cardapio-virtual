@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment.development';
 })
 export class ImageService extends BaseSupabaseService {
   async uploadImage(file: File, path: string): Promise<string | null> {
-    const { data, error } = await this.supabaseService.supabase.storage.from('images').upload(path, file);
+    const { data, error } = await this.supabaseService.supabase.storage.from('images').upload(path, file, { upsert: true });
     if (error) {
       console.error('Erro no upload:', error);
       return null;
@@ -29,5 +29,18 @@ export class ImageService extends BaseSupabaseService {
     }
 
     return true;
+  }
+
+  async getImageUrl(imagePath: string): Promise<string | null> {
+    const { data, error } = await this.supabaseService.supabase.storage
+      .from('images')
+      .createSignedUrl(imagePath, 3600); // URL válida por 1 hora
+
+    if (error) {
+      console.error('Erro ao buscar a imagem:', error);
+      return null;
+    }
+
+    return data?.signedUrl || null;
   }
 }
