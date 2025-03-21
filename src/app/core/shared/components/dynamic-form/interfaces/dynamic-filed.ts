@@ -20,5 +20,6 @@ export interface iDynamicField {
   padding?: string;
   tooltip?: string;
   disabled?: boolean;
+  directive?: string;
 }
 

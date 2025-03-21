@@ -23,10 +23,11 @@ import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
+import { ButtonComponent } from '@shared/components/button/button.component';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
-  imports: [DynamicFormComponent, LoadingComponent],
+  imports: [DynamicFormComponent, LoadingComponent, ButtonComponent],
   templateUrl: './add-edit-item-dialog.component.html',
   styleUrl: './add-edit-item-dialog.component.scss',
 })
@@ -50,7 +51,7 @@ export class AddEditItemDialogComponent implements OnInit {
   public foodFields: iDynamicField[] = [
     {
       name: 'name',
-      label: 'Nome do Prato',
+      label: 'Nome do Item',
       type: 'text',
       validators: [Validators.required],
       padding: '10px',
@@ -58,16 +59,17 @@ export class AddEditItemDialogComponent implements OnInit {
     {
       name: 'description',
       label: 'Descrição',
-      type: 'textarea',
+      type: 'text',
       validators: [],
       padding: '10px',
     },
     {
       name: 'price',
       label: 'Preço',
-      type: 'number',
+      type: 'text',
       validators: [Validators.required],
       padding: '10px',
+      directive: 'onlyNumbers',
     },
     {
       name: 'category_id',
@@ -114,7 +116,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'image_file',
       label: 'Imagem',
       type: 'file',
-      validators: [],
+      validators: [Validators.required],
       padding: '10px',
       onFileUpload: async (file, form) => {
         form.patchValue({ image_file: file });
@@ -147,6 +149,7 @@ export class AddEditItemDialogComponent implements OnInit {
 
       const foodData = await this.foodService.getFoodById(foodId.toString());
       this.imageUrl = foodData?.image_url || null;
+
       if (foodData) {
         const extras = await this.extraService.getExtrasByFoodId(foodId.toString());
 
@@ -167,8 +170,6 @@ export class AddEditItemDialogComponent implements OnInit {
         });
 
       }
-    } catch (error) {
-      console.error('Erro ao carregar os dados do prato:', error);
     } finally {
       this.loadingService.hideLoading();
     }

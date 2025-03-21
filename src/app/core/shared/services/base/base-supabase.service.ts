@@ -2,20 +2,20 @@ import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../loading/loading.service';
+import { InsertOptions } from '@shared/interfaces/insert-options';
 
 @Injectable({
   providedIn: 'root'
 })
 export abstract class BaseSupabaseService {
-  public supabaseService = inject(SupabaseService);
   protected table!: string;
-  public loadingService = inject(LoadingService);
 
+  public loadingService = inject(LoadingService);
   public toastr = inject(ToastrService);
+  public supabaseService = inject(SupabaseService);
+
   async getAll<T>(table: string, selectFields: string = '*'): Promise<T[]> {
-    // this.loadingService.showLoading();
     const { data, error } = await this.supabaseService.supabase.from(table).select(selectFields);
-    // this.loadingService.hideLoading();
     if (error) {
       this.toastr.error(`Erro ao buscar registros da tabela ${table}:`, error.message);
       throw new Error(error.message);
@@ -80,14 +80,20 @@ export abstract class BaseSupabaseService {
   }
 
   // Método para inserir um novo registro
-  async insert<T>(table: string, item: Partial<T>): Promise<T> {
-    this.loadingService.showLoading();
-    const { data, error } = await this.supabaseService.supabase.from(table).insert([item]).select().single();
-    this.loadingService.hideLoading();
+  async insert<T>(table: string, item: Partial<T>, options: InsertOptions = {}): Promise<T> {
+    const { wrapInArray = true } = options; // Valor padrão para wrapInArray é true
+
+    const { data, error } = await this.supabaseService.supabase
+      .from(table)
+      .insert(wrapInArray ? [item] : item) // Envolve o item em um array se wrapInArray for true
+      .select()
+      .single();
+
     if (error) {
       this.toastr.error(`Erro ao inserir na tabela ${table}:`, error.message);
       throw new Error(error.message);
     }
+
     return data as T;
   }
 

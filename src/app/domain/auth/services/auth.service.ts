@@ -14,6 +14,10 @@ export class AuthService extends BaseSupabaseService {
   public isLogged = signal<boolean>(false);
   public isAdmin = signal<boolean>(false);
 
+  ngOnInit(): void {
+    this.load();
+  }
+
   public async load() {
     const { data } = await this.supabaseService.supabase.auth.getSession();
 

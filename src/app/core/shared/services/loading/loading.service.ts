@@ -8,9 +8,11 @@ export class LoadingService {
 
   public showLoading(): void {
     this.loading.set(true);
+    document.body.classList.add('overflow-hidden', 'h-screen');
   }
 
   public hideLoading(): void {
     this.loading.set(false);
+    document.body.classList.remove('overflow-hidden', 'h-screen');
   }
 }

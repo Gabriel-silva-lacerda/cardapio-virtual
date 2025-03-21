@@ -27,6 +27,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LoadingComponent } from '../loading/loading.component';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { IconButtonComponent } from '../icon-button/icon-button.component';
 
 @Component({
   selector: 'app-food-menu',
@@ -38,7 +40,8 @@ import { LoadingComponent } from '../loading/loading.component';
     DayOfWeekTranslatePipe,
     MatSnackBarModule,
     RouterLink,
-    LoadingComponent
+    LoadingComponent,
+    IconButtonComponent
   ],
   templateUrl: './food-menu.component.html',
   styleUrl: './food-menu.component.scss',
@@ -48,16 +51,20 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   @Input() food!: iFood;
   @Input() cartItem?: iCartItem;
   @Input() isInCart = false;
+  @Input() showItem = false;
   @Output() editItem = new EventEmitter<number>();
   @Output() deleteItem = new EventEmitter<any>();
 
   private foodService = inject(FoodService);
   private cachedFoodDetails: iFoodDetails | null = null;
   private localStorageService = inject(LocalStorageService);
+  private authService = inject(AuthService);
 
+  public loadingService = inject(LoadingService);
   public tooltipMessage: string = '';
   public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
-
+  public isAdmin = this.authService.isAdmin;
+  
   ngOnInit(): void {
     this.updateTooltipMessage();
   }

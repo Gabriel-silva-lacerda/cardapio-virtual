@@ -18,6 +18,7 @@ import { LoadingService } from '@shared/services/loading/loading.service';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.directive';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -28,7 +29,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     InputTextModule,
     NgxMaskDirective,
     MultiSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    OnlyNumbersDirective
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',

@@ -1,0 +1,9 @@
+<button class="{{ customClass }} w-full" [disabled]="disabled" [ngClass]="{
+  'button-canceled': isCanceled,
+  'button-primary': !isCanceled
+}">
+  {{ label }}
+  @if(!isCanceled && isLoading) {
+  <app-loading />
+  }
+</button>

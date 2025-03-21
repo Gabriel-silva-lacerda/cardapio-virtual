@@ -1,5 +1,5 @@
 ::ng-deep p-multiSelect .p-multiselect-dropdown {
-  display: none;
+  @apply hidden;
 }
 
 ::ng-deep p-multiSelect .p-multiselect-label {
@@ -10,14 +10,15 @@
   @apply border border-gray-300;
 }
 
-p-multiSelect {
-  @apply border;
-}
-
 ::ng-deep p-multiSelect  {
   background-image: url("../../../../../assets/icons/down-arrow.png") !important;
   background-repeat: no-repeat !important;
-  background-position: right 0.2rem center !important;
-  background-size: 8.8px !important;
+  background-position: right 0.23rem center !important;
+  background-size: 8.7px !important;
+  @apply border border-gray-300 rounded-lg !important;
+}
+
+::ng-deep .p-checkbox-checked .p-checkbox-box  {
+  @apply bg-primary border border-gray-300 !important;
 }
 

@@ -1,14 +1,15 @@
-<h2 mat-dialog-title>{{ data.title || 'Confirmação' }}</h2>
+<div class="flex flex-col justify-center gap-4 bg-[#fff] shadow-lg items-center p-6">
+  <h2 class="text-xl font-semibold text-gray-800">{{ data.title || 'Confirmação' }}</h2>
 
-<div>
-  <p>{{ data.message }}</p>
-</div>
+  <div>
+    <p class="text-center text-gray-600">{{ data.message }}</p>
+  </div>
 
-<div>
-  <button mat-button (click)="onCancel()">
-    {{ data.cancelText || 'Cancelar' }}
-  </button>
-  <button mat-button color="warn" (click)="onConfirm()">
-    {{ data.confirmText || 'Confirmar' }}
-  </button>
+  <div class="flex gap-2 w-full">
+    <app-button [label]="data.cancelText || 'Cancelar'" class="w-1/2" [isLoading]="this.loadingService.loading()"
+      [isCanceled]="true" (click)="onCancel()"></app-button>
+    <app-button [label]="data.confirmText || 'Confirmar'" class="w-1/2" (click)="onConfirm()"
+      [isLoading]="this.loadingService.loading()"
+      [disabled]="this.loadingService.loading()"></app-button>
+  </div>
 </div>

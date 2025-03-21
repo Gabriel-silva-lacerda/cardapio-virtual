@@ -1,0 +1,12 @@
+<button class="bg-primary px-2 py-1 rounded-md text-white mt-2 disabled:opacity-50"
+   [disabled]="disabled || isLoading">
+
+  @if(isLoading) {
+    @if(isLoading) {
+      <app-loading />
+    }
+  }
+  @else {
+  <i [class]="icon"></i>
+  }
+</button>

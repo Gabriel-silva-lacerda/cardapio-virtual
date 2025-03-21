@@ -2,26 +2,28 @@
   <app-header-page [title]="title()" />
 
   <div>
-
-
     <div class="h-[70%] mt-10 px-3">
-
-      <div class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2">
-        <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="addFood()">
-          <!-- @if(isLoading()) {
-          <app-loading />
-          } @else { -->
-
-          <i class="fa-solid fa-plus"></i>
-          Adicinar
-          <!-- } -->
-        </button>
-      </div>
-      @if(!this.id) {
+      @if(isAdmin()) {
+        <div class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2">
+          <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
+            (click)="addFood()">
+            <i class="fa-solid fa-plus"></i>
+            Adicinar
+          </button>
+        </div>
+      }
+      @if (this.loadingService.loading()) {
+      <app-skeleton-loader>
+        @for (i of skeletonItems; track $index) {
+        <app-skeleton-food />
+        }
+      </app-skeleton-loader>
+      } @else {
+      @if (!this.id) {
       @for (category of groupedFoods() | keyvalue; track category.key) {
-      <span class="text-gray-500 text-xl block ">{{ category.key }}</span>
+      <span class="text-gray-500 text-xl block">{{ category.key }}</span>
       @for (food of category.value; track food.id) {
-      <app-food-menu [food]="food" (editItem)="addFood($event)" (deleteItem)="removeFood($event)"></app-food-menu>
+      <app-food-menu [food]="food" [showItem]="true" (editItem)="addFood($event)" (deleteItem)="removeFood($event)"></app-food-menu>
       }
       }
       } @else {
@@ -29,6 +31,8 @@
       <app-food-menu [food]="food" />
       }
       }
+      }
+
     </div>
 
   </div>

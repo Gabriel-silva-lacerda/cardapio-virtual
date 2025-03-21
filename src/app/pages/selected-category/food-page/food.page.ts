@@ -15,10 +15,23 @@ import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-d
 import { ImageService } from '@shared/services/image/image.service';
 import { ToastrService } from 'ngx-toastr';
 import { iFoodDetails } from '@shared/interfaces/food-datails.interface';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
+import { SkeletonFoodComponent } from '../components/skeleton-food/skeleton-food.component';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-food-page',
-  imports: [FoodMenuComponent, HeaderPageComponent, KeyValuePipe],
+  imports: [
+    FoodMenuComponent,
+    HeaderPageComponent,
+    KeyValuePipe,
+    LoadingComponent,
+    SkeletonLoaderComponent,
+    SkeletonFoodComponent
+  ],
   templateUrl: './food.page.html',
   styleUrl: './food.page.scss',
   animations: [fade],
@@ -30,39 +43,50 @@ export class FoodPage {
   private dialog = inject(MatDialog);
   private imageService = inject(ImageService);
   private toastr = inject(ToastrService);
+  private authService = inject(AuthService);
+  private localStorageService = inject(LocalStorageService);
 
   public foods = signal<iFood[] | null>(null);
   public title = signal<string>('');
   public id!: string | null;
   public groupedFoods = signal<Record<string, iFood[]>>({});
+  public loadingService = inject(LoadingService);
+  public skeletonItems =  Array.from({ length: 5 });
+  public isAdmin = this.authService.isAdmin;
+  public companyId = this.localStorageService.getSignal('companyId', 0);
 
   ngOnInit(): void {
     this.getAllFoods();
   }
 
   private async getAllFoods(): Promise<void> {
-    this.id = await firstValueFrom(this.route.paramMap).then((params) =>
-      params.get('id')
-    );
+    this.loadingService.showLoading();
 
-    if (this.id) this.getFoodsByCategory(+this.id);
-    else {
-      const groupedFoods =
-        await this.foodService.getAllFoodsGroupedByCategory();
-      this.groupedFoods.set(groupedFoods);
-      this.title.set('Cardápio');
+    try {
+      this.id = await firstValueFrom(this.route.paramMap).then((params) =>
+        params.get('id')
+      );
+
+      if (this.id) {
+        await this.getFoodsByCategory(+this.id, this.companyId());
+      } else {
+        const groupedFoods = await this.foodService.getAllFoodsGroupedByCategory(this.companyId());
+        this.groupedFoods.set(groupedFoods);
+        this.title.set('Cardápio');
+      }
+    } finally {
+      this.loadingService.hideLoading();
     }
   }
 
-  public async getFoodsByCategory(id: number) {
-    const foods = await this.foodService.getFoodsByCategory(id);
+  public async getFoodsByCategory(id: number, companyId: number): Promise<void> {
+    const foods = await this.foodService.getFoodsByCategory(id, companyId);
     const category = await this.categoryService.getById<iCategory>(
       'categories',
       id
     );
 
     if (!category) {
-      console.error('Categoria não encontrada');
       return;
     }
 
@@ -73,7 +97,7 @@ export class FoodPage {
   public addFood(foodId?: number) {
     const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
       width: '400px',
-      height: '800px',
+      height: '739px',
       data: {
         foodId,
       },
@@ -94,6 +118,7 @@ export class FoodPage {
         message: 'Tem certeza que deseja excluir este item?',
         confirmText: 'Excluir',
         cancelText: 'Cancelar',
+        loading: this.loadingService.loading(),
       },
     });
 
@@ -111,9 +136,12 @@ export class FoodPage {
           if (!error && deleted) {
             this.toastr.success('Item deletado com sucesso!');
             this.getAllFoods();
+            this.loadingService.hideLoading();
           }
         }
       }
     });
+
+    this.loadingService.hideLoading();
   }
 }

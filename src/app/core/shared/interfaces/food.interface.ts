@@ -9,5 +9,5 @@ export interface iFood {
   image_url?: string | null;
   day_of_week: DayOfWeek;
   created_at?: string;
-
+  company_id: number;
 }

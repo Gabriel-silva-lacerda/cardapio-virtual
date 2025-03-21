@@ -1,2 +1,11 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Poppins, "Helvetica Neue", sans-serif; }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.mat-mdc-dialog-surface {
+  @apply rounded-xl !important;
+}

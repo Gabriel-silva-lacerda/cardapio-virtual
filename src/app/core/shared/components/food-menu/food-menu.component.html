@@ -2,8 +2,8 @@
   <li
     [routerLink]="cartItem?.id ? ['/app/comidas/comida', foodDetails?.id, cartItem?.id] : ['/app/comidas/comida', foodDetails?.id]"
     [queryParams]="{ empresa: companyName() }"
-    class="flex mb-4 h-[6.4rem] border cursor-pointer rounded-md bg-white-light shadow-sm items-center gap-2 pe-2"
-    [ngClass]="{' h-[8.4rem]': cartItem?.id }">
+    class="flex h-[6.4rem] border cursor-pointer rounded-md mb-3 bg-white-light shadow-sm items-center gap-2 pe-2"
+    [ngClass]="{' h-[8.4rem]': cartItem?.id, 'mb-3': !showItem }">
     <img class="w-24 h-full object-cover border border-l rounded-md" [src]="foodDetails?.imageUrl"
       alt="{{ foodDetails?.name }}" [ngClass]="{'w-28': cartItem?.id }">
     <div class="flex flex-col justify-between gap-3 flex-1 ">
@@ -40,21 +40,12 @@
     </div>
   </li>
 </ul>
-<div class="flex gap-2 items-center">
-  <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="edit(foodDetails?.id)">
-    <!-- @if(isLoading()) {
-    <app-loading />
-    } @else { -->
+@if(showItem && isAdmin()) {
+  <div class="flex gap-2 items-center mb-3">
+    <app-icon-button icon="fa-solid fa-pen-to-square" (click)="edit(foodDetails?.id)" />
 
-    <i class="fa-solid fa-plus"></i>
-    <!-- } -->
-  </button>
-  <button class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2" (click)="remove(foodDetails)">
-    <!-- @if(isLoading()) {
-    <app-loading />
-    } @else { -->
-    <i class="fa-solid fa-trash"></i>
+    <app-icon-button icon="fa-solid fa-trash" (click)="remove(foodDetails)" />
 
-    <!-- } -->
-  </button>
-</div>
+  </div>
+}
+
