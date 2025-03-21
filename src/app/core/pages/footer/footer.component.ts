@@ -17,13 +17,13 @@ export class FooterComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private localStorageService = inject(LocalStorageService);
   private destroy$ = new Subject<void>();
-  private authService = inject(AuthService); // Injete o AuthService
+  private authService = inject(AuthService);
 
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
   public showItemService = inject(ShowItemService);
-  public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
   public links = this.getLinks();
   public activeLinks: { [key: string]: boolean } = {};
+  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
 
   async ngOnInit() {
     this.updateActiveLinks();

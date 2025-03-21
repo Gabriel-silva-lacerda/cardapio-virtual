@@ -49,7 +49,7 @@ export class ShowItemService {
   }
 
   private shouldShowFooter(url: string): boolean {
-    const routesWithFooter = ['/app', '/app/categoria', '/app/perfil'];
+    const routesWithFooter = ['/app', '/app/categoria', '/app/perfil', '/app/comidas'];
     return routesWithFooter.includes(url);
   }
 }

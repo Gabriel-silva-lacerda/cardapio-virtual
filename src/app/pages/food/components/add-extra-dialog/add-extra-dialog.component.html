@@ -1,0 +1,10 @@
+<div class="py-4 px-6">
+  <app-dynamic-form #formExtra [fields]="extraFields"></app-dynamic-form>
+
+  <div class="flex gap-2">
+    <app-button [label]="'Cancelar'" class="w-1/2" [isLoading]="this.loadingService.loading()" [isCanceled]="true"
+      (click)="onCancel()"></app-button>
+    <app-button [label]="'Salvar'" class="w-1/2" (click)="onSave()" [isLoading]="this.loadingService.loading()"
+      [disabled]="formExtra.form.invalid || this.loadingService.loading()"></app-button>
+  </div>
+</div>

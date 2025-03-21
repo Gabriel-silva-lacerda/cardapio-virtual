@@ -49,6 +49,7 @@ export class DynamicFormComponent implements OnInit {
   public selectedFileName!: string;
   public imagePreviewUrl: string | null = null;
   public isDisabled: { [key: string]: boolean } = {};
+  public showButton = false;
 
   constructor(@Inject(ERROR_MESSAGES) private errors: ErrorMessages) {}
 

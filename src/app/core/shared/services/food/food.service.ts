@@ -62,6 +62,8 @@ export class FoodService extends BaseSupabaseService {
     return {
       ...food,
       image_url: food.image_url
+      ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
+      : null,
     };
   }
 
@@ -111,37 +113,6 @@ export class FoodService extends BaseSupabaseService {
       await this.insert('food_extras', foodExtras, { wrapInArray: false });
     }
   }
-
-
-  // async getFoodByName(name: string): Promise<any> {
-  //   const { data, error } = await this.supabaseService.supabase
-  //     .from('foods')
-  //     .select('*')
-  //     .eq('name', name)
-  //     .single();
-
-  //   if (error) {
-  //     this.toastr.error(`Erro ao buscar o prato pelo nome ${name}:`, error.message);
-  //     throw new Error(error.message);
-  //   }
-
-  //   return data;
-  // }
-
-  // async getAllFoodsByCompany(companyId: number): Promise<any[]> {
-  //   const { data, error } = await this.supabaseService.supabase
-  //     .from('foods')
-  //     .select('*')
-  //     .eq('company_id', companyId);
-
-  //   if (error) {
-  //     this.toastr.error('Erro ao buscar as comidas:', error.message);
-  //     throw new Error(error.message);
-  //   }
-
-  //   return data;
-  // }
-
 
   public resetFoodValues() {
     this.selectedAdditions.set({});

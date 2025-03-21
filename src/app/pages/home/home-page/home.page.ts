@@ -16,6 +16,8 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
+import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skeleton-food.component';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-home-page',
@@ -25,7 +27,9 @@ import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
     HeaderPageComponent,
     RouterLink,
     SkeletonLoaderComponent,
-    SkeletonCategoriesComponent
+    SkeletonCategoriesComponent,
+    SkeletonFoodComponent,
+    NgClass
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',

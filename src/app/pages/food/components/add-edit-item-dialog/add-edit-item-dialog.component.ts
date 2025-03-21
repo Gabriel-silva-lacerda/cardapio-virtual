@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { CompanyService } from '@shared/services/company/company.service';
@@ -20,14 +20,15 @@ import { iExtra } from '../../../selected-food/interfaces/extra.interface';
 import { ExtraService } from '../../../selected-food/services/extra/extra.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.component';
+import { iFood } from '@shared/interfaces/food.interface';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
-  imports: [DynamicFormComponent, LoadingComponent, ButtonComponent],
+  imports: [DynamicFormComponent, ButtonComponent],
   templateUrl: './add-edit-item-dialog.component.html',
   styleUrl: './add-edit-item-dialog.component.scss',
 })
@@ -39,6 +40,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private foodService = inject(FoodService);
   private imageService = inject(ImageService);
   private toastr = inject(ToastrService);
+  private dialog = inject(MatDialog);
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
@@ -46,7 +48,6 @@ export class AddEditItemDialogComponent implements OnInit {
   public extras = signal<{ id: number; name: string }[]>([]);
   public imageUrl: string | null = null;
   public companyId = this.localStorageService.getSignal('companyId', 0);
-
 
   public foodFields: iDynamicField[] = [
     {
@@ -92,7 +93,8 @@ export class AddEditItemDialogComponent implements OnInit {
       options: this.extras().map((e) => ({ label: e.name, value: e.id })),
       validators: [],
       padding: '10px',
-      tooltip: 'Selecione uma categoria primeiro!'
+      tooltip: 'Selecione uma categoria primeiro!',
+      onClick: () => this.onAddExtraItem()
     },
     {
       name: 'has_day_of_week',
@@ -141,13 +143,14 @@ export class AddEditItemDialogComponent implements OnInit {
     this.categories.set(await this.categoryService.getAll('categories'));
     this.foodFields.find(f => f.name === 'category_id')!.options = this.categories().map(c => ({ label: c.name, value: c.id }));
     this.dynamicForm.isDisabled['extras'] = true;
+    this.dynamicForm.showButton = true;
   }
 
   async loadFoodDataById(foodId: number): Promise<void> {
     try {
       this.loadingService.showLoading();
 
-      const foodData = await this.foodService.getFoodById(foodId.toString());
+      const foodData = await this.foodService.getById<iFood>('foods', foodId.toString());
       this.imageUrl = foodData?.image_url || null;
 
       if (foodData) {
@@ -168,6 +171,7 @@ export class AddEditItemDialogComponent implements OnInit {
           day_of_week: foodData.day_of_week || null,
           image_file: foodData.image_url,
         });
+        this.dynamicForm.showButton = false;
 
       }
     } finally {
@@ -182,6 +186,21 @@ export class AddEditItemDialogComponent implements OnInit {
     this.foodFields.find(f => f.name === 'extras')!.options = this.extras().map(e => ({ label: e.name, value: e.id }));
 
     this.dynamicForm.isDisabled['extras'] = false;
+
+
+  }
+
+  public onAddExtraItem() {
+    const dialogRef = this.dialog.open(AddExtraDialogComponent, {
+      width: '400px',
+      data: { categoryId: this.dynamicForm.form.value.category_id }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadExtrasByCategory(this.dynamicForm.form.value.category_id);
+      }
+    });
   }
 
   public onCancel(): void {

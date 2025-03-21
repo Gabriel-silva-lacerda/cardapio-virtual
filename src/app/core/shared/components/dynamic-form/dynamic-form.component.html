@@ -9,14 +9,12 @@
         id="{{ field.name }}" [type]="field.type" [formControlName]="field.name" class="input-primary py-3"
         [ngStyle]="{ 'padding': field.padding }"
         [ngClass]="{ 'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched }"
-        [mask]="field.mask || ''" (ngModelChange)="field.onChange && field.onChange($event, form)"  />
+        [mask]="field.mask || ''" (ngModelChange)="field.onChange && field.onChange($event, form)" />
 
-        <input
-        *ngIf="field.directive === 'onlyNumbers'"
-        id="{{ field.name }}" [type]="field.type" [formControlName]="field.name" class="input-primary py-3"
-        [ngStyle]="{ 'padding': field.padding }"
+      <input *ngIf="field.directive === 'onlyNumbers'" id="{{ field.name }}" [type]="field.type"
+        [formControlName]="field.name" class="input-primary py-3" [ngStyle]="{ 'padding': field.padding }"
         [ngClass]="{ 'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched }"
-        [mask]="field.mask || ''" (ngModelChange)="field.onChange && field.onChange($event, form)" onlyNumbers  />
+        [mask]="field.mask || ''" (ngModelChange)="field.onChange && field.onChange($event, form)" onlyNumbers />
 
       <input *ngIf="field.type === 'checkbox'" id="{{ field.name }}" type="checkbox" [formControlName]="field.name"
         class="input-primary py-3" (change)="field.onChange && field.onChange($event, form)" />
@@ -50,11 +48,17 @@
       </select>
 
       <div *ngIf="field.type === 'multiselect'" [matTooltip]="isDisabled[field.name] ? field.tooltip : ''"
-        class="w-full">
+        class="w-full relative">
         <p-multiSelect id="{{ field.name }}" [options]="field.options" optionLabel="label" optionValue="value"
           [formControlName]="field.name" placeholder="Selecione os itens"
-          class="input-primary py-1 px-0 outline-none focus:border border-gray-50 teste w-full"
+          class=" input-primary py-1 px-0 outline-none focus:border border-gray-50 teste w-full"
           [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"></p-multiSelect>
+
+        <button  *ngIf="showButton" type="button"
+          class="absolute cursor-pointer right-7 bg-primary px-3 py-1 rounded-md text-white mt-2 disabled:opacity-50"
+            (click)="field.onClick ? field.onClick() : null" [ngClass]="{ 'hidden': isDisabled[field.name] }">
+          +
+        </button>
       </div>
     </div>
 

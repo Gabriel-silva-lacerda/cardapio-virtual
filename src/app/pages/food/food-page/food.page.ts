@@ -28,7 +28,6 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
     FoodMenuComponent,
     HeaderPageComponent,
     KeyValuePipe,
-    LoadingComponent,
     SkeletonLoaderComponent,
     SkeletonFoodComponent
   ],

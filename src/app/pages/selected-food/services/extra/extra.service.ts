@@ -14,7 +14,6 @@ export class ExtraService extends BaseSupabaseService {
     if (extraIds.length === 0) return [];
 
     return this.getAllByFieldIn('extras', 'id', extraIds);
-
   }
 
   async getExtrasByCategory(categoryId: number): Promise<iExtra[]> {
@@ -26,4 +25,21 @@ export class ExtraService extends BaseSupabaseService {
       return this.getAllByFieldIn('extras', 'id', extraIds);
     });
   }
+
+  async addExtra(extra: {  name: string, price: number } , categoryId: number ): Promise<iExtra> {
+      const extraData = await this.insert<iExtra>('extras', {
+        name: extra.name,
+        price: extra.price,
+      });
+
+      const extraId = extraData.id;
+
+      await this.insert('category_extras', {
+        category_id: categoryId,
+        extra_id: extraId
+      });
+
+      return extraData;
+    }
+
 }

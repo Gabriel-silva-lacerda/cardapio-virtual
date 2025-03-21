@@ -4,36 +4,47 @@
   <div class="h-[70%] mt-10 px-3 pb-16">
     <div class="flex justify-between items-center mb-2">
       <span class="text-gray-500 text-xl block ">Categorias</span>
-      <a class="text-gray-500 py-2 text-text4" routerLink="categorias" [queryParams]="{ empresa: companyName() }">Ver mais +</a>
+      <a class="text-gray-500 py-2 text-text4" routerLink="categorias" [queryParams]="{ empresa: companyName() }">Ver
+        mais +</a>
     </div>
     <div class="flex gap-4 overflow-x-auto">
       @if(loadingService.loading()) {
-        @for (i of skeletonItems; track $index) {
-          <app-skeleton-loader>
-            <app-skeleton-categories customClass="px-10 py-4" />
-          </app-skeleton-loader>
-        }
+      @for (i of skeletonItems; track $index) {
+      <app-skeleton-loader>
+        <app-skeleton-categories customClass="px-10 py-4" />
+      </app-skeleton-loader>
+      }
 
       } @else {
-        @for (category of this.categories(); track $index) {
-          <app-categories [category]="category" customClass="py-3 px-4" />
-          } @empty {
-          <span>Sem Categorias para mostrar</span>
-        }
+      @for (category of this.categories(); track $index) {
+      <app-categories [category]="category" customClass="py-3 px-4" />
+      } @empty {
+      <span>Sem Categorias para mostrar</span>
+      }
       }
     </div>
 
-    <div>
+    <div  [ngClass]="{ 'mt-6': this.loadingService.loading()}">
+      @if (this.loadingService.loading()) {
+        <app-skeleton-loader >
+          @for (i of skeletonItems; track $index) {
+          <app-skeleton-food class="mt-6" [showTitle]="false"/>
+          }
+        </app-skeleton-loader>
+        } @else {
       <div class="flex justify-between items-center mt-2">
         <span class="text-gray-500 text-xl block my-2">Cardápio</span>
-        <a class="text-gray-500 py-2 text-text4" routerLink="comidas" [queryParams]="{ empresa: companyName() }">Ver mais +</a>
+        <a class="text-gray-500 py-2 text-text4" routerLink="comidas" [queryParams]="{ empresa: companyName() }">Ver
+          mais +</a>
       </div>
+
       @for (food of this.foods(); track $index) {
       <app-food-menu [food]="food" />
       } @empty {
       <span>
         Sem Comidas para mostrar
       </span>
+      }
       }
     </div>
   </div>

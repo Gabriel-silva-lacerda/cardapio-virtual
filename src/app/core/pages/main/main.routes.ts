@@ -27,7 +27,7 @@ export const mainRoutes: Routes = [
       {
         path: 'comida/:id',
         loadComponent: () =>
-          import('../../../pages/selected-category/food-page/food.page')
+          import('../../../pages/food/food-page/food.page')
             .then((m) => m.FoodPage),
       },
     ],
@@ -38,7 +38,7 @@ export const mainRoutes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('../../../pages/selected-category/food-page/food.page').then(
+          import('../../../pages/food/food-page/food.page').then(
             (m) => m.FoodPage
           ),
       },

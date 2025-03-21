@@ -1,6 +1,8 @@
-<div class="w-32 h-6 bg-gray-300 rounded mt-2 mb-2"></div>
+@if(showTitle) {
+  <div class="w-32 h-6 bg-gray-300 rounded my-2"></div>
+}
 
-<ul class="flex flex-col gap-6 ">
+<ul class="flex flex-col gap-6 " [ngClass]="{ 'mt-6': !showTitle}">
   <li class="flex h-[6.4rem] border rounded-md bg-gray-200 animate-pulse shadow-sm items-center gap-2 pe-2">
     <!-- Imagem Skeleton -->
     <div class="w-24 h-full bg-gray-300 border border-l rounded-md"></div>
