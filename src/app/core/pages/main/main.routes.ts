@@ -4,9 +4,7 @@ export const mainRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../../pages/home/home-page/home.page').then(
-        (m) => m.HomePage
-      ),
+      import('../../../pages/home/home-page/home.page').then((m) => m.HomePage),
   },
   {
     path: 'perfil',
@@ -21,14 +19,16 @@ export const mainRoutes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('../../../pages/categories/categories-page/categories.page')
-            .then((m) => m.CategoriesPage),
+          import(
+            '../../../pages/categories/categories-page/categories.page'
+          ).then((m) => m.CategoriesPage),
       },
       {
         path: 'comida/:id',
         loadComponent: () =>
-          import('../../../pages/food/food-page/food.page')
-            .then((m) => m.FoodPage),
+          import('../../../pages/food/food-page/food.page').then(
+            (m) => m.FoodPage
+          ),
       },
     ],
   },
@@ -45,37 +45,44 @@ export const mainRoutes: Routes = [
       {
         path: 'comida/:id',
         loadComponent: () =>
-          import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
-            (m) => m.SelectdFoodListPage
-          ),
+          import(
+            '../../../pages/food-view/food-view-page/food-view.page.'
+          ).then((m) => m.FoodViewPage),
       },
       {
         path: 'comida/:id/:itemId',
         loadComponent: () =>
-          import('../../../pages/selected-food/selected-food-list/selected-food-list.page').then(
-            (m) => m.SelectdFoodListPage
-          ),
+          import(
+            '../../../pages/food-view/food-view-page/food-view.page.'
+          ).then((m) => m.FoodViewPage),
       },
-    ]
+    ],
   },
 
   {
     path: 'cart',
     loadComponent: () =>
-      import('../../../pages/cart/cart-page/cart.page').then(
-        (m) => m.CartPage
-      ),
+      import('../../../pages/cart/cart-page/cart.page').then((m) => m.CartPage),
   },
   {
     path: 'sucesso-pagamento',
-    loadComponent: () => import('../successful-payment/successful-payment.page').then((m) => m.SuccessfulPaymentPage),
+    loadComponent: () =>
+      import('../successful-payment/successful-payment.page').then(
+        (m) => m.SuccessfulPaymentPage
+      ),
   },
   {
     path: 'pedente-pagamento',
-    loadComponent: () => import('../peding-payment/peding-payment.page').then((m) => m.PedingPaymentPage),
+    loadComponent: () =>
+      import('../peding-payment/peding-payment.page').then(
+        (m) => m.PedingPaymentPage
+      ),
   },
   {
     path: 'falha-pagamento',
-    loadComponent: () => import('../fail-payment/fail-payment.page').then((m) => m.FailPaymentPage),
+    loadComponent: () =>
+      import('../fail-payment/fail-payment.page').then(
+        (m) => m.FailPaymentPage
+      ),
   },
 ];

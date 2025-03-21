@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Company } from '@shared/interfaces/company';
-import { CheckoutService } from '@shared/services/checkout.service';
+import { StripeService } from '@shared/services/stripe/stripe.service';
 import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ToastrService } from 'ngx-toastr';
@@ -14,7 +14,7 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './successfull-payment-plan.page.scss'
 })
 export class SuccessfullPaymentPlanPage {
-  private checkoutService = inject(CheckoutService);
+  private stripeService = inject(StripeService);
   private companyService = inject(CompanyService);
   private route = inject(ActivatedRoute);
   private toastr = inject(ToastrService);
@@ -37,7 +37,7 @@ export class SuccessfullPaymentPlanPage {
           return;
         }
 
-        this.checkoutService.createConnectedAccount(company.email).pipe(takeUntil(this.destroy$))
+        this.stripeService.createConnectedAccount(company.email).pipe(takeUntil(this.destroy$))
           .subscribe({ next: (stripeResponse) => {
             this.createAccountLink(stripeResponse.accountId, company.name)
             this.localStorageService.setItem(`stripeAccountCreated-${companyId}`, true);
@@ -46,7 +46,7 @@ export class SuccessfullPaymentPlanPage {
   }
 
   createAccountLink(accountId: string, email: string) {
-    this.checkoutService.createAccountLink(accountId, email).pipe(takeUntil(this.destroy$))
+    this.stripeService.createAccountLink(accountId, email).pipe(takeUntil(this.destroy$))
       .subscribe({ next: (accountLink) =>  window.location.href = accountLink.url });
   }
 

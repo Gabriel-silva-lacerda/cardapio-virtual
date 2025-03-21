@@ -4,10 +4,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
+import { ExtraService } from '@shared/services/extra/extra.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ToastrService } from 'ngx-toastr';
-import { ExtraService } from 'src/app/pages/selected-food/services/extra/extra.service';
 
 @Component({
   selector: 'app-add-extra-dialog',

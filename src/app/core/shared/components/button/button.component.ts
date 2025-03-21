@@ -11,7 +11,6 @@ import { LoadingComponent } from '../loading/loading.component';
 export class ButtonComponent {
   @Input() customClass!: string;
   @Input() isLoading: boolean = false;
-  @Input() form: any;
   @Input() isCanceled: boolean = false;
   @Input() label?: string;
   @Input() disabled: boolean = false;

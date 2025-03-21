@@ -16,8 +16,6 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { ImageService } from '@shared/services/image/image.service';
 import { iCategory } from '../../../home/interfaces/category.interface';
 import { CategoryService } from '../../../home/services/category.service';
-import { iExtra } from '../../../selected-food/interfaces/extra.interface';
-import { ExtraService } from '../../../selected-food/services/extra/extra.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { Subject } from 'rxjs';
@@ -25,6 +23,7 @@ import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.component';
 import { iFood } from '@shared/interfaces/food.interface';
+import { ExtraService } from '@shared/services/extra/extra.service';
 
 @Component({
   selector: 'app-add-edit-item-dialog',

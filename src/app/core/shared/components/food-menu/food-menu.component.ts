@@ -53,7 +53,7 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   @Input() isInCart = false;
   @Input() showItem = false;
   @Output() editItem = new EventEmitter<number>();
-  @Output() deleteItem = new EventEmitter<any>();
+  @Output() deleteItem = new EventEmitter<iFoodDetails>();
 
   private foodService = inject(FoodService);
   private cachedFoodDetails: iFoodDetails | null = null;
@@ -64,7 +64,7 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   public tooltipMessage: string = '';
   public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
   public isAdmin = this.authService.isAdmin;
-  
+
   ngOnInit(): void {
     this.updateTooltipMessage();
   }
@@ -109,6 +109,6 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   }
 
   public remove(food: iFoodDetails | null) {
-    this.deleteItem.emit(food);
+    this.deleteItem.emit(food as iFoodDetails);
   }
 }

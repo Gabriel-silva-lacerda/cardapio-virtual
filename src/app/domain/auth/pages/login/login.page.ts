@@ -124,6 +124,9 @@ export class LoginPage {
       return;
     }
 
+    const isAdmin = userCompany.role === 'admin';
+    this.authService.isAdmin.set(isAdmin);
+
     const firstLogin = userData.user.user_metadata?.['first_login'];
     this.authService.isLogged.set(true);
     this.loadingService.hideLoading();

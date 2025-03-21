@@ -26,6 +26,7 @@
     "baseUrl": "./",
     "paths": {
       "@shared/*": ["src/app/core/shared/*"],
+      "@enviroment/*": ["src/environments/*"],
     }
   },
   "angularCompilerOptions": {

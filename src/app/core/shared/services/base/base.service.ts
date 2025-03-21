@@ -3,8 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
-import { environment } from 'src/environments/environment.development';
 import { LoadingService } from '../loading/loading.service';
+import { environment } from '@enviroment/environment.development';
 
 @Injectable({
   providedIn: 'root',

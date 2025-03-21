@@ -1,14 +1,13 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { Injectable } from '@angular/core';
-import { BaseService } from './base/base.service';
-import { environment } from 'src/environments/environment.development';
 import { Observable } from 'rxjs';
-import { Company } from '@shared/interfaces/company';
+import { BaseService } from '../base/base.service';
+import { environment } from '@enviroment/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CheckoutService extends BaseService{
+export class StripeService extends BaseService{
   private stripePromise = loadStripe(environment.STRIPE_KEY);
 
   async createCheckoutSession(priceId: string, companyId: number | undefined) {
@@ -22,7 +21,7 @@ export class CheckoutService extends BaseService{
         if (result.error) {
           console.error(result.error.message);
         }
-      });
+    });
   }
 
   createConnectedAccount(email: string): Observable<{ accountId: string }> {

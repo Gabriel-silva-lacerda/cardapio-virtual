@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 import { iFood } from '@shared/interfaces/food.interface';
-import { environment } from 'src/environments/environment.development';
 import { BaseSupabaseService } from '../base/base-supabase.service';
-import { iExtra } from 'src/app/pages/selected-food/interfaces/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart.interface';
+import { iFoodWithCategory } from 'src/app/pages/home/interfaces/food-with-category';
+import { environment } from '@enviroment/environment.development';
+import { iExtra } from '@shared/interfaces/extra.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,11 +16,11 @@ export class FoodService extends BaseSupabaseService {
   public totalAddition = signal<number>(0);
 
   async getAllFoodsGroupedByCategory(companyId: number): Promise<{ [categoryName: string]: iFood[] }> {
-    const data = await this.getAllByField<iFood>('foods', 'company_id', companyId, '*, categories(name)');
+    const data = await this.getAllByField<iFoodWithCategory>('foods', 'company_id', companyId, '*, categories(name)');
 
     const groupedFoods: Record<string, iFood[]> = {};
 
-    data.forEach((food: any) => {
+    data.forEach((food) => {
       const categoryName = food.categories?.name || 'Outros';
 
       if (!groupedFoods[categoryName]) {
@@ -84,7 +85,7 @@ export class FoodService extends BaseSupabaseService {
     }));
   }
 
-  async createFoodWithExtras(foodData: any, extraIds: number[]) {
+  async createFoodWithExtras(foodData: iFood, extraIds: number[]): Promise<iFood> {
     const food = await this.insert<iFood>('foods', foodData);
 
     if (extraIds.length > 0) {
@@ -99,8 +100,8 @@ export class FoodService extends BaseSupabaseService {
     return food;
   }
 
-  async updateFoodWithExtras(foodId: number, foodData: any, extraIds: number[]) {
-    await this.update<any>('foods', foodId, foodData);
+  async updateFoodWithExtras(foodId: number, foodData: iFood, extraIds: number[]): Promise<void> {
+    await this.update<iFood>('foods', foodId, foodData);
 
     await this.deleteByFilter('food_extras', { food_id: foodId });
 
@@ -135,12 +136,7 @@ export class FoodService extends BaseSupabaseService {
     };
   }
 
-  private updateFoodImageUrl(food: iFood): iFood {
-    return {
-      ...food,
-      image_url: food.image_url
-        ? `${environment.SUPABASE_URL}/${food.image_url}`
-        : null,
-    };
+  private getImageUrl(food: iFood): string | null {
+    return food.image_url ? `${environment.SUPABASE_STORAGE}/${food.image_url}` : null;
   }
 }

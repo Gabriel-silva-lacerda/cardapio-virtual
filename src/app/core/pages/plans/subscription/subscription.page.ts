@@ -1,5 +1,5 @@
 import cepPromise from 'cep-promise';
-import { Component, computed, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
@@ -13,9 +13,9 @@ import { ToastrService } from 'ngx-toastr';
 import { PaymentService } from 'src/app/pages/cart/services/payment.service';
 import { SubscriptonService } from '@shared/services/subscription/subscripton.service';
 import { EmailService } from '@shared/services/email.service';
-import { CheckoutService } from '@shared/services/checkout.service';
 import { JsonPipe } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { StripeService } from '@shared/services/stripe/stripe.service';
 
 @Component({
   selector: 'app-subscription',
@@ -30,7 +30,7 @@ export class SubscriptionPage {
   private toastr = inject(ToastrService);
   private paymentService = inject(PaymentService);
   private subscriptionService = inject(SubscriptonService);
-  private checkoutService = inject(CheckoutService);
+  private stripeService = inject(StripeService);
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
@@ -213,6 +213,6 @@ export class SubscriptionPage {
     console.log(data.company);
 
     if(data.company)
-    this.checkoutService.createCheckoutSession(this.plan().price_id, data?.company.id);
+    this.stripeService.createCheckoutSession(this.plan().price_id, data?.company.id);
   }
 }

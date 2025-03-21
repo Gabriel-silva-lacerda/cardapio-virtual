@@ -5,6 +5,4 @@ import { BaseSupabaseService } from '../base/base-supabase.service';
   providedIn: 'root'
 })
 export class CompanyService extends BaseSupabaseService {
-  public companyName = signal('');
-  // constructor() { }
 }
