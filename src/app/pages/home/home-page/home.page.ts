@@ -8,7 +8,7 @@ import { CategoryService } from '../services/category.service';
 import { iCategory } from '../interfaces/category.interface';
 import { iFood } from '@shared/interfaces/food.interface';
 import { CompanyService } from '@shared/services/company/company.service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { LoadingService } from '@shared/services/loading/loading.service';
@@ -37,6 +37,7 @@ import { NgClass } from '@angular/common';
 })
 export class HomePage implements OnInit {
   private localStorageService = inject(LocalStorageService);
+  private route = inject(ActivatedRoute);
 
   public loadingService = inject(LoadingService);
   public foodService = inject(FoodService);

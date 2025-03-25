@@ -47,8 +47,12 @@ export class FooterComponent implements OnInit, OnDestroy {
         { path: 'pedidos', label: 'Pedidos' }
       );
     } else {
+      console.log("aqui");
+
       baseLinks.push({ path: '/auth', label: 'Fazer login' });
     }
+
+    console.log(baseLinks);
 
     return baseLinks;
   }

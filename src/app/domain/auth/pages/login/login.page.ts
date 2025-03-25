@@ -84,7 +84,6 @@ export class LoginPage {
     }
 
     const companyId = company.id;
-    this.localStorageService.setItem("companyId", companyId);
 
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
 

@@ -13,13 +13,13 @@ import { ToastrService } from 'ngx-toastr';
 import { PaymentService } from 'src/app/pages/cart/services/payment.service';
 import { SubscriptonService } from '@shared/services/subscription/subscripton.service';
 import { EmailService } from '@shared/services/email.service';
-import { JsonPipe } from '@angular/common';
+import { CurrencyPipe, JsonPipe } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { StripeService } from '@shared/services/stripe/stripe.service';
 
 @Component({
   selector: 'app-subscription',
-  imports: [DynamicFormComponent, FormsModule, LoadingComponent],
+  imports: [DynamicFormComponent, FormsModule, LoadingComponent, CurrencyPipe],
   templateUrl: './subscription.page.html',
   styleUrl: './subscription.page.scss',
 })
@@ -186,33 +186,33 @@ export class SubscriptionPage {
 
   async onSubmit() {
     // if (this.dynamicForm.form.valid) {
-    const formData = this.dynamicForm.form.getRawValue();
+    // const formData = this.dynamicForm.form.getRawValue();
 
-    // Exemplo de dados capturados
-    const companyData = {
-      fullName: formData.fullName,
-      name: formData.name,
-      email: formData.email,
-      cep: formData.cep,
-      street: formData.street,
-      number: formData.number,
-      neighborhood: formData.neighborhood,
-      complement: formData.complement,
-      city: formData.city,
-      state: formData.state,
-      plan_id: this.plan().id,
-    };
-    console.log(companyData);
+    // // Exemplo de dados capturados
+    // const companyData = {
+    //   fullName: formData.fullName,
+    //   name: formData.name,
+    //   email: formData.email,
+    //   cep: formData.cep,
+    //   street: formData.street,
+    //   number: formData.number,
+    //   neighborhood: formData.neighborhood,
+    //   complement: formData.complement,
+    //   city: formData.city,
+    //   state: formData.state,
+    //   plan_id: this.plan().id,
+    // };
+    // console.log(companyData);
 
-    const data = await this.subscriptionService.registerCompanyWithSubscription(companyData);
+    // const data = await this.subscriptionService.registerCompanyWithSubscription(companyData);
 
-    if(!data.success) {
-      console.log(data.message);
-    }
+    // if(!data.success) {
+    //   console.log(data.message);
+    // }
 
-    console.log(data.company);
+    // console.log(data.company);
 
-    if(data.company)
-    this.stripeService.createCheckoutSession(this.plan().price_id, data?.company.id);
+    // if(data.company)
+    this.stripeService.createCheckoutSession(this.plan().price_id, 25);
   }
 }

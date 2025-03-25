@@ -11,25 +11,28 @@ export class StripeService extends BaseService{
   private stripePromise = loadStripe(environment.STRIPE_KEY);
 
   async createCheckoutSession(priceId: string, companyId: number | undefined) {
-    this.post<{ sessionId: string }>({ priceId, companyId },  'Payment/create-checkout-session')
+    this.post<{ sessionId: string }>({ priceId, companyId }, 'payment/create-checkout-session')
       .subscribe(async (response) => {
         const stripe = await this.stripePromise;
         const { sessionId } = response;
+
+        console.log("sessionId recebido:", sessionId); // Depuração para verificar o valor do sessionId
 
         const result = await stripe!.redirectToCheckout({ sessionId });
 
         if (result.error) {
           console.error(result.error.message);
         }
-    });
+      });
   }
 
+
   createConnectedAccount(email: string): Observable<{ accountId: string }> {
-    return this.post<{ accountId: string }>({ email }, 'Payment/create-connected-account');
+    return this.post<{ accountId: string }>({ email }, 'payment/create-connected-account');
   }
 
   createAccountLink(accountId: string, companyName: string): Observable<{ url: string }> {
-    return this.post<{ url: string }>({ accountId, companyName }, 'Payment/create-account-link');
+    return this.post<{ url: string }>({ accountId, companyName }, 'payment/create-account-link');
   }
 
 }

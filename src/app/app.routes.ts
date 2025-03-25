@@ -39,7 +39,7 @@ export const routes: Routes = [
     path: 'app',
     loadComponent: () =>
       import('./core/pages/main/main.component').then((m) => m.MainComponent),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, AuthParamGuard],
     children: [
       {
         path: '',

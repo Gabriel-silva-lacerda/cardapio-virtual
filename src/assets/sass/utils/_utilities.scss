@@ -8,14 +8,14 @@
 .button-primary {
   @apply
   bg-primary
-  w-full 
+  w-full
   py-3
   rounded-lg
   text-white cursor-pointer
   transition-all duration-300
   ease-in-out
   hover:bg-primary-light
-  flex items-center justify-center gap-2;
+  flex items-center justify-center gap-2 text-title5;
 
   &:disabled {
     @apply bg-gray-300 cursor-not-allowed;

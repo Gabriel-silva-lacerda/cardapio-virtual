@@ -4,4 +4,6 @@ export interface Plans {
   price: number;
   description: string;
   price_id: string;
+  recursos: string[];
+  limitacoes: string[];
 }

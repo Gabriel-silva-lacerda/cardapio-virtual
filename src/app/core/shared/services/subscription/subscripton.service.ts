@@ -126,32 +126,4 @@ export class SubscriptonService extends BaseSupabaseService {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
   }
-
-  // public async sendWelcomeEmail(company: any, password: string) {
-  //   const companyUrl = `http://localhost:4200/auth?empresa=${company.unique_url}`;
-  //   const emailMessage = `
-  //     <h2>Bem-vindo ao nosso sistema!</h2>
-  //     <p>Olá, ${company.name}!</p>
-  //     <p>Seu plano foi ativado com sucesso.</p>
-  //     <p>Aqui estão os detalhes do seu login:</p>
-  //     <ul>
-  //       <li><strong>Email:</strong> ${company.email}</li>
-  //       <li><strong>Senha:</strong> ${password}</li> <!-- Inclui a senha no e-mail -->
-  //       <li><strong>Link de acesso:</strong> <a href="${companyUrl}">${companyUrl}</a></li>
-  //     </ul>
-  //     <p>Faça login diretamente no seu painel!</p>
-  //   `;
-
-  //   try {
-  //     await this.emailService.sendEmail(
-  //       company,
-  //       password,
-  //       companyUrl
-  //     );
-  //     console.log('E-mail de boas-vindas enviado com sucesso.');
-  //   } catch (error) {
-  //     console.error('Erro ao enviar e-mail de boas-vindas:', error);
-  //     throw new Error('Erro ao enviar e-mail de boas-vindas.');
-  //   }
-  // }
 }

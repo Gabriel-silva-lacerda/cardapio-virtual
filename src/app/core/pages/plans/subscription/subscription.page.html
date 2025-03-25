@@ -1,17 +1,28 @@
-<div class="px-3 py-2">
-  <app-dynamic-form [fields]="addressFields" />
-
-  <div class="flex flex-col">
-    <span>{{ plan().name }}</span>
-    <span>{{ plan().price }}</span>
-
+<div class="bg-[#fff] shadow-lg rounded-xl overflow-hidden border border-gray-200">
+  <!-- Cabeçalho com nome e preço -->
+  <div class="bg-primary  py-4 px-6 border-b border-primary-dark flex justify-between items-center">
+    <span class="text-title4 font-semibold text-white">
+      {{ plan().name }}
+    </span>
+    <span class="text-title5 font-semibold text-white">
+      {{ plan().price | currency: 'BRL' }}
+    </span>
   </div>
 
-  <button class="button-primary text-text4" (click)="onSubmit()" [disabled]="loadingService.loading()">
-    <!-- [disabled]="isButtonDisabled" -->
+  <!-- Conteúdo -->
+  <div class="px-6 py-6  border">
+    <app-dynamic-form [fields]="addressFields"></app-dynamic-form>
+
+    <!-- Botão -->
+    <button
+      class="button-primary w-full mt-6 flex items-center justify-center py-3 rounded-lg text-white font-semibold "
+      (click)="onSubmit()"
+      [disabled]="loadingService.loading()">
+
       @if(loadingService.loading()) {
-        <app-loading />
+        <app-loading class="mr-2"></app-loading>
       }
-    Finalizar compra
-  </button>
+      Finalizar compra
+    </button>
+  </div>
 </div>

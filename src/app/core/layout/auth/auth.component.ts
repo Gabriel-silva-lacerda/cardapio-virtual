@@ -21,9 +21,6 @@ export class AuthComponent  {
     this.route.queryParams.subscribe((params) => {
       const paramCompanyName = params['empresa'];
       this.companyName = paramCompanyName.charAt(0).toUpperCase() + paramCompanyName.slice(1).toLowerCase();
-      if (this.companyName) {
-        this.localStorageService.setItem('companyName', paramCompanyName);
-      }
     });
   }
 }

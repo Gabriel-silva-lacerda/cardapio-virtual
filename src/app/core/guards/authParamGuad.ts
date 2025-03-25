@@ -2,13 +2,16 @@ import { inject, Injectable } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
 import { Company } from "@shared/interfaces/company";
 import { CompanyService } from "@shared/services/company/company.service";
+import { LoadingService } from "@shared/services/loading/loading.service";
+import { LocalStorageService } from "@shared/services/localstorage/localstorage.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthParamGuard implements CanActivate {
   private companyService = inject(CompanyService);
-  constructor(private router: Router) {}
+  private router = inject(Router);
+  private localStorageService = inject(LocalStorageService);
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     const empresa = route.queryParams['empresa'];
@@ -19,9 +22,11 @@ export class AuthParamGuard implements CanActivate {
     }
 
     try {
-      // Verifica se a empresa existe no Supabase pela unique_url
       const company = await this.companyService.getByField<Company>('companies', 'unique_url', empresa, 'id');
       if (company) {
+        this.localStorageService.setItem('companyName', empresa);
+        this.localStorageService.setItem("companyId", company.id);
+
         return true;
       } else {
         this.router.navigate(['/']);
