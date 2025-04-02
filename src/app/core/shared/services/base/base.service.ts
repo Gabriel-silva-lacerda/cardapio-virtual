@@ -13,7 +13,7 @@ export abstract class BaseService {
   protected http: HttpClient = inject(HttpClient);
   protected toastr: ToastrService = inject(ToastrService);
   protected apiUrl: string = environment.API_URL;
-  private loadingService = inject(LoadingService);
+  protected loadingService = inject(LoadingService);
 
   // Método genérico para GET (buscar todos os itens)
   get<T>(path?: string): Observable<T[]> {

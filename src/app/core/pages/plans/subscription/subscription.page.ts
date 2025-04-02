@@ -4,33 +4,32 @@ import { FormGroup, FormsModule, Validators } from '@angular/forms';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { debounceTime, firstValueFrom, Subject, takeUntil } from 'rxjs';
-import { BRAZILIAN_STATES } from 'src/app/pages/cart/components/payment-address-dialog/payment-address-dialog.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PlansService } from '@shared/services/plans/plans.service';
 import { Plans } from '@shared/interfaces/plans.interface';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
-import { PaymentService } from 'src/app/pages/cart/services/payment.service';
-import { SubscriptonService } from '@shared/services/subscription/subscripton.service';
-import { EmailService } from '@shared/services/email.service';
-import { CurrencyPipe, JsonPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { StripeService } from '@shared/services/stripe/stripe.service';
+import { Company } from '@shared/interfaces/company';
+import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
+import { fade } from '@shared/utils/animations.utils';
 
 @Component({
   selector: 'app-subscription',
-  imports: [DynamicFormComponent, FormsModule, LoadingComponent, CurrencyPipe],
+  imports: [DynamicFormComponent, FormsModule, LoadingComponent, CurrencyPipe, RouterLink],
   templateUrl: './subscription.page.html',
   styleUrl: './subscription.page.scss',
+  animations: [fade],
 })
 export class SubscriptionPage {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private route = inject(ActivatedRoute);
   private plansService = inject(PlansService);
   private toastr = inject(ToastrService);
-  private paymentService = inject(PaymentService);
-  private subscriptionService = inject(SubscriptonService);
   private stripeService = inject(StripeService);
+  private planId!: number | string | null;
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
@@ -107,38 +106,43 @@ export class SubscriptionPage {
       name: 'city',
       label: 'Cidade',
       type: 'text',
-      // options: BRAZILIAN_STATES,
       validators: [Validators.required],
       padding: '10px',
     },
     {
       name: 'state',
       label: 'Estado',
-      type: 'text',
+      type: 'select',
+      options: BRAZILIAN_STATES,
       validators: [Validators.required],
       padding: '10px',
     },
   ];
 
-  planId!: number | string | null;
-  plan = signal<Plans>({} as Plans);
+  public plan = signal<Plans>({} as Plans);
 
   async ngOnInit() {
-    this.cepSubject
-      .pipe(debounceTime(500), takeUntil(this.destroy$))
-      .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
+    this.getCep();
 
     const params = await firstValueFrom(this.route.paramMap);
     this.planId = params.get('id');
     if (this.planId) this.getPlanById(this.planId);
   }
 
+  private getCep() {
+    this.cepSubject
+      .pipe(debounceTime(500), takeUntil(this.destroy$))
+      .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
+  }
+
   async getPlanById(planId: string) {
-    const plan = await this.plansService.getByField<Plans>('plans', 'id', +planId);
+    const plan = await this.plansService.getByField<Plans>(
+      'plans',
+      'id',
+      planId
+    );
 
     this.plan.set(plan as unknown as Plans);
-    console.log(this.plan());
-
   }
 
   async searchCep(value: string, form: FormGroup) {
@@ -185,34 +189,34 @@ export class SubscriptionPage {
   }
 
   async onSubmit() {
-    // if (this.dynamicForm.form.valid) {
-    // const formData = this.dynamicForm.form.getRawValue();
+    if (!this.dynamicForm.form.valid) {
+      return;
+    }
 
-    // // Exemplo de dados capturados
-    // const companyData = {
-    //   fullName: formData.fullName,
-    //   name: formData.name,
-    //   email: formData.email,
-    //   cep: formData.cep,
-    //   street: formData.street,
-    //   number: formData.number,
-    //   neighborhood: formData.neighborhood,
-    //   complement: formData.complement,
-    //   city: formData.city,
-    //   state: formData.state,
-    //   plan_id: this.plan().id,
-    // };
-    // console.log(companyData);
+    try {
+      const formData = this.dynamicForm.form.getRawValue();
 
-    // const data = await this.subscriptionService.registerCompanyWithSubscription(companyData);
+      const companyData: Company = {
+        name: formData.name,
+        email: formData.email,
+        cep: formData.cep,
+        street: formData.street,
+        number: formData.number,
+        neighborhood: formData.neighborhood,
+        complement: formData.complement,
+        city: formData.city,
+        state: formData.state,
+        plan_id: this.plan().id,
+      };
 
-    // if(!data.success) {
-    //   console.log(data.message);
-    // }
-
-    // console.log(data.company);
-
-    // if(data.company)
-    this.stripeService.createCheckoutSession(this.plan().price_id, 25);
+      await this.stripeService.createCheckoutSession(
+        this.plan().price_id,
+        companyData,
+        formData.fullName,
+        this.plan().id
+      );
+    } catch (error) {
+      console.error('Erro ao processar o cadastro:', error);
+    }
   }
 }

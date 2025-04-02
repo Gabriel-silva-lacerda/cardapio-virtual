@@ -6,10 +6,11 @@ import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, takeUntil } from 'rxjs';
+import { PaymentComponent } from '@shared/components/payment/payment.component';
 
 @Component({
   selector: 'app-successfull-payment-plan',
-  imports: [RouterLink],
+  imports: [RouterLink, PaymentComponent],
   templateUrl: './successfull-payment-plan.page.html',
   styleUrl: './successfull-payment-plan.page.scss'
 })

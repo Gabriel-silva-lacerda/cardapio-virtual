@@ -1,3 +1,9 @@
-<h1>Pagamento foi realizado com sucesso!</h1>
-<h1>Verifique sua caixa de e-mail ou spam!</h1>
-<button routerLink="/planos">Voltar para os planos</button>
+<app-payment backText="Voltar para os planos" link="/planos" paymentText="Pagamento Aprovado">
+  <p class="text-gray-600 text-lg mb-1">Obrigado por sua compra.</p>
+  <p class="text-gray-600 text-lg mb-1">Verifique sua caixa de entrada.</p>
+  <div class="mt-6 pt-6 border-t border-gray-200">
+    </div>
+  <p class="text-gray-600 text-lg mb-4">Não esqueça de conectar a sua conta na stripe para receber os pagamentos!
+    <span role="img" aria-label="party emoji" class="text-2xl"> 😉 </span>
+  </p>
+</app-payment>

@@ -16,12 +16,6 @@ import { PaymentComponent } from '../payment/payment.component';
 import { iCartItem } from '@shared/interfaces/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';
 
-export const BRAZILIAN_STATES = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-];
-
 @Component({
   selector: 'app-payment-address-dialog',
   imports: [FormsModule, DynamicFormComponent, LoadingComponent, MatTooltipModule, PaymentComponent],

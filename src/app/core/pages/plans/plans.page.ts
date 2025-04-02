@@ -3,12 +3,14 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Plans } from '@shared/interfaces/plans.interface';
 import { PlansService } from '@shared/services/plans/plans.service';
+import { fade } from '@shared/utils/animations.utils';
 
 @Component({
   selector: 'app-plans',
   imports: [NgClass, NgIf],
   templateUrl: './plans.page.html',
-  styleUrl: './plans.page.scss'
+  styleUrl: './plans.page.scss',
+  animations: [fade]
 })
 export class PlansPage implements OnInit {
   private plansService = inject(PlansService);

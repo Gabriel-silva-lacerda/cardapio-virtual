@@ -1,6 +1,5 @@
-<div class="bg-gray-100 min-h-screen pb-10">
-  <!-- Header -->
-  <header class="flex justify-between items-center bg-primary-rose-soft px-4 py-3 w-full  fixed top-0">
+<div class="bg-gray-100 min-h-screen pb-10" [@fade]>
+  <header class="flex justify-between items-center bg-primary-rose-soft px-4 py-2 w-full  fixed top-0">
     <span class="text-primary-dark font-semibold">
       <img src="assets/images/logos/logo.png" alt="Cardápio digital"
         class="max-w-full w-20 sm:w-3/4 md:w-28 rounded-2xl ">
@@ -16,7 +15,6 @@
     (click)="closeMenu($event)">
   </div>
 
-  <!-- Menu Lateral -->
   <div class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 z-50"
     [ngClass]="{ 'translate-x-0': menuOpen, 'translate-x-full': !menuOpen }">
     <div class="flex justify-end w-full">
@@ -29,7 +27,6 @@
     </nav>
   </div>
 
-  <!-- Hero Section -->
   <div class="bg-primary-rose-soft text-primary-dark py-32 px-6 text-center flex flex-col items-center">
     <h2 class="text-title3 font-bold">
       Digitalize seu cardápio e aumente suas vendas!
@@ -38,20 +35,17 @@
       Tenha um cardápio online moderno e fácil de acessar. Seu cliente escolhe e pede sem complicação!
     </p>
 
-    <!-- Botão para rolar até os planos -->
     <a class="mt-6 bg-primary text-white font-semibold px-6 py-3 rounded-lg text-title6 shadow-lg hover:bg-primary-dark transition cursor-pointer"
       (click)="scrollToPlans()">
       Escolher um Plano ↓
     </a>
 
-    <!-- Imagem -->
     <div class="mt-8 flex justify-center">
       <img src="assets/images/lading-page/online-menu.png" alt="Cardápio digital"
         class="max-w-full w-[100%] sm:w-3/4 md:w-1/2 rounded-2xl ">
     </div>
   </div>
 
-  <!-- Planos -->
   <section id="plansSection" class="px-4 mt-10">
     <h1 class="text-primary-dark text-center text-title4">Escolha o plano ideal para o seu negócio</h1>
     <p class="text-center text-gray-600 text-text5 mt-2">

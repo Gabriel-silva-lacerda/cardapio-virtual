@@ -1,5 +1,4 @@
-<div class="bg-[#fff] shadow-lg rounded-xl overflow-hidden border border-gray-200">
-  <!-- Cabeçalho com nome e preço -->
+<div class="bg-[#fff] shadow-lg rounded-xl overflow-hidden border border-gray-200" [@fade]>
   <div class="bg-primary  py-4 px-6 border-b border-primary-dark flex justify-between items-center">
     <span class="text-title4 font-semibold text-white">
       {{ plan().name }}
@@ -9,20 +8,24 @@
     </span>
   </div>
 
-  <!-- Conteúdo -->
   <div class="px-6 py-6  border">
-    <app-dynamic-form [fields]="addressFields"></app-dynamic-form>
+    <app-dynamic-form #formSubcription [fields]="addressFields"></app-dynamic-form>
 
-    <!-- Botão -->
     <button
-      class="button-primary w-full mt-6 flex items-center justify-center py-3 rounded-lg text-white font-semibold "
-      (click)="onSubmit()"
-      [disabled]="loadingService.loading()">
+      class="button-primary w-full mt-3 flex items-center justify-center py-3 rounded-lg text-white font-semibold "
+      (click)="onSubmit()" [disabled]="loadingService.loading() || formSubcription?.form?.invalid ">
 
       @if(loadingService.loading()) {
-        <app-loading class="mr-2"></app-loading>
+      <app-loading class="mr-2"></app-loading>
       }
       Finalizar compra
+    </button>
+
+    <button
+      class="bg-transparent text-title5 border text-primary w-full mt-3 flex items-center justify-center py-3 rounded-lg font-semibold hover:bg-none"
+      routerLink="/planos"
+      >
+      Voltar
     </button>
   </div>
 </div>
