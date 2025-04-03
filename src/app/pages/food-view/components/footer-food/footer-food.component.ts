@@ -10,11 +10,14 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { iFood } from '@shared/interfaces/food.interface';
+import { iFood } from '@shared/interfaces/food/food.interface';
 import { FoodService } from '@shared/services/food/food.service';
 import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../services/cart/cart.service';
-import { getCurrentDayOfWeek, getUnavailableItemMessage } from '@shared/utils/day.utils';
+import {
+  getCurrentDayOfWeek,
+  getUnavailableItemMessage,
+} from '@shared/utils/day.utils';
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltip } from '@angular/material/tooltip';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
@@ -37,7 +40,10 @@ export class FooterFoodComponent implements OnInit, OnChanges {
   private cartService = inject(CartService);
   private localStorageService = inject(LocalStorageService);
 
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
   public selectedAdditions = this.foodService.selectedAdditions;
   public observations = this.foodService.observations;
   public productCount = this.foodService.productCount;
@@ -115,7 +121,7 @@ export class FooterFoodComponent implements OnInit, OnChanges {
     });
 
     this.router.navigate([this.newItem ? '/app' : '/app/cart'], {
-      queryParams: { empresa: this.companyName() }
+      queryParams: { empresa: this.companyName() },
     });
   }
 }

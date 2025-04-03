@@ -1,10 +1,10 @@
 import { Injectable, signal } from '@angular/core';
-import { iFood } from '@shared/interfaces/food.interface';
+import { iFood } from '@shared/interfaces/food/food.interface';
 import { BaseSupabaseService } from '../base/base-supabase.service';
-import { iCartItem } from '@shared/interfaces/cart.interface';
 import { iFoodWithCategory } from 'src/app/pages/home/interfaces/food-with-category';
 import { environment } from '@enviroment/environment.development';
-import { iExtra } from '@shared/interfaces/extra.interface';
+import { iExtra } from '@shared/interfaces/extra/extra.interface';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,8 +15,15 @@ export class FoodService extends BaseSupabaseService {
   public productCount = signal<number>(1);
   public totalAddition = signal<number>(0);
 
-  async getAllFoodsGroupedByCategory(companyId: number): Promise<{ [categoryName: string]: iFood[] }> {
-    const data = await this.getAllByField<iFoodWithCategory>('foods', 'company_id', companyId, '*, categories(name)');
+  async getAllFoodsGroupedByCategory(
+    companyId: number
+  ): Promise<{ [categoryName: string]: iFood[] }> {
+    const data = await this.getAllByField<iFoodWithCategory>(
+      'foods',
+      'company_id',
+      companyId,
+      '*, categories(name)'
+    );
 
     const groupedFoods: Record<string, iFood[]> = {};
 
@@ -39,20 +46,20 @@ export class FoodService extends BaseSupabaseService {
   }
 
   async getFoodsByCompany(companyId: number): Promise<iFood[]> {
-      const foods = await this.getAllByField<iFood>(
-        'foods',
-        'company_id',
-        companyId
-      );
+    const foods = await this.getAllByField<iFood>(
+      'foods',
+      'company_id',
+      companyId
+    );
 
-      const updatedFoods = foods.map((food) => ({
-        ...food,
-        image_url: food.image_url
-          ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-          : null,
-      }));
+    const updatedFoods = foods.map((food) => ({
+      ...food,
+      image_url: food.image_url
+        ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
+        : null,
+    }));
 
-      return updatedFoods;
+    return updatedFoods;
   }
 
   async getFoodById(id: string): Promise<iFood | null> {
@@ -63,12 +70,15 @@ export class FoodService extends BaseSupabaseService {
     return {
       ...food,
       image_url: food.image_url
-      ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-      : null,
+        ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
+        : null,
     };
   }
 
-  async getFoodsByCategory(categoryId: number, companyId: number): Promise<iFood[] | null> {
+  async getFoodsByCategory(
+    categoryId: number,
+    companyId: number
+  ): Promise<iFood[] | null> {
     const foods = await this.supabaseService.supabase
       .from('foods')
       .select('*')
@@ -85,7 +95,10 @@ export class FoodService extends BaseSupabaseService {
     }));
   }
 
-  async createFoodWithExtras(foodData: iFood, extraIds: number[]): Promise<iFood> {
+  async createFoodWithExtras(
+    foodData: iFood,
+    extraIds: number[]
+  ): Promise<iFood> {
     const food = await this.insert<iFood>('foods', foodData);
 
     if (extraIds.length > 0) {
@@ -100,7 +113,11 @@ export class FoodService extends BaseSupabaseService {
     return food;
   }
 
-  async updateFoodWithExtras(foodId: number, foodData: iFood, extraIds: number[]): Promise<void> {
+  async updateFoodWithExtras(
+    foodId: number,
+    foodData: iFood,
+    extraIds: number[]
+  ): Promise<void> {
     await this.update<iFood>('foods', foodId, foodData);
 
     await this.deleteByFilter('food_extras', { food_id: foodId });
@@ -137,6 +154,8 @@ export class FoodService extends BaseSupabaseService {
   }
 
   private getImageUrl(food: iFood): string | null {
-    return food.image_url ? `${environment.SUPABASE_STORAGE}/${food.image_url}` : null;
+    return food.image_url
+      ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
+      : null;
   }
 }

@@ -1,4 +1,4 @@
-import { iCartItem } from "@shared/interfaces/cart.interface";
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 export const transformCartItemsToOrderItems = (cartItems: any[]) => {
   return cartItems.map((item) => ({

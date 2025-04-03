@@ -1,0 +1,106 @@
+.plan-details-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.plan-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.plan-header h1 {
+  color: #333;
+  font-size: 2.2rem;
+}
+
+.plan-header h2 {
+  color: #4CAF50;
+  font-size: 1.8rem;
+}
+
+.plan-features {
+  margin-bottom: 2rem;
+}
+
+.plan-features h3, .payment-info h3, .stripe-integration h4, .stripe-benefits h4 {
+  color: #444;
+  margin-bottom: 1rem;
+}
+
+.plan-features ul, .payment-info ul, .stripe-benefits ul {
+  padding-left: 1.5rem;
+}
+
+.plan-features li, .payment-info li, .stripe-benefits li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.payment-info {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.stripe-integration {
+  background: #f0f7ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.stripe-images {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.stripe-img {
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.upgrade-suggestion {
+  background: #fff8e1;
+  padding: 1rem;
+  border-left: 4px solid #ffc107;
+  margin-top: 1rem;
+}
+
+.back-button {
+  display: block;
+  margin: 0 auto;
+  padding: 0.8rem 2rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.back-button:hover {
+  background: #3e8e41;
+}
+
+@media (max-width: 768px) {
+  .plan-details-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .stripe-images {
+    flex-direction: column;
+  }
+}

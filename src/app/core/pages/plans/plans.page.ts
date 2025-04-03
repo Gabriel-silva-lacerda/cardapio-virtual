@@ -1,7 +1,7 @@
 import { NgClass, NgIf } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Plans } from '@shared/interfaces/plans.interface';
+import { Plans } from '@shared/interfaces/plans/plans.interface';
 import { PlansService } from '@shared/services/plans/plans.service';
 import { fade } from '@shared/utils/animations.utils';
 
@@ -10,12 +10,12 @@ import { fade } from '@shared/utils/animations.utils';
   imports: [NgClass, NgIf],
   templateUrl: './plans.page.html',
   styleUrl: './plans.page.scss',
-  animations: [fade]
+  animations: [fade],
 })
 export class PlansPage implements OnInit {
   private plansService = inject(PlansService);
   private router = inject(Router);
-  public plans = signal<Plans[]>([])
+  public plans = signal<Plans[]>([]);
   public menuOpen = false;
 
   async ngOnInit() {
@@ -23,8 +23,8 @@ export class PlansPage implements OnInit {
     this.plans.set(plans);
   }
 
-  goToCheckout(plan: Plans) {
-    this.router.navigate(['/planos/pagamento', plan.id]);
+  goToRoute(link: string, data: string) {
+    this.router.navigate([link, data]);
   }
 
   closeMenu(event: MouseEvent) {
@@ -40,5 +40,4 @@ export class PlansPage implements OnInit {
       plansSection.scrollIntoView({ behavior: 'smooth' });
     }
   }
-
 }

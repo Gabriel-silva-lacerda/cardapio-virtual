@@ -7,7 +7,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { CompanyService } from '@shared/services/company/company.service';
@@ -22,7 +26,7 @@ import { Subject } from 'rxjs';
 import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.component';
-import { iFood } from '@shared/interfaces/food.interface';
+import { iFood } from '@shared/interfaces/food/food.interface';
 import { ExtraService } from '@shared/services/extra/extra.service';
 
 @Component({
@@ -83,7 +87,7 @@ export class AddEditItemDialogComponent implements OnInit {
         if (!isNaN(categoryId)) {
           this.loadExtrasByCategory(categoryId);
         }
-      }
+      },
     },
     {
       name: 'extras',
@@ -93,7 +97,7 @@ export class AddEditItemDialogComponent implements OnInit {
       validators: [],
       padding: '10px',
       tooltip: 'Selecione uma categoria primeiro!',
-      onClick: () => this.onAddExtraItem()
+      onClick: () => this.onAddExtraItem(),
     },
     {
       name: 'has_day_of_week',
@@ -140,7 +144,8 @@ export class AddEditItemDialogComponent implements OnInit {
 
   public async getCategories() {
     this.categories.set(await this.categoryService.getAll('categories'));
-    this.foodFields.find(f => f.name === 'category_id')!.options = this.categories().map(c => ({ label: c.name, value: c.id }));
+    this.foodFields.find((f) => f.name === 'category_id')!.options =
+      this.categories().map((c) => ({ label: c.name, value: c.id }));
     this.dynamicForm.isDisabled['extras'] = true;
     this.dynamicForm.showButton = true;
   }
@@ -149,15 +154,21 @@ export class AddEditItemDialogComponent implements OnInit {
     try {
       this.loadingService.showLoading();
 
-      const foodData = await this.foodService.getById<iFood>('foods', foodId.toString());
+      const foodData = await this.foodService.getById<iFood>(
+        'foods',
+        foodId.toString()
+      );
       this.imageUrl = foodData?.image_url || null;
 
       if (foodData) {
-        const extras = await this.extraService.getExtrasByFoodId(foodId.toString());
+        const extras = await this.extraService.getExtrasByFoodId(
+          foodId.toString()
+        );
 
         if (foodData.image_url) {
           this.dynamicForm.selectedFileName = foodData.image_url;
-          this.dynamicForm.imagePreviewUrl = await this.imageService.getImageUrl(foodData.image_url);
+          this.dynamicForm.imagePreviewUrl =
+            await this.imageService.getImageUrl(foodData.image_url);
         }
 
         this.dynamicForm.form.patchValue({
@@ -165,37 +176,35 @@ export class AddEditItemDialogComponent implements OnInit {
           description: foodData.description,
           price: foodData.price,
           category_id: foodData.category_id,
-          extras: extras.map(extra => extra.id),
+          extras: extras.map((extra) => extra.id),
           has_day_of_week: foodData.day_of_week !== null,
           day_of_week: foodData.day_of_week || null,
           image_file: foodData.image_url,
         });
         this.dynamicForm.showButton = false;
-
       }
     } finally {
       this.loadingService.hideLoading();
     }
-}
+  }
 
   private async loadExtrasByCategory(categoryId: number) {
     const extras = await this.extraService.getExtrasByCategory(categoryId);
     this.extras.set(extras);
 
-    this.foodFields.find(f => f.name === 'extras')!.options = this.extras().map(e => ({ label: e.name, value: e.id }));
+    this.foodFields.find((f) => f.name === 'extras')!.options =
+      this.extras().map((e) => ({ label: e.name, value: e.id }));
 
     this.dynamicForm.isDisabled['extras'] = false;
-
-
   }
 
   public onAddExtraItem() {
     const dialogRef = this.dialog.open(AddExtraDialogComponent, {
       width: '400px',
-      data: { categoryId: this.dynamicForm.form.value.category_id }
+      data: { categoryId: this.dynamicForm.form.value.category_id },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadExtrasByCategory(this.dynamicForm.form.value.category_id);
       }
@@ -218,7 +227,7 @@ export class AddEditItemDialogComponent implements OnInit {
 
       if (formData.image_file && formData.image_file instanceof File) {
         if (this.data.foodId && this.dynamicForm.selectedFileName) {
-          console.log(this.imageUrl)
+          console.log(this.imageUrl);
           await this.imageService.deleteImage(this.imageUrl as string);
         }
 
@@ -241,7 +250,11 @@ export class AddEditItemDialogComponent implements OnInit {
       const extraIds = formData.extras || [];
 
       if (this.data.foodId) {
-        await this.foodService.updateFoodWithExtras(this.data.foodId, foodData, extraIds);
+        await this.foodService.updateFoodWithExtras(
+          this.data.foodId,
+          foodData,
+          extraIds
+        );
         this.toastr.success('Item atualizado com sucesso!');
       } else {
         await this.foodService.createFoodWithExtras(foodData, extraIds);
@@ -249,7 +262,7 @@ export class AddEditItemDialogComponent implements OnInit {
       }
 
       this.dialogRef.close(true);
-    } finally  {
+    } finally {
       this.loadingService.hideLoading();
     }
   }
@@ -258,7 +271,9 @@ export class AddEditItemDialogComponent implements OnInit {
     if (!form.contains('day_of_week') && form.get('has_day_of_week')?.value) {
       form.addControl('day_of_week', new FormControl('', Validators.required));
 
-      const hasDayOfWeekIndex = this.foodFields.findIndex(field => field.name === 'has_day_of_week');
+      const hasDayOfWeekIndex = this.foodFields.findIndex(
+        (field) => field.name === 'has_day_of_week'
+      );
 
       this.foodFields.splice(hasDayOfWeekIndex + 1, 0, {
         name: 'day_of_week',
@@ -274,7 +289,9 @@ export class AddEditItemDialogComponent implements OnInit {
   private removeDayOfWeekField(form: FormGroup): void {
     if (form.contains('day_of_week')) {
       form.removeControl('day_of_week');
-      this.foodFields = this.foodFields.filter(field => field.name !== 'day_of_week');
+      this.foodFields = this.foodFields.filter(
+        (field) => field.name !== 'day_of_week'
+      );
     }
   }
 }

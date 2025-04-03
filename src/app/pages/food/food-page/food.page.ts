@@ -3,7 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
 import { fade } from '@shared/utils/animations.utils';
-import { iFood } from '@shared/interfaces/food.interface';
+import { iFood } from '@shared/interfaces/food/food.interface';
 import { FoodService } from '@shared/services/food/food.service';
 import { firstValueFrom } from 'rxjs';
 import { CategoryService } from '../../home/services/category.service';
@@ -14,7 +14,7 @@ import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/a
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { ImageService } from '@shared/services/image/image.service';
 import { ToastrService } from 'ngx-toastr';
-import { iFoodDetails } from '@shared/interfaces/food-datails.interface';
+import { iFoodDetails } from '@shared/interfaces/food-details/food-datails.interface';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
@@ -29,7 +29,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
     HeaderPageComponent,
     KeyValuePipe,
     SkeletonLoaderComponent,
-    SkeletonFoodComponent
+    SkeletonFoodComponent,
   ],
   templateUrl: './food.page.html',
   styleUrl: './food.page.scss',
@@ -50,7 +50,7 @@ export class FoodPage {
   public id!: string | null;
   public groupedFoods = signal<Record<string, iFood[]>>({});
   public loadingService = inject(LoadingService);
-  public skeletonItems =  Array.from({ length: 5 });
+  public skeletonItems = Array.from({ length: 5 });
   public isAdmin = this.authService.isAdmin;
   public companyId = this.localStorageService.getSignal('companyId', 0);
 
@@ -69,7 +69,8 @@ export class FoodPage {
       if (this.id) {
         await this.getFoodsByCategory(+this.id, this.companyId());
       } else {
-        const groupedFoods = await this.foodService.getAllFoodsGroupedByCategory(this.companyId());
+        const groupedFoods =
+          await this.foodService.getAllFoodsGroupedByCategory(this.companyId());
         this.groupedFoods.set(groupedFoods);
         this.title.set('Cardápio');
       }
@@ -78,7 +79,10 @@ export class FoodPage {
     }
   }
 
-  public async getFoodsByCategory(id: number, companyId: number): Promise<void> {
+  public async getFoodsByCategory(
+    id: number,
+    companyId: number
+  ): Promise<void> {
     const foods = await this.foodService.getFoodsByCategory(id, companyId);
     const category = await this.categoryService.getById<iCategory>(
       'categories',

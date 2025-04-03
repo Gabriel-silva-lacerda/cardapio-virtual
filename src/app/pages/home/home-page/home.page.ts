@@ -6,7 +6,7 @@ import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.
 import { FoodService } from '../../../core/shared/services/food/food.service';
 import { CategoryService } from '../services/category.service';
 import { iCategory } from '../interfaces/category.interface';
-import { iFood } from '@shared/interfaces/food.interface';
+import { iFood } from '@shared/interfaces/food/food.interface';
 import { CompanyService } from '@shared/services/company/company.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
@@ -29,7 +29,7 @@ import { NgClass } from '@angular/common';
     SkeletonLoaderComponent,
     SkeletonCategoriesComponent,
     SkeletonFoodComponent,
-    NgClass
+    NgClass,
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
@@ -48,10 +48,7 @@ export class HomePage implements OnInit {
     'companyName',
     '[]'
   );
-  public companyId = this.localStorageService.getSignal(
-    'companyId',
-    0
-  );
+  public companyId = this.localStorageService.getSignal('companyId', 0);
 
   ngOnInit() {
     this.getAllFoodAndCategories();

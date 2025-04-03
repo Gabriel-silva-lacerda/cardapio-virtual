@@ -1,9 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 import { BaseSupabaseService } from '../base/base-supabase.service';
-import { iInsertOrder } from '@shared/interfaces/insert-order.interface';
-import { iOrder } from '@shared/interfaces/order.interface';
-import { iOrderItem } from '@shared/interfaces/order-item.interface';
-import { iOrderItemExtra } from '@shared/interfaces/order-item-extra.interface';
+import { iInsertOrder } from '@shared/interfaces/insert-order/insert-order.interface';
+import { iOrder } from '@shared/interfaces/order/order.interface';
+import { iOrderItem } from '@shared/interfaces/order-item/order-item.interface';
+import { iOrderItemExtra } from '@shared/interfaces/order-item-extra/order-item-extra.interface';
 
 interface teste {
   id: number;

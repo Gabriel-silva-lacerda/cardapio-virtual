@@ -12,9 +12,9 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { iFood } from '@shared/interfaces/food.interface';
-import { iCartItem } from '@shared/interfaces/cart.interface';
-import { iFoodDetails } from '@shared/interfaces/food-datails.interface';
+import { iFood } from '@shared/interfaces/food/food.interface';
+
+import { iFoodDetails } from '@shared/interfaces/food-details/food-datails.interface';
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DayOfWeekTranslatePipe } from 'src/app/widget/pipes/day-of-week-translate.pipe';
@@ -29,6 +29,7 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LoadingComponent } from '../loading/loading.component';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 @Component({
   selector: 'app-food-menu',
@@ -41,7 +42,7 @@ import { IconButtonComponent } from '../icon-button/icon-button.component';
     MatSnackBarModule,
     RouterLink,
     LoadingComponent,
-    IconButtonComponent
+    IconButtonComponent,
   ],
   templateUrl: './food-menu.component.html',
   styleUrl: './food-menu.component.scss',
@@ -62,7 +63,10 @@ export class FoodMenuComponent implements OnInit, OnChanges {
 
   public loadingService = inject(LoadingService);
   public tooltipMessage: string = '';
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
   public isAdmin = this.authService.isAdmin;
 
   ngOnInit(): void {

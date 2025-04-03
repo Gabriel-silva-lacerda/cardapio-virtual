@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../loading/loading.service';
-import { InsertOptions } from '@shared/interfaces/insert-options';
+import { InsertOptions } from '@shared/interfaces/insert-options/insert-options';
 
 @Injectable({
   providedIn: 'root'

@@ -1,7 +1,8 @@
 import { NgClass } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
-import { iCartItem } from '@shared/interfaces/cart.interface';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
+
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ShowItemService } from '@shared/services/show-item/show-item.service';
 import { filter, Subject, takeUntil } from 'rxjs';

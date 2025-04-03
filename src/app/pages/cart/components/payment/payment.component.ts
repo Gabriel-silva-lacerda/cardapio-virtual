@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import {MatRadioModule} from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { iCartItem } from '@shared/interfaces/cart.interface';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { PaymentService } from '../../services/payment.service';
 import { OrderService } from '@shared/services/order/order.service';
 import { AuthService } from '../../../../domain/auth/services/auth.service';

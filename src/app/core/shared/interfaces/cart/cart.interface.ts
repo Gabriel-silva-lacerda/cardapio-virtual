@@ -1,5 +1,5 @@
-import { iExtra } from './extra.interface';
-import { iFood } from './food.interface';
+import { iExtra } from '../extra/extra.interface';
+import { iFood } from '../food/food.interface';
 
 export interface iCartItem {
   id: string | null;

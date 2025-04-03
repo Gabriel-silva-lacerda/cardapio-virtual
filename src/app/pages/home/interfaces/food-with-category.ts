@@ -1,4 +1,4 @@
-import { iFood } from "@shared/interfaces/food.interface";
+import { iFood } from '@shared/interfaces/food/food.interface';
 
 export interface iFoodWithCategory extends iFood {
   categories?: { name: string };

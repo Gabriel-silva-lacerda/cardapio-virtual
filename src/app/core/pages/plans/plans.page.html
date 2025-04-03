@@ -1,5 +1,5 @@
 <div class="bg-gray-100 min-h-screen pb-10" [@fade]>
-  <header class="flex justify-between items-center bg-primary-rose-soft px-4 py-2 w-full  fixed top-0">
+  <header class="flex justify-between items-center bg-primary-rose-soft px-4 py-2la w-full  fixed top-0">
     <span class="text-primary-dark font-semibold">
       <img src="assets/images/logos/logo.png" alt="Cardápio digital"
         class="max-w-full w-20 sm:w-3/4 md:w-28 rounded-2xl ">
@@ -85,9 +85,15 @@
           </ul>
           }
 
-          <button class="button-primary mt-3 hover:bg-primary transition" (click)="goToCheckout(plan)">
+
+          <a class="text-primary underline mt-3 block cursor-pointer" (click)="goToRoute('planos/detalhes', plan.id)">
+            Detalhes sobre o plano
+          </a>
+
+          <button class="button-primary mt-3 hover:bg-primary transition" (click)="goToRoute('planos/pagamento', plan.id)">
             Comprar
           </button>
+
         </div>
       </div>
       }

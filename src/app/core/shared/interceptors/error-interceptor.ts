@@ -1,4 +1,3 @@
-// src/app/interceptors/error.interceptor.ts
 import { HttpInterceptorFn } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';

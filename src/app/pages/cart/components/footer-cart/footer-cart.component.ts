@@ -1,12 +1,8 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { iCartItem } from '@shared/interfaces/cart.interface';
-import { PaymentService } from '../../services/payment.service';
-import { OrderService } from '../../../../core/shared/services/order/order.service';
-import { createPreferenceItems, transformCartItemsToOrderItems } from '@shared/utils/oder.utils';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { PaymentComponent } from '../payment/payment.component';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { PaymentAddressDialogComponent } from '../payment-address-dialog/payment-address-dialog.component';

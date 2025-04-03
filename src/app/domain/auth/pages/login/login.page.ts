@@ -83,6 +83,7 @@ export class LoginPage {
       return;
     }
 
+
     const companyId = company.id;
 
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });

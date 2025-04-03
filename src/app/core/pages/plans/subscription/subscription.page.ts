@@ -6,19 +6,25 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { debounceTime, firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PlansService } from '@shared/services/plans/plans.service';
-import { Plans } from '@shared/interfaces/plans.interface';
+import { Plans } from '@shared/interfaces/plans/plans.interface';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { CurrencyPipe } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { StripeService } from '@shared/services/stripe/stripe.service';
-import { Company } from '@shared/interfaces/company';
+import { Company } from '@shared/interfaces/company/company';
 import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
 import { fade } from '@shared/utils/animations.utils';
 
 @Component({
   selector: 'app-subscription',
-  imports: [DynamicFormComponent, FormsModule, LoadingComponent, CurrencyPipe, RouterLink],
+  imports: [
+    DynamicFormComponent,
+    FormsModule,
+    LoadingComponent,
+    CurrencyPipe,
+    RouterLink,
+  ],
   templateUrl: './subscription.page.html',
   styleUrl: './subscription.page.scss',
   animations: [fade],

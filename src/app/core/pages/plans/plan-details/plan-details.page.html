@@ -1,0 +1,104 @@
+<!-- <div class="plan-details-container">
+  <div class="plan-header">
+    <h1>Plano {{plan().name}}</h1>
+    <h2>{{plan().price}}</h2>
+  </div>
+
+  <div class="plan-features">
+    <h3>Recursos incluídos:</h3>
+    <ul>
+      @for (recurso of plan().recursos; track $index) {
+      <li>{{recurso}}</li>
+      }
+    </ul>
+  </div>
+
+  <div class="payment-info">
+    <h3>Sobre os pagamentos:</h3>
+    <p>Este plano não inclui integração com o Stripe para pagamentos online. Seus clientes poderão:</p>
+    <ul>
+      <li>Visualizar seu cardápio online</li>
+      <li>Fazer pedidos via WhatsApp</li>
+      <li>Efetuar pagamentos diretamente com você (dinheiro, PIX ou outras formas offline)</li>
+    </ul>
+
+    <div class="upgrade-suggestion">
+      <p>Se desejar receber pagamentos online diretamente pelo cardápio, considere atualizar para o <a
+          routerLink="/planos/premium">Plano Premium</a>.</p>
+    </div>
+  </div>
+
+  <button routerLink="/planos" class="back-button">Voltar para planos</button>
+</div> -->
+
+<main class="px-4 pt-32 max-w-3xl mx-auto">
+  <!-- Cabeçalho do Plano -->
+  <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+    <div class="bg-primary px-6 py-5">
+      <h1 class="text-title3 font-bold text-white">{{ plan().name }}</h1>
+      <p class="text-white opacity-90 mt-1">{{ plan().description }}</p>
+    </div>
+
+    <div class="px-6 py-5">
+      <div class="flex items-center justify-between">
+        <span class="text-title2 font-bold text-primary-dark">
+          R$ {{ plan().price }} <span class="text-text5 text-gray-600 font-normal">/mês</span>
+        </span>
+        <span class="bg-secondary bg-opacity-20 text-secondary-dark px-3 py-1 rounded-full text-text5">
+          Mais popular
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seção de Recursos -->
+  <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-gray-100">
+      <h2 class="text-title4 font-semibold text-primary-dark">Recursos principais</h2>
+    </div>
+
+    <div class="px-6 py-5">
+      <ul class="space-y-4">
+        <li *ngFor="let recurso of plan().recursos" class="flex items-start">
+          <i class="fas fa-check-circle text-secondary-dark mt-1 mr-3"></i>
+          <div>
+            <p class="text-gray-600 text-text5 mt-1" *ngIf="recurso">{{ recurso }}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Seção de Pagamento (destaque para o Premium) -->
+  <div *ngIf="plan().id === 'premium'" class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-gray-100">
+      <h2 class="text-title4 font-semibold text-primary-dark">Pagamentos online com Stripe</h2>
+    </div>
+
+    <div class="px-6 py-5">
+      <div class="flex items-start mb-4">
+        <div class="bg-primary-rose-soft p-3 rounded-lg mr-4">
+          <i class="fas fa-credit-card text-primary text-xl"></i>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-800">Integração completa com Stripe</h3>
+          <p class="text-gray-600 text-text5 mt-1">
+            Seus clientes podem pagar diretamente no cardápio digital com cartão, PIX ou boleto.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg mb-4">
+        <h4 class="font-medium text-gray-800 mb-2">Como configurar:</h4>
+        <ol class="space-y-2 pl-5">
+          <li class="text-gray-700 text-text5">1. Acesse "Configurações" no seu painel</li>
+          <li class="text-gray-700 text-text5">2. Clique em "Conectar com Stripe"</li>
+          <li class="text-gray-700 text-text5">3. Siga as instruções para vincular sua conta</li>
+          <li class="text-gray-700 text-text5">4. Comece a receber pagamentos automaticamente</li>
+        </ol>
+      </div>
+
+      <img src="assets/images/stripe-integration.png" alt="Integração com Stripe" class="w-full rounded-lg border border-gray-200 mt-4">
+    </div>
+  </div>
+</main>

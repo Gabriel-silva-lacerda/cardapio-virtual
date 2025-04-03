@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseSupabaseService } from '@shared/services/base/base-supabase.service';
-import { iExtra } from '../../interfaces/extra.interface';
+import { iExtra } from '../../interfaces/extra/extra.interface';
 
 @Injectable({
   providedIn: 'root',

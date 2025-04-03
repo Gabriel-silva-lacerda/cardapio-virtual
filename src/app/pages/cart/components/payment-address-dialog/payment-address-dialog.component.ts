@@ -13,7 +13,7 @@ import cepPromise from 'cep-promise';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { fadeInOut } from '@shared/utils/animations.utils';
 import { PaymentComponent } from '../payment/payment.component';
-import { iCartItem } from '@shared/interfaces/cart.interface';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';
 
 @Component({

@@ -30,3 +30,13 @@ export const fadeInOut =  trigger('fadeInOut', [
   //   animate('300ms  0s', style({ opacity: 0 }))
   // ])
 ]);
+
+export const expandAnimation = trigger('expandAnimation', [
+  transition(':enter', [
+    style({ height: '0px', opacity: 0 }),
+    animate('300ms ease-out', style({ height: '*', opacity: 1 }))
+  ]),
+  transition(':leave', [
+    animate('200ms ease-in', style({ height: '0px', opacity: 0 }))
+  ])
+])

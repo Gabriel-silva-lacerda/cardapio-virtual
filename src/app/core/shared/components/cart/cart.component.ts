@@ -1,8 +1,9 @@
 import { ShowItemService } from '@shared/services/show-item/show-item.service';
 import { Component, inject } from '@angular/core';
-import { iCartItem } from '@shared/interfaces/cart.interface';
+
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { RouterLink } from '@angular/router';
+import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 @Component({
   selector: 'app-cart',
