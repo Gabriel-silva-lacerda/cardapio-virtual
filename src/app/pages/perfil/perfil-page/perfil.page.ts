@@ -50,13 +50,7 @@ export class PerfilPage {
   }
 
   async loadCompanyData() {
-    this.companyData.set(
-      await this.companyService.getByField<Company>(
-        'companies',
-        'id',
-        this.companyId()
-      )
-    );
+    this.companyData.set(await this.companyService.getByField<Company>('companies','id',this.companyId()));
   }
 
   async logout() {
@@ -82,9 +76,7 @@ export class PerfilPage {
     this.stripeService
       .checkAccountStatus(this.companyData().account_id as string)
       .subscribe({
-        next: (response: any) => {
-          this.isActive = response.data.isActive;
-        },
+        next: (response) => this.isActive = response.data.isActive,
         complete: () => this.loadingService.hideLoading(),
       });
   }
@@ -99,15 +91,9 @@ export class PerfilPage {
       .createConnectedAccount(this.companyData().email)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (stripeResponse: any) => {
-          this.createAccountLink(
-            stripeResponse.data.accountId,
-            this.companyData()?.unique_url as string
-          );
-          this.localStorageService.setItem(
-            `stripeAccountCreated-${this.companyId()}`,
-            true
-          );
+        next: (stripeResponse) => {
+          this.createAccountLink(stripeResponse.data.accountId,this.companyData()?.unique_url as string);
+          this.localStorageService.setItem(`stripeAccountCreated-${this.companyId()}`, true);
         },
       });
   }
@@ -117,7 +103,7 @@ export class PerfilPage {
       .createAccountLink(accountId, email)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response: any) => {
+        next: (response) => {
           if (response.data.accountLink)
             window.location.href = response.data.accountLink;
         },
@@ -129,13 +115,11 @@ export class PerfilPage {
 
     if (!this.companyData()?.account_id) return;
 
-    this.stripeService
-      .getExpressLoginLink(this.companyData().account_id as string)
-      .subscribe({
-        next: (response: any) => {
-          if (response.data?.url) window.location.href = response.data.url;
-        },
-      });
+    this.stripeService.getExpressLoginLink(this.companyData().account_id as string).subscribe({
+      next: (response) => {
+        if (response.data?.url) window.location.href = response.data.url;
+      },
+    });
   }
 
   private updateUserInitial() {
