@@ -86,15 +86,21 @@ export class DynamicFormComponent implements OnInit {
 
   getErrorsMessages(fieldName: string): string[] {
     const control = this.form.get(fieldName);
-    if (!control || !control.errors) return [];
+    const errors = control?.errors;
 
-    return Object.keys(control.errors || {}).map((errorKey) => {
+    if (!errors) return [];
+
+    return Object.keys(errors).map((errorKey) => {
+      if (errorKey === 'customError' && errors['customError']) {
+        return errors['customError'];
+      }
+
       const errorFn = this.errors[errorKey];
-      return errorFn
-        ? errorFn(control.errors?.[errorKey])
-        : `Erro desconhecido`;
+      return errorFn ? errorFn(errors[errorKey]) : `Erro desconhecido`;
     });
   }
+
+
 
   disableFields(fieldNames: string[]) {
     fieldNames.forEach((fieldName) => {

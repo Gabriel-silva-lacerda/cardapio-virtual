@@ -8,8 +8,6 @@ import { InsertOptions } from '@shared/interfaces/insert-options/insert-options'
   providedIn: 'root'
 })
 export abstract class BaseSupabaseService {
-  protected table!: string;
-
   public loadingService = inject(LoadingService);
   public toastr = inject(ToastrService);
   public supabaseService = inject(SupabaseService);

@@ -15,6 +15,7 @@ import { StripeService } from '@shared/services/stripe/stripe.service';
 import { Company } from '@shared/interfaces/company/company';
 import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
 import { fade } from '@shared/utils/animations.utils';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-subscription',
@@ -36,6 +37,7 @@ export class SubscriptionPage {
   private toastr = inject(ToastrService);
   private stripeService = inject(StripeService);
   private planId!: number | string | null;
+  private companyService = inject(CompanyService);
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
@@ -199,8 +201,28 @@ export class SubscriptionPage {
       return;
     }
 
+
+
+
     try {
       const formData = this.dynamicForm.form.getRawValue();
+
+      const { exists, company, email } = await this.companyService.checkIfCompanyOrEmailExists(formData.name, formData.email);
+      if (exists) {
+        const fieldErrors = {
+          company: { field: 'name', message: 'Já existe uma empresa com este nome!' },
+          email: { field: 'email', message: 'Este e-mail já está cadastrado!' }
+        };
+
+        Object.entries({ company, email }).forEach(([key, value]) => {
+          if (value) {
+            this.dynamicForm.form.controls[fieldErrors[key as keyof typeof fieldErrors].field]
+              .setErrors({ customError: fieldErrors[key as keyof typeof fieldErrors].message });
+          }
+        });
+
+        return;
+      }
 
       const companyData: Company = {
         name: formData.name,
