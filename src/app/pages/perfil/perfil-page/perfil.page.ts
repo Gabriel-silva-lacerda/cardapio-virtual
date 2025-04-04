@@ -46,6 +46,7 @@ export class PerfilPage {
   async ngOnInit() {
     this.updateUserInitial();
     await this.loadCompanyData();
+    if (!this.companyData()?.account_id) return;
     this.checkAccountStatus();
   }
 
@@ -71,7 +72,6 @@ export class PerfilPage {
 
   checkAccountStatus() {
     this.loadingService.showLoading();
-    if (!this.companyData()?.account_id) return;
 
     this.stripeService
       .checkAccountStatus(this.companyData().account_id as string)

@@ -14,10 +14,8 @@ export class AuthService extends BaseSupabaseService {
   public isLogged = signal<boolean>(false);
   public isAdmin = signal<boolean>(false);
 
-
   public async load() {
     const { data, error } = await this.supabaseService.supabase.auth.getSession();
-    console.log(data)
     if (!data.session || error) {
       return;
     }

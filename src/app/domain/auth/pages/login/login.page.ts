@@ -83,7 +83,6 @@ export class LoginPage {
       return;
     }
 
-
     const companyId = company.id;
 
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
@@ -111,7 +110,6 @@ export class LoginPage {
       return;
     }
 
-
     const userId = userData.user.id;
 
     const userCompany = await this.companyService.getByField<any>('user_companies', 'user_id', userId);
@@ -128,6 +126,7 @@ export class LoginPage {
     this.authService.isAdmin.set(isAdmin);
 
     const firstLogin = userData.user.user_metadata?.['first_login'];
+    this.authService.getUser(userId);
     this.authService.isLogged.set(true);
     this.loadingService.hideLoading();
 

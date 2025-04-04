@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from '../../guards/authGuard';
 
 export const mainRoutes: Routes = [
   {
@@ -12,6 +13,7 @@ export const mainRoutes: Routes = [
       import('../../../pages/perfil/perfil-page/perfil.page').then(
         (m) => m.PerfilPage
       ),
+      canActivate: [AuthGuard]
   },
   {
     path: 'categorias',

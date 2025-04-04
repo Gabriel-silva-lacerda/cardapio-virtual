@@ -1,9 +1,18 @@
-import { AuthAccessGuard } from './core/guards/authAccessGuard';
-import { AuthGuard } from './core/guards/authGuard';
 import { Routes } from '@angular/router';
 import { AuthParamGuard } from './core/guards/authParamGuad';
 
 export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'planos',
+    pathMatch: 'full',
+
+  },
+  {
+    path: 'planos',
+    loadChildren: () =>
+      import('./core/pages/plans/plans.routes').then((m) => m.plansRoutes),
+  },
   {
     path: 'auth',
     loadComponent: () =>
@@ -21,25 +30,14 @@ export const routes: Routes = [
           import('./core/pages/reset-password/reset-password.component').then(
             (m) => m.ResetPasswordComponent
           ),
-          // canActivate: [AuthAccessGuard]
       },
     ],
-  },
-  {
-    path: '',
-    redirectTo: 'planos',
-    pathMatch: 'full',
-  },
-  {
-    path: 'planos',
-    loadChildren: () =>
-      import('./core/pages/plans/plans.routes').then((m) => m.plansRoutes),
   },
   {
     path: 'app',
     loadComponent: () =>
       import('./core/pages/main/main.component').then((m) => m.MainComponent),
-    canActivate: [AuthGuard, AuthParamGuard],
+    canActivate: [AuthParamGuard],
     children: [
       {
         path: '',

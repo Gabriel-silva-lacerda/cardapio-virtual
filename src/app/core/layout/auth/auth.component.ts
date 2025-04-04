@@ -13,14 +13,13 @@ import { TitleService } from '@shared/services/title/title.service';
 export class AuthComponent  {
   public titleService = inject(TitleService);
   private route = inject(ActivatedRoute);
-  private localStorageService = inject(LocalStorageService);
 
   public companyName: string = '';
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const paramCompanyName = params['empresa'];
-      this.companyName = paramCompanyName.charAt(0).toUpperCase() + paramCompanyName.slice(1).toLowerCase();
+      this.companyName = paramCompanyName?.charAt(0).toUpperCase() + paramCompanyName?.slice(1).toLowerCase();
     });
   }
 }

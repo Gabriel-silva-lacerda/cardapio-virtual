@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { PaymentGuard } from '../../guards/paymentGuard';
+import { IsLoggedGuard } from '../../guards/isLoggedGuard';
 
 export const plansRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./plans.page').then((m) => m.PlansPage),
+    canActivate: [IsLoggedGuard]
   },
   {
     path: 'pagamento/:id',
@@ -12,11 +14,13 @@ export const plansRoutes: Routes = [
       import('./subscription/subscription.page').then(
         (m) => m.SubscriptionPage
       ),
+      canActivate: [IsLoggedGuard]
   },
   {
     path: 'detalhes/:id',
     loadComponent: () =>
       import('./plan-details/plan-details.page').then((m) => m.PlanDetailsPage),
+    canActivate: [IsLoggedGuard]
   },
   {
     path: 'sucesso-pagamento',
