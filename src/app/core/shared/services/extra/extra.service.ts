@@ -19,8 +19,8 @@ export class ExtraService extends BaseSupabaseService {
     return this.getAllByFieldIn('extras', 'id', extraIds);
   }
 
-  async getExtrasByCategory(categoryId: number): Promise<iExtra[]> {
-    return this.getAllByField<{ category_id: number; extra_id: number }>(
+  async getExtrasByCategory(categoryId: string): Promise<iExtra[]> {
+    return this.getAllByField<{ category_id: string; extra_id: string }>(
       'category_extras',
       'category_id',
       categoryId,

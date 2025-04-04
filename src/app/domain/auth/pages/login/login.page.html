@@ -13,14 +13,21 @@
       Reenviar código de confirmação
     </button>
   }
-
-  <div class="flex justify-between">
-    <a class="link" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
-      Esqueceu sua senha?
-    </a>
-    <a class="link cursor-pointer" (click)="viewMenu()">
+  
+  <button class="button-primary mt-3" routerLink="/">Voltar para a tela de planos</button>
+  <div class="flex justify-between my-4">
+    <div>
+      <a class="link mt-0 mb-2 block" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
+        Criar um usuário
+      </a>
+      <a class="link mt-0 block" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
+        Esqueceu sua senha?
+      </a>
+    </div>
+    <a class="link mt-0 cursor-pointer" (click)="viewMenu()">
       Visualizar cardápio
     </a>
   </div>
+
 
 </div>

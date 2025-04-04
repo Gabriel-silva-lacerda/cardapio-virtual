@@ -11,7 +11,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { CompanyService } from '@shared/services/company/company.service';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from '@shared/services/error-handler/error-handler.service';
-import { fadeIn } from '@shared/utils/animations.utils';
+import { fade, fadeIn } from '@shared/utils/animations.utils';
 import { AuthService } from '../../services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 
@@ -21,7 +21,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
   imports: [CommonModule, DynamicFormComponent, ButtonModule, RouterLink, LoadingComponent],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
-  animations: [fadeIn]
+  animations: [fadeIn, fade]
 })
 export class LoginPage {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;

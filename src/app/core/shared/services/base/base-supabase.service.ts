@@ -54,7 +54,7 @@ export abstract class BaseSupabaseService {
       .eq(field, value).single();
 
     if (error) {
-      this.toastr.error(`Erro ao buscar registros na tabela ${table} com ${field} = ${value}:`, error.message);
+      this.toastr.error(`Erro`, error.message);
       throw new Error(error.message);
     }
 

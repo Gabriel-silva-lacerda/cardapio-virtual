@@ -15,11 +15,13 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
   </button>`,
 })
 export class BackButtonComponent {
+  @Input() customClass = '';
+  
   private router = inject(Router);
   private location = inject(Location);
   private localStorageService = inject(LocalStorageService);
   public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
-  @Input() customClass = '';
+
 
   goBack() {
     const currentUrl = this.router.url;

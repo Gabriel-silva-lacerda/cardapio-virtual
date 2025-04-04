@@ -83,10 +83,10 @@ export class AddEditItemDialogComponent implements OnInit {
       validators: [Validators.required],
       padding: '10px',
       onChange: (data: unknown, form: FormGroup) => {
-        const categoryId = Number(data);
-        if (!isNaN(categoryId)) {
+        const categoryId = String(data);
+
           this.loadExtrasByCategory(categoryId);
-        }
+
       },
     },
     {
@@ -145,7 +145,7 @@ export class AddEditItemDialogComponent implements OnInit {
   public async getCategories() {
     this.categories.set(await this.categoryService.getAll('categories'));
     this.foodFields.find((f) => f.name === 'category_id')!.options =
-      this.categories().map((c) => ({ label: c.name, value: c.id }));
+    this.categories().map((c) => ({ label: c.name, value: c.id }));
     this.dynamicForm.isDisabled['extras'] = true;
     this.dynamicForm.showButton = true;
   }
@@ -188,7 +188,8 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  private async loadExtrasByCategory(categoryId: number) {
+  private async loadExtrasByCategory(categoryId: string) {
+    console.log(categoryId)
     const extras = await this.extraService.getExtrasByCategory(categoryId);
     this.extras.set(extras);
 

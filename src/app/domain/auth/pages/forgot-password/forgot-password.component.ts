@@ -7,11 +7,12 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [RouterLink, DynamicFormComponent],
+  imports: [RouterLink, DynamicFormComponent, LoadingComponent],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })
