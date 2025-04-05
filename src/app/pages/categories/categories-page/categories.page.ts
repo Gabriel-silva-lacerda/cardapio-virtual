@@ -12,12 +12,14 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SkeletonCategoriesComponent } from '../components/skeleton-categories/skeleton-categories.component';
+import { fade } from '@shared/utils/animations.utils';
 
 @Component({
   selector: 'app-categories-page',
   imports: [HeaderPageComponent, CategoriesComponent, SkeletonLoaderComponent, SkeletonCategoriesComponent],
   templateUrl: './categories.page.html',
-  styleUrl: './categories.page.scss'
+  styleUrl: './categories.page.scss',
+  animations: [fade]
 })
 export class CategoriesPage implements OnInit {
   private categoryService = inject(CategoryService);
@@ -40,7 +42,7 @@ export class CategoriesPage implements OnInit {
     this.loadingService.showLoading();
 
     try {
-      const categories = await this.categoryService.getCategoriesByCompanyUrl(this.companyId());
+      const categories = await this.categoryService.getAll<iCategory>('categories');
       this.categories.set(categories);
     } finally {
       this.loadingService.hideLoading();

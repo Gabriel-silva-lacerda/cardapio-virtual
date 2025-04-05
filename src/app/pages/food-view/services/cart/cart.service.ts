@@ -15,8 +15,13 @@ export class CartService {
   );
 
   // Adiciona ou atualiza um item no carrinho
-  public addOrUpdateCartItem(item: iCartItem, isNewItem: boolean): void {
-    const currentCart = this.cartItems();
+  public addOrUpdateCartItem(item: iCartItem, isNewItem: boolean, userId: string | undefined): void {
+    const userIdLocalStorage = userId;
+    if (!userIdLocalStorage) return; // segurança: evita salvar sem identificar a empresa
+
+    const cartKey = `cart-${userIdLocalStorage}`;
+    const currentCart = this.localStorageService.getItem<iCartItem[]>(cartKey) || [];
+
     const existingItemIndex = currentCart.findIndex(
       (cartItem) => cartItem.food.id === item.food?.id
     );
@@ -36,8 +41,9 @@ export class CartService {
     }
 
     this.cartItems.set([...currentCart]);
-    this.localStorageService.setItem('cart', currentCart);
+    this.localStorageService.setItem(cartKey, currentCart);
   }
+
 
   // Atualiza um item existente no carrinho
   private updateExistingItem(

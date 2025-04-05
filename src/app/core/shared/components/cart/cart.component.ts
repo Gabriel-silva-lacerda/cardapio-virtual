@@ -1,9 +1,10 @@
 import { ShowItemService } from '@shared/services/show-item/show-item.service';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -11,10 +12,23 @@ import { iCartItem } from '@shared/interfaces/cart/cart.interface';
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })
-export class CartComponent {
+export class CartComponent implements OnInit{
   private localStorageService = inject(LocalStorageService);
+  private authService = inject(AuthService); 
 
   public showItemService = inject(ShowItemService);
-  public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
+
+  public cart = signal<iCartItem[]>([]);
   public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+
+  ngOnInit() {
+    const userId = this.authService.currentUser()?.id;
+
+    if (userId) {
+      const cartKey = `cart-${userId}`;
+      const savedCart = this.localStorageService.getItem<iCartItem[]>(cartKey) || [];
+      this.cart.set(savedCart);
+    }
+  }
 }
+

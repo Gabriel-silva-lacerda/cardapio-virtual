@@ -1,0 +1,34 @@
+<div class=" rounded-lg w-full shadow-lg bg-primary">
+  <div class="flex justify-between items-center p-5 bg-primary ">
+    <h2 class="text-xl font-semibold text-white">Pesquisar Empresa</h2>
+    <button class="text-black text-xl" (click)="closeDialog()">✖</button>
+  </div>
+
+  <div class="p-5 pt-3 bg-white">
+    <app-search-input [placeholder]="'Digite o nome da empresa...'" (searchChange)="onSearchChange($event)" />
+    <ul class="max-h-96 overflow-y-auto space-y-3 px-2" (scroll)="onScroll($event)">
+      <li *ngFor="let company of filteredCompanies()"  (click)="goToCompany(company.unique_url)">
+        <div class="p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition cursor-pointer"
+          (click)="selectCompany(company)">
+          <div class="flex justify-between items-center gap-4">
+            <h3 class="text-lg font-semibold text-gray-800">{{ company.name }}</h3>
+            <img [src]="company.image_url" alt="Imagem da empresa" class="w-12 h-12 rounded-full border object-cover">
+          </div>
+
+          <p class="text-sm text-gray-600 my-1">{{ company.email }}</p>
+          <p class="text-sm text-gray-500">
+            📍 {{ company.street }}, {{ company.number }}, {{ company.neighborhood }} - {{ company.city }}/{{
+            company.state }}
+          </p>
+        </div>
+      </li>
+
+      @if(isLoading()) {
+        <li class="flex justify-center text-gray-500 py-2">
+          <app-loading />
+        </li>
+      }
+
+    </ul>
+  </div>
+</div>

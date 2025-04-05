@@ -1,11 +1,19 @@
 <div class="bg-gray-100 min-h-screen pb-10" [@fade]>
-  <header class="flex justify-between items-center bg-primary-rose-soft px-4 py-2la w-full  fixed top-0">
+  <header class="flex justify-between items-center bg-primary-rose-soft px-4 py-2 w-full fixed top-0">
     <span class="text-primary-dark font-semibold">
       <img src="assets/images/logos/logo.png" alt="Cardápio digital"
-        class="max-w-full w-20 sm:w-3/4 md:w-28 rounded-2xl ">
+        class="max-w-full w-24 ">
     </span>
-    <button
-      class="border border-primary-dark text-primary-dark px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition"
+
+    <nav class="hidden md:flex items-center space-x-6 ">
+      <a href="#" class="text-black hover:text-primary-dark transition">Home</a>
+      <a href="#" class="text-black hover:text-primary-dark transition">Empresas</a>
+      <a href="#" class="text-black hover:text-primary-dark transition">Contato</a>
+      <button class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition"
+        (click)="openCompanySearchModal()">Pesquisar Empresa</button>
+    </nav>
+
+    <button class="border border-primary-dark text-primary-dark px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition md:hidden"
       (click)="menuOpen = true">
       ☰
     </button>
@@ -18,14 +26,16 @@
   <div class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 z-50"
     [ngClass]="{ 'translate-x-0': menuOpen, 'translate-x-full': !menuOpen }">
     <div class="flex justify-end w-full">
-      <button class="text-black px-4 py-2 text-xl " (click)="menuOpen = false">✖</button>
+      <button class="text-black px-4 py-2 text-xl" (click)="menuOpen = false">✖</button>
     </div>
-    <nav class="flex flex-col px-2">
+    <nav class="flex items-center flex-col px-2">
       <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Home</a>
       <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Empresas</a>
       <a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Contato</a>
+      <button class="bg-primary text-white px-4 py-2 rounded-md" (click)="openCompanySearchModal()">Pesquisar Empresa</button>
     </nav>
   </div>
+
 
   <div class="bg-primary-rose-soft text-primary-dark py-32 px-6 text-center flex flex-col items-center">
     <h2 class="text-title3 font-bold">

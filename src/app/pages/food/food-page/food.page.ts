@@ -52,7 +52,7 @@ export class FoodPage {
   public loadingService = inject(LoadingService);
   public skeletonItems = Array.from({ length: 5 });
   public isAdmin = this.authService.isAdmin;
-  public companyId = this.localStorageService.getSignal('companyId', 0);
+  public companyId = this.localStorageService.getSignal('companyId', '0');
 
   ngOnInit(): void {
     this.getAllFoods();
@@ -67,7 +67,7 @@ export class FoodPage {
       );
 
       if (this.id) {
-        await this.getFoodsByCategory(+this.id, this.companyId());
+        await this.getFoodsByCategory(this.id, this.companyId());
       } else {
         const groupedFoods =
           await this.foodService.getAllFoodsGroupedByCategory(this.companyId());
@@ -80,8 +80,8 @@ export class FoodPage {
   }
 
   public async getFoodsByCategory(
-    id: number,
-    companyId: number
+    id: string,
+    companyId: string
   ): Promise<void> {
     const foods = await this.foodService.getFoodsByCategory(id, companyId);
     const category = await this.categoryService.getById<iCategory>(
@@ -97,7 +97,7 @@ export class FoodPage {
     this.foods.set(foods);
   }
 
-  public addFood(foodId?: number) {
+  public addFood(foodId?: string) {
     const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
       width: '400px',
       height: '739px',

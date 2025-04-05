@@ -207,19 +207,25 @@ export class SubscriptionPage {
     try {
       const formData = this.dynamicForm.form.getRawValue();
 
-      const { exists, company, email } = await this.companyService.checkIfCompanyOrEmailExists(formData.name, formData.email);
+      const unique_url = this.generateUniqueUrl(formData.name);
+      const { exists, company, email } = await this.companyService.checkIfCompanyOrEmailExists(formData.name, formData.email, unique_url);
       if (exists) {
         const fieldErrors = {
           company: { field: 'name', message: 'Já existe uma empresa com este nome!' },
-          email: { field: 'email', message: 'Este e-mail já está cadastrado!' }
+          email: { field: 'email', message: 'Este e-mail já está cadastrado!' },
+          unique_url: { field: 'name', message: 'Já existe uma empresa com este nome!' }
+
         };
 
-        Object.entries({ company, email }).forEach(([key, value]) => {
-          if (value) {
-            this.dynamicForm.form.controls[fieldErrors[key as keyof typeof fieldErrors].field]
-              .setErrors({ customError: fieldErrors[key as keyof typeof fieldErrors].message });
-          }
-        });
+         Object.entries({ company, unique_url, email }).forEach(([key, value]) => {
+            if (value) {
+              const field = key === 'unique_url' ? 'name' : fieldErrors[key as keyof typeof fieldErrors].field;
+
+              this.dynamicForm.form.controls[field].setErrors({
+                customError: fieldErrors[key as keyof typeof fieldErrors].message,
+              });
+            }
+          });
 
         return;
       }
@@ -246,5 +252,12 @@ export class SubscriptionPage {
     } catch (error) {
       console.error('Erro ao processar o cadastro:', error);
     }
+  }
+
+  private generateUniqueUrl(companyName: string): string {
+    return companyName
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
   }
 }

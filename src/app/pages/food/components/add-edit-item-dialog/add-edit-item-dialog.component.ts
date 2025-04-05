@@ -47,10 +47,10 @@ export class AddEditItemDialogComponent implements OnInit {
 
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
-  public categories = signal<{ id: number; name: string }[]>([]);
-  public extras = signal<{ id: number; name: string }[]>([]);
+  public categories = signal<{ id: string; name: string }[]>([]);
+  public extras = signal<{ id: string; name: string }[]>([]);
   public imageUrl: string | null = null;
-  public companyId = this.localStorageService.getSignal('companyId', 0);
+  public companyId = this.localStorageService.getSignal('companyId', '0');
 
   public foodFields: iDynamicField[] = [
     {
@@ -143,7 +143,7 @@ export class AddEditItemDialogComponent implements OnInit {
   }
 
   public async getCategories() {
-    this.categories.set(await this.categoryService.getAll('categories'));
+    this.categories.set(await this.categoryService.getAllByField<iCategory>('company_categories_view', 'company_id', (this.companyId())),  );
     this.foodFields.find((f) => f.name === 'category_id')!.options =
     this.categories().map((c) => ({ label: c.name, value: c.id }));
     this.dynamicForm.isDisabled['extras'] = true;
@@ -189,7 +189,6 @@ export class AddEditItemDialogComponent implements OnInit {
   }
 
   private async loadExtrasByCategory(categoryId: string) {
-    console.log(categoryId)
     const extras = await this.extraService.getExtrasByCategory(categoryId);
     this.extras.set(extras);
 

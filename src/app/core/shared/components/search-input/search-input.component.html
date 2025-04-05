@@ -1,0 +1,9 @@
+<div class="relative w-full">
+  <input
+    type="text"
+    [placeholder]="placeholder"
+    [value]="searchQuery()"
+    (input)="onSearchChange($event)"
+    class="input-primary w-full"
+  />
+</div>

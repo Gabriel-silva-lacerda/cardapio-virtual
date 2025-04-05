@@ -1,7 +1,7 @@
 import { DayOfWeek } from "@shared/enums/day-of-week.enum";
 
 export interface iFood {
-  id?: number;
+  id?: string;
   name: string;
   description?: string;
   price: number;
@@ -9,5 +9,5 @@ export interface iFood {
   image_url?: string | null;
   day_of_week: DayOfWeek;
   created_at?: string;
-  company_id: number;
+  company_id: string;
 }

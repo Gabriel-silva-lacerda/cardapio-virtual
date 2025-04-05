@@ -53,7 +53,7 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   @Input() cartItem?: iCartItem;
   @Input() isInCart = false;
   @Input() showItem = false;
-  @Output() editItem = new EventEmitter<number>();
+  @Output() editItem = new EventEmitter<string>();
   @Output() deleteItem = new EventEmitter<iFoodDetails>();
 
   private foodService = inject(FoodService);
@@ -108,8 +108,8 @@ export class FoodMenuComponent implements OnInit, OnChanges {
         : getUnavailableItemMessage(this.foodDetails?.day_of_week);
   }
 
-  public edit(foodId: number | undefined) {
-    this.editItem.emit(foodId as number);
+  public edit(foodId: string | undefined) {
+    this.editItem.emit(foodId as string);
   }
 
   public remove(food: iFoodDetails | null) {

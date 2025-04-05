@@ -1,7 +1,7 @@
 import { DayOfWeek } from "@shared/enums/day-of-week.enum";
 
 export interface iFoodDetails {
-  id: number | undefined;
+  id: string | undefined;
   name: string;
   description?: string;
   price: number;

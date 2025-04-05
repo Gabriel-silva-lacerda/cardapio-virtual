@@ -6,48 +6,64 @@ import { iCategory } from '../interfaces/category.interface';
   providedIn: 'root',
 })
 export class CategoryService extends BaseSupabaseService {
-  private async getCategoriesByCompanyId(companyId: number): Promise<iCategory[]> {
-    const companyCategories = await this.getAllByField<{ category_id: number }>(
-      'company_categories',
-      'company_id',
-      companyId,
-      'category_id'
-    );
+  // private async getCategoriesByCompanyId(companyId: number): Promise<iCategory[]> {
+  //   const companyCategories = await this.getAllByField<{ category_id: number }>(
+  //     'company_categories',
+  //     'company_id',
+  //     companyId,
+  //     'category_id'
+  //   );
 
-    const categoryIds = companyCategories.map(item => item.category_id);
+  //   const categoryIds = companyCategories.map(item => item.category_id);
 
-    const { data, error } = await this.supabaseService.supabase
-      .from('categories')
-      .select('*')
-      .in('id', categoryIds);
+  //   const { data, error } = await this.supabaseService.supabase
+  //     .from('categories')
+  //     .select('*')
+  //     .in('id', categoryIds);
 
-    if (error) {
-      this.toastr.error('Erro ao buscar categorias:', error.message);
-      throw new Error(error.message);
-    }
+  //   if (error) {
+  //     this.toastr.error('Erro ao buscar categorias:', error.message);
+  //     throw new Error(error.message);
+  //   }
 
-    return data as iCategory[];
+  //   return data as iCategory[];
+  // }
+
+  // public async getCategoriesByCompanyUrl(companyId: number): Promise<iCategory[]> {
+  //   const { data: userData } = await this.supabaseService.supabase.auth.getUser();
+  //   const user = userData?.user;
+
+  //   if (user) {
+  //     const userRole = await this.getByField<{ role: string }>('user_companies', 'user_id', user.id);
+  //     if (userRole?.role === 'admin') {
+  //       return await this.getAll<iCategory>('categories');
+  //     }
+  //   }
+
+  //   return await this.getCategoriesByCompanyId(companyId);
+  // }
+
+  // public async getCategoriesByCompany(companyId: number): Promise<iCategory[]> {
+  //   return await this.getCategoriesByCompanyId(companyId);
+  // }
+  async teste() {
+    const { data: { user }, error } =  await this.supabaseService.supabase.auth.getUser();
+    const { data: userInfo } = await this.supabaseService.supabase
+    .from('user_companies')
+    .select('*')
+    .eq('user_id', user?.id);
+
+    console.log("UserInfo:", userInfo);
   }
 
-  public async getCategoriesByCompanyUrl(companyId: number): Promise<iCategory[]> {
-    const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-    const user = userData?.user;
-
-    if (user) {
-      const userRole = await this.getByField<{ role: string }>('user_companies', 'user_id', user.id);
-      if (userRole?.role === 'admin') {
-        return await this.getAll<iCategory>('categories');
-      }
-    }
-
-    return await this.getCategoriesByCompanyId(companyId);
+  async teste2() {
+    const { data } = await this.supabaseService.supabase.from('debug_auth_uid').select('*');
+    console.log('Supabase está enxergando o UID como:', data);
   }
 
-  public async getCategoriesByCompany(companyId: number): Promise<iCategory[]> {
-    return await this.getCategoriesByCompanyId(companyId);
-  }
-  
-  async getAssociatedCategories(companyId: number): Promise<any[]> {
+
+
+  async getAssociatedCategories(companyId: string): Promise<any[]> {
     const { data, error } = await this.supabaseService.supabase
       .from('company_categories')
       .select('category_id')

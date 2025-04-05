@@ -21,6 +21,7 @@ import {
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltip } from '@angular/material/tooltip';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-footer-food',
@@ -39,6 +40,7 @@ export class FooterFoodComponent implements OnInit, OnChanges {
   private toastr = inject(ToastrService);
   private cartService = inject(CartService);
   private localStorageService = inject(LocalStorageService);
+  private authService = inject(AuthService);
 
   public companyName = this.localStorageService.getSignal<string>(
     'companyName',
@@ -114,7 +116,7 @@ export class FooterFoodComponent implements OnInit, OnChanges {
       totalPrice: this.totalPrice(),
     };
 
-    this.cartService.addOrUpdateCartItem(cartItem, this.newItem);
+    this.cartService.addOrUpdateCartItem(cartItem, this.newItem, this.authService.currentUser()?.id);
 
     this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name, {
       positionClass: 'toast-top-left',

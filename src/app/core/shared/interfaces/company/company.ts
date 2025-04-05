@@ -16,4 +16,5 @@ export interface Company {
   street?: string;
   unique_url?: string;
   updated_at?: string | null;
+  image_url?: string | null;
 }

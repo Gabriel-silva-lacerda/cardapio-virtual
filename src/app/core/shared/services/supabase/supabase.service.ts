@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@enviroment/environment.development';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SupabaseService {
-  supabase!: SupabaseClient;
+  supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = new SupabaseClient(
+    this.supabase = createClient(
       environment.SUPABASE_URL,
-      environment.SUPABASE_KEY
+      environment.SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true
+        }
+      }
     );
   }
 }

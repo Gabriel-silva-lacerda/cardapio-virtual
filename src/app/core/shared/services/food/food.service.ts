@@ -5,6 +5,7 @@ import { iFoodWithCategory } from 'src/app/pages/home/interfaces/food-with-categ
 import { environment } from '@enviroment/environment.development';
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
+import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,7 @@ export class FoodService extends BaseSupabaseService {
   public totalAddition = signal<number>(0);
 
   async getAllFoodsGroupedByCategory(
-    companyId: number
+    companyId: string
   ): Promise<{ [categoryName: string]: iFood[] }> {
     const data = await this.getAllByField<iFoodWithCategory>(
       'foods',
@@ -36,27 +37,19 @@ export class FoodService extends BaseSupabaseService {
 
       groupedFoods[categoryName].push({
         ...food,
-        image_url: food.image_url
-          ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-          : null,
+        image_url: getImageUrl(food.image_url as string),
       });
     });
 
     return groupedFoods;
   }
 
-  async getFoodsByCompany(companyId: number): Promise<iFood[]> {
-    const foods = await this.getAllByField<iFood>(
-      'foods',
-      'company_id',
-      companyId
-    );
+  async getFoods(): Promise<iFood[]> {
+    const foods = await this.getAll<iFood>('foods',);
 
     const updatedFoods = foods.map((food) => ({
       ...food,
-      image_url: food.image_url
-        ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-        : null,
+      image_url: getImageUrl(food.image_url as string)
     }));
 
     return updatedFoods;
@@ -69,15 +62,13 @@ export class FoodService extends BaseSupabaseService {
 
     return {
       ...food,
-      image_url: food.image_url
-        ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-        : null,
+      image_url: getImageUrl(food.image_url as string)
     };
   }
 
   async getFoodsByCategory(
-    categoryId: number,
-    companyId: number
+    categoryId: string,
+    companyId: string
   ): Promise<iFood[] | null> {
     const foods = await this.supabaseService.supabase
       .from('foods')
@@ -89,9 +80,7 @@ export class FoodService extends BaseSupabaseService {
 
     return foods.data.map((food) => ({
       ...food,
-      image_url: food.image_url
-        ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-        : null,
+      image_url: getImageUrl(food.image_url as string)
     }));
   }
 
@@ -153,9 +142,4 @@ export class FoodService extends BaseSupabaseService {
     };
   }
 
-  private getImageUrl(food: iFood): string | null {
-    return food.image_url
-      ? `${environment.SUPABASE_STORAGE}/${food.image_url}`
-      : null;
-  }
 }

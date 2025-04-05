@@ -1,6 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.service';
-import { EmailService } from '../email.service';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { Company } from '@shared/interfaces/company/company';
 

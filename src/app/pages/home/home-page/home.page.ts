@@ -63,9 +63,10 @@ export class HomePage implements OnInit {
 
     try {
       const [foods, categories] = await Promise.all([
-        this.foodService.getFoodsByCompany(this.companyId()),
-        this.categoryService.getCategoriesByCompany(this.companyId()),
+        this.foodService.getFoods(),
+        this.categoryService.getAllByField<iCategory>('company_categories_view', 'company_id', (this.companyId())),
       ]);
+
       this.foods.set(foods);
       this.categories.set(categories);
     } finally {
