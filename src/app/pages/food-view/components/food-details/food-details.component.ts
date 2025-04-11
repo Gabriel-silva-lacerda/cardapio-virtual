@@ -32,16 +32,16 @@ export class FoodDetailsComponent {
         price: item.price,
         quantity: 0,
       };
-    
+
       return {
         ...state,
         [item.id]: { ...currentItem, quantity: currentItem.quantity + 1 },
       };
     });
-    
+
     this.updateTotalAdditions();
   }
-  
+
   public decreaseAddition(item: {
     id: string;
     name: string;
@@ -49,29 +49,29 @@ export class FoodDetailsComponent {
   }): void {
     const selected: { [key: string]: iExtra } = this.selectedAdditions();
     const currentItem = selected[item.id];
-    
-  
+
+
     if (currentItem && currentItem.quantity > 0) {
       this.selectedAdditions.update((state) => ({
         ...state,
         [item.id]: { ...currentItem, quantity: currentItem.quantity - 1 },
       }));
     }
-  
+
     this.updateTotalAdditions();
   }
-  
+
   private updateTotalAdditions(): void {
     const selected = this.selectedAdditions();
     let totalAdditions = Object.values(selected).reduce((sum, item) => {
       return sum + item.quantity * item.price;
     }, 0);
-  
+
     this.foodService.totalAddition.set(totalAdditions);
   }
 
   get selectedAdditionsMap(): { [key: string]: iExtra } {
     return this.selectedAdditions();
   }
-  
+
 }

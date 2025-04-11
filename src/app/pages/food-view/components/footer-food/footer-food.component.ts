@@ -40,7 +40,7 @@ export class FooterFoodComponent implements OnInit, OnChanges {
   private toastr = inject(ToastrService);
   private cartService = inject(CartService);
   private localStorageService = inject(LocalStorageService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
 
   public companyName = this.localStorageService.getSignal<string>(
     'companyName',
@@ -94,11 +94,16 @@ export class FooterFoodComponent implements OnInit, OnChanges {
   }
 
   private updateTooltipMessage(): void {
-    this.tooltipMessage =
-      this.food?.day_of_week === getCurrentDayOfWeek()
-        ? ''
-        : getUnavailableItemMessage(this.food?.day_of_week);
+    if (this.authService.isAdmin()) {
+      this.tooltipMessage = 'Somente usuários podem adicionar no carrinho';
+    } else {
+      this.tooltipMessage =
+        this.food?.day_of_week === getCurrentDayOfWeek()
+          ? ''
+          : getUnavailableItemMessage(this.food?.day_of_week);
+    }
   }
+
 
   public getCurrentDayOfWeek(): DayOfWeek {
     return getCurrentDayOfWeek();

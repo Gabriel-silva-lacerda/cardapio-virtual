@@ -11,7 +11,7 @@ import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
   providedIn: 'root',
 })
 export class FoodService extends BaseSupabaseService {
-  public selectedAdditions = signal<{ [key: number]: iExtra }>({});
+  public selectedAdditions = signal<{ [key: string]: iExtra }>({});
   public observations = signal<string>('');
   public productCount = signal<number>(1);
   public totalAddition = signal<number>(0);

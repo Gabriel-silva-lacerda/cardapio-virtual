@@ -25,7 +25,6 @@ export class PerfilPage {
   private router = inject(Router);
   private stripeService = inject(StripeService);
   private localStorageService = inject(LocalStorageService);
-  private authService = inject(AuthService);
   private companyService = inject(CompanyService);
   private toastr = inject(ToastrService);
   private companyData = signal<Company>({} as Company);
@@ -36,6 +35,7 @@ export class PerfilPage {
   private destroy$ = new Subject<void>();
   private companyId = this.localStorageService.getSignal('companyId', 0);
 
+  public authService = inject(AuthService);
   public loadingService = inject(LoadingService);
   public isLogged = this.authService.isLogged;
   public currentUser = this.authService.currentUser;

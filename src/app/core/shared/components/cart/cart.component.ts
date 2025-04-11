@@ -14,7 +14,7 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
 })
 export class CartComponent implements OnInit{
   private localStorageService = inject(LocalStorageService);
-  private authService = inject(AuthService); 
+  public authService = inject(AuthService);
 
   public showItemService = inject(ShowItemService);
 

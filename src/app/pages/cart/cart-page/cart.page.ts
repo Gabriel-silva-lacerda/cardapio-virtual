@@ -20,8 +20,6 @@ export class CartPage implements OnInit {
   private authService = inject(AuthService);
   public carts = signal<iCartItem[]>([]);
 
-
-
   ngOnInit() {
     const userId = this.authService.currentUser()?.id;
 
