@@ -21,57 +21,57 @@ export class FoodDetailsComponent {
 
   // Função para aumentar a quantidade de adicionais
   public increaseAddition(item: {
-    id: number;
+    id: string;
     name: string;
     price: number;
   }): void {
-    this.selectedAdditions.update((state) => {
-      // Verificar se o item já está no estado, caso contrário, inicializá-lo com quantidade 0
+    this.selectedAdditions.update((state: { [key: string]: iExtra }) => {
       const currentItem = state[item.id] || {
         id: item.id,
         name: item.name,
         price: item.price,
         quantity: 0,
       };
-      // Retornar um novo estado com o spread correto
+    
       return {
         ...state,
         [item.id]: { ...currentItem, quantity: currentItem.quantity + 1 },
       };
     });
+    
     this.updateTotalAdditions();
   }
-
-  // Função para diminuir a quantidade de adicionais
+  
   public decreaseAddition(item: {
-    id: number;
+    id: string;
     name: string;
     price: number;
   }): void {
-    if (
-      this.selectedAdditions()[item.id] &&
-      this.selectedAdditions()[item.id].quantity > 0
-    ) {
-      this.selectedAdditions.update((state) => {
-        const currentItem = state[item.id];
-        // Retornar um novo estado com o spread correto
-        return {
-          ...state,
-          [item.id]: { ...currentItem, quantity: currentItem.quantity - 1 },
-        };
-      });
+    const selected: { [key: string]: iExtra } = this.selectedAdditions();
+    const currentItem = selected[item.id];
+    
+  
+    if (currentItem && currentItem.quantity > 0) {
+      this.selectedAdditions.update((state) => ({
+        ...state,
+        [item.id]: { ...currentItem, quantity: currentItem.quantity - 1 },
+      }));
     }
+  
     this.updateTotalAdditions();
   }
-
+  
   private updateTotalAdditions(): void {
-    let totalAdditions = Object.values(this.selectedAdditions()).reduce(
-      (sum, item) => {
-        return sum + item.quantity * item.price;
-      },
-      0
-    );
-
+    const selected = this.selectedAdditions();
+    let totalAdditions = Object.values(selected).reduce((sum, item) => {
+      return sum + item.quantity * item.price;
+    }, 0);
+  
     this.foodService.totalAddition.set(totalAdditions);
   }
+
+  get selectedAdditionsMap(): { [key: string]: iExtra } {
+    return this.selectedAdditions();
+  }
+  
 }

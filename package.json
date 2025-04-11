@@ -43,6 +43,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/mercadopago-sdk-js": "^2.0.17",
     "autoprefixer": "^10.4.20",
+    "husky": "^9.1.7",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

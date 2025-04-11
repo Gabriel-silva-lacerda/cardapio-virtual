@@ -21,7 +21,8 @@
           </div>
           <div class="flex items-center gap-2">
             <button (click)="decreaseAddition(item)" class="px-2 py-1 text-xl text-black rounded">-</button>
-            <span class="min-w-[20px] text-center text-lg text-black"> {{ selectedAdditions()[item.id]?.quantity || 0 }}
+            <span class="min-w-[20px] text-center text-lg text-black"> {{ selectedAdditionsMap[item.id]?.quantity || 0 }}
+
             </span>
             <button (click)="increaseAddition(item)" class="px-2 py-1 text-xl text-primary rounded">+</button>
           </div>
