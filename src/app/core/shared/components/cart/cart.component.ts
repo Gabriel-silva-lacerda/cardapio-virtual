@@ -1,5 +1,5 @@
 import { ShowItemService } from '@shared/services/show-item/show-item.service';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { RouterLink } from '@angular/router';
@@ -10,25 +10,32 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
   selector: 'app-cart',
   imports: [RouterLink],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.scss'
+  styleUrl: './cart.component.scss',
 })
-export class CartComponent implements OnInit{
+export class CartComponent {
   private localStorageService = inject(LocalStorageService);
   public authService = inject(AuthService);
 
   public showItemService = inject(ShowItemService);
 
   public cart = signal<iCartItem[]>([]);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
 
-  ngOnInit() {
-    const userId = this.authService.currentUser()?.id;
+  constructor() {
+    effect(() => {
+      const userId = this.authService.currentUser()?.id;
 
-    if (userId) {
-      const cartKey = `cart-${userId}`;
-      const savedCart = this.localStorageService.getItem<iCartItem[]>(cartKey) || [];
-      this.cart.set(savedCart);
-    }
+      if (userId) {
+        const cartKey = `cart-${userId}`;
+        const savedCart = this.localStorageService.getSignal<iCartItem[]>(
+          cartKey,
+          []
+        );
+        this.cart.set(savedCart());
+      }
+    });
   }
 }
-
