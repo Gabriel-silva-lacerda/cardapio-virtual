@@ -1,8 +1,10 @@
 @if(food) {
 <div class="relative">
-  <app-back-button customClass="absolute left-3 top-1 bg-primary text-white py-2 px-4 rounded-lg" />
-  <img class="w-full object-contain" [src]="food.image_url" alt="">
-  <div class=" mt-5 px-3 flex flex-col gap-3">
+  <app-back-button
+    customClass="absolute left-3 top-1 bg-primary text-white py-2 px-4 rounded-lg"
+  />
+  <img class="w-full object-contain" [src]="food.image_url" alt="" />
+  <div class="mt-5 px-3 flex flex-col gap-3">
     <div class="flex flex-col">
       <span class="text-title5 font-medium">{{ food.name }}</span>
       <span>A partir de {{ food.price }}</span>
@@ -14,30 +16,50 @@
       <ul class="mt-2 flex flex-col gap-3">
         @for (item of extras; track $index) {
         <li
-          class="border p-3 border-gray-300 bg-white-light rounded-lg shadow-sm text-gray-600 flex justify-between items-center">
+          class="border p-3 border-gray-300 bg-white-light rounded-lg shadow-sm text-gray-600 flex justify-between items-center"
+        >
           <div class="flex flex-col">
             <span class="text-text4">{{ item.name }}</span>
             <span class="text-text6">+ R${{ item.price }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <button (click)="decreaseAddition(item)" class="px-2 py-1 text-xl text-black rounded">-</button>
-            <span class="min-w-[20px] text-center text-lg text-black"> {{ selectedAdditionsMap[item.id]?.quantity || 0 }}
-
+            <button
+              (click)="decreaseAddition(item)"
+              class="px-2 py-1 text-xl text-black rounded"
+            >
+              -
+            </button>
+            <span class="min-w-[20px] text-center text-lg text-black">
+              {{ selectedAdditions()[item.id]?.quantity || 0 }}
             </span>
-            <button (click)="increaseAddition(item)" class="px-2 py-1 text-xl text-primary rounded">+</button>
+            <button
+              (click)="increaseAddition(item)"
+              class="px-2 py-1 text-xl text-primary rounded"
+            >
+              +
+            </button>
           </div>
         </li>
         } @empty {
-        <div class="border p-3 border-gray-300 bg-white-light rounded-lg shadow-sm text-gray-600">Não há adicionais disponíveis</div>
+        <div
+          class="border p-3 border-gray-300 bg-white-light rounded-lg shadow-sm text-gray-600"
+        >
+          Não há adicionais disponíveis
+        </div>
         }
       </ul>
     </div>
 
     <div class="mt-1">
-      <label for="observations" class="block text-lg font-semibold">Observações</label>
-      <textarea [(ngModel)]="observations" id="observations"
+      <label for="observations" class="block text-lg font-semibold"
+        >Observações</label
+      >
+      <textarea
+        [(ngModel)]="observations"
+        id="observations"
         placeholder="Digite aqui alguma observação sobre o pedido..."
-        class="w-full h-24 p-2 border border-gray-300 rounded-lg resize-none outline-none"></textarea>
+        class="w-full h-24 p-2 border border-gray-300 rounded-lg resize-none outline-none"
+      ></textarea>
     </div>
   </div>
 </div>

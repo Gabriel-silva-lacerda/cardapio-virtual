@@ -52,6 +52,7 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.getAllFoodAndCategories();
+    sessionStorage.removeItem('paymentRedirect');
   }
 
   get skeletonItems(): number[] {
@@ -64,7 +65,11 @@ export class HomePage implements OnInit {
     try {
       const [foods, categories] = await Promise.all([
         this.foodService.getFoods(),
-        this.categoryService.getAllByField<iCategory>('company_categories_view', 'company_id', (this.companyId())),
+        this.categoryService.getAllByField<iCategory>(
+          'company_categories_view',
+          'company_id',
+          this.companyId()
+        ),
       ]);
 
       this.foods.set(foods);

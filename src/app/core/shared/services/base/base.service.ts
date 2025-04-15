@@ -13,6 +13,8 @@ export abstract class BaseService {
   protected http: HttpClient = inject(HttpClient);
   protected toastr: ToastrService = inject(ToastrService);
   protected apiUrl: string = environment.API_URL;
+  protected apiCep = environment.VIACEP_URL;
+
   protected loadingService = inject(LoadingService);
 
   // Método genérico para GET (buscar todos os itens)
@@ -47,7 +49,7 @@ export abstract class BaseService {
         this.loadingService.hideLoading();
         // this.toastr.error('Erro ao criar item.', 'Erro');
         return throwError(() => error);
-      }),
+      })
     );
   }
 

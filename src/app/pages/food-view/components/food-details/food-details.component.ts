@@ -1,9 +1,9 @@
 import { Component, inject, Input } from '@angular/core';
 import { iFood } from '@shared/interfaces/food/food.interface';
-import { iExtra } from '../../../../core/shared/interfaces/extra/extra.interface';
 import { FormsModule } from '@angular/forms';
 import { FoodService } from '@shared/services/food/food.service';
-import { BackButtonComponent } from '../../../../core/shared/components/back-button/back-button.component';
+import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
+import { iExtra } from '@shared/interfaces/extra/extra.interface';
 
 @Component({
   selector: 'app-food-details',
@@ -19,7 +19,6 @@ export class FoodDetailsComponent {
   public selectedAdditions = this.foodService.selectedAdditions;
   public observations = this.foodService.observations;
 
-  // Função para aumentar a quantidade de adicionais
   public increaseAddition(item: {
     id: string;
     name: string;
@@ -50,7 +49,6 @@ export class FoodDetailsComponent {
     const selected: { [key: string]: iExtra } = this.selectedAdditions();
     const currentItem = selected[item.id];
 
-
     if (currentItem && currentItem.quantity > 0) {
       this.selectedAdditions.update((state) => ({
         ...state,
@@ -73,5 +71,4 @@ export class FoodDetailsComponent {
   get selectedAdditionsMap(): { [key: string]: iExtra } {
     return this.selectedAdditions();
   }
-
 }

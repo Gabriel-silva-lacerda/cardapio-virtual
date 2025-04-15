@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   inject,
-  Inject,
   OnInit,
   signal,
   ViewChild,
@@ -22,7 +21,6 @@ import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
-import cepPromise from 'cep-promise';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { fadeInOut } from '@shared/utils/animations.utils';
 import { PaymentComponent } from '../payment/payment.component';
@@ -33,6 +31,9 @@ import { SaveAddressDialogComponent } from '../save-address-dialog/save-address-
 import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
 import { Address } from '../../interfaces/address';
 import { CardAddressComponent } from '../card-address/card-address.component';
+import { PickupOptionComponent } from '../pickup-option/pickup-option.component';
+import { ViacepService } from '@shared/services/via-cep/viacep.service';
+import { ViaCep, ViaCepError } from '@shared/interfaces/via-cep/via-cep';
 
 @Component({
   selector: 'app-payment-address-dialog',
@@ -43,6 +44,7 @@ import { CardAddressComponent } from '../card-address/card-address.component';
     MatTooltipModule,
     PaymentComponent,
     CardAddressComponent,
+    PickupOptionComponent,
   ],
   templateUrl: './payment-address-dialog.component.html',
   styleUrl: './payment-address-dialog.component.scss',
@@ -56,16 +58,21 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private localStorageService = inject(LocalStorageService);
+  private dialogRef = inject(MatDialogRef<PaymentAddressDialogComponent>);
+  private viaCepService = inject(ViacepService);
 
+  public data = inject<iCartItem[]>(MAT_DIALOG_DATA);
   public loadingService = inject(LoadingService);
   public selectedDelivery = signal(true);
   public isSelectAddress = signal(false);
   public selectedAddress = signal<Address>({} as Address);
   public cepSubject = new Subject<string>();
   public destroy$ = new Subject<void>();
-  public isLoading = false;
+  public loading = {
+    viaCep: false,
+    insertDelivery: false,
+  };
   public showPayment = this.orderService.showPayment;
-  public formData!: any;
   public deliveryAddresses = signal([]);
 
   public addressFields: iDynamicField[] = [
@@ -132,27 +139,30 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     },
   ];
 
-  constructor(
-    public dialogRef: MatDialogRef<PaymentAddressDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: iCartItem[]
-  ) {}
-
   ngOnInit() {
-    this.cepSubject
-      .pipe(debounceTime(500), takeUntil(this.destroy$))
-      .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
-    this.cdr.detectChanges();
+    this.initCepListener();
     this.getDeliveryAddresses();
-
-    const selectedAddress = this.localStorageService.getItem<Address>(
-      'selectedAddress'
-    ) as Address;
-    if (selectedAddress) this.isSelectAddress.set(true);
-    this.selectedAddress.set(selectedAddress);
+    this.loadSelectedAddressFromStorage();
   }
 
   ngAfterViewInit() {
     this.cdr.detectChanges();
+  }
+
+  private initCepListener(): void {
+    this.cepSubject
+      .pipe(debounceTime(500), takeUntil(this.destroy$))
+      .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
+  }
+
+  private loadSelectedAddressFromStorage(): void {
+    const selectedAddress = this.localStorageService.getItem<Address>(
+      'selectedAddress'
+    ) as Address;
+    if (selectedAddress) {
+      this.isSelectAddress.set(true);
+      this.selectedAddress.set(selectedAddress);
+    }
   }
 
   async getDeliveryAddresses() {
@@ -169,45 +179,70 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     const control = form.get('cep');
     if (control?.invalid && value.length < 8) return;
 
-    this.isLoading = true;
+    this.loading.viaCep = true;
 
-    try {
-      // const addressData = await cepPromise(value);
-      // form.patchValue({
-      //   street: addressData.street,
-      //   neighborhood: addressData.neighborhood,
-      //   city: addressData.city,
-      //   state: addressData.state,
-      // });
-      // form.get('street')?.markAsTouched();
-      // form.get('neighborhood')?.markAsTouched();
-      // form.get('city')?.markAsTouched();
-      // form.get('state')?.markAsTouched();
-      // this.dynamicForm.disableFields([
-      //   'street',
-      //   'neighborhood',
-      //   'city',
-      //   'state',
-      // ]);
-    } catch (error) {
-      this.toastr.error('CEP não encontrado ou inválido.');
+    this.viaCepService.getCep(value).subscribe({
+      next: (addressData: ViaCep | ViaCepError) => {
+        if ((addressData as ViaCepError).erro === 'true') {
+          this.toastr.error('CEP não encontrado ou inválido.');
 
-      form.patchValue({
-        street: null,
-        neighborhood: null,
-        city: null,
-        state: null,
-      });
+          form.patchValue({
+            street: null,
+            neighborhood: null,
+            city: null,
+            state: null,
+          });
 
-      this.dynamicForm.enableFields([
-        'street',
-        'neighborhood',
-        'city',
-        'state',
-      ]);
-    } finally {
-      this.isLoading = false;
-    }
+          this.dynamicForm.enableFields([
+            'street',
+            'neighborhood',
+            'city',
+            'state',
+          ]);
+        } else {
+          const validAddressData = addressData as ViaCep;
+
+          form.patchValue({
+            street: validAddressData.logradouro,
+            neighborhood: validAddressData.bairro,
+            city: validAddressData.localidade,
+            state: validAddressData.uf,
+          });
+
+          form.get('street')?.markAsTouched();
+          form.get('neighborhood')?.markAsTouched();
+          form.get('city')?.markAsTouched();
+          form.get('state')?.markAsTouched();
+
+          this.dynamicForm.disableFields([
+            'street',
+            'neighborhood',
+            'city',
+            'state',
+          ]);
+        }
+      },
+      error: () => {
+        this.toastr.error('CEP não encontrado ou inválido.');
+
+        form.patchValue({
+          street: null,
+          neighborhood: null,
+          city: null,
+          state: null,
+        });
+
+        this.dynamicForm.enableFields([
+          'street',
+          'neighborhood',
+          'city',
+          'state',
+        ]);
+      },
+      complete: () => {
+        this.loading.viaCep = false;
+      },
+    });
   }
 
   openSaveAddressDialog() {
@@ -252,12 +287,18 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
       );
 
       if (!existingAddress) {
-        this.selectedAddress.set(
-          await this.orderService.insert(
-            'delivery_addresses',
-            deliveryAddresses
-          )
-        );
+        try {
+          this.loading.insertDelivery = true;
+
+          this.selectedAddress.set(
+            await this.orderService.insert(
+              'delivery_addresses',
+              deliveryAddresses
+            )
+          );
+        } finally {
+          this.loading.insertDelivery = false;
+        }
       }
     }
   }

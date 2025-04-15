@@ -18,6 +18,8 @@ import {
 } from '@shared/utils/oder.utils';
 import { StripeService } from '@shared/services/stripe/stripe.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
 
 enum PaymentMethod {
   Entrega = 'entrega',
@@ -27,7 +29,7 @@ enum PaymentMethod {
 
 @Component({
   selector: 'app-payment',
-  imports: [CurrencyPipe, FormsModule, MatTooltipModule],
+  imports: [CurrencyPipe, FormsModule, MatTooltipModule, LoadingComponent],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss',
 })
@@ -38,7 +40,7 @@ export class PaymentComponent {
   private stripeService = inject(StripeService);
   private orderService = inject(OrderService);
   private authService = inject(AuthService);
-  private localStorageService = inject(LocalStorageService);
+  public loadingService = inject(LoadingService);
 
   public selectedPayment: PaymentMethod | null = null;
   public total!: number;
@@ -68,7 +70,6 @@ export class PaymentComponent {
     };
 
     const orderItems = order.items.map((item, index) => ({
-      Id: index,
       FoodId: item.food_id,
       Quantity: item.quantity,
       Observations: item.observations || '',
@@ -76,7 +77,6 @@ export class PaymentComponent {
 
     const orderItemExtras = order.items.flatMap((item, index) =>
       item.extras.map((extra) => ({
-        ItemId: index,
         ExtraId: extra.extra_id,
         ExtraQuantity: extra.extra_quantity,
       }))
@@ -90,6 +90,8 @@ export class PaymentComponent {
       DeliveryAddressId: this.deliveryAddressId,
       Delivery: this.selectedDelivery,
     };
+
+    console.log(order.items);
 
     const productName = carts.map((item) => item.food.name).join(' + ');
     const amountInCents = this.total * 100;

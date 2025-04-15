@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../guards/authGuard';
+import { PaymentSuccessGuard } from '../../guards/paymentRedirectGuard';
+import { PaymentStatusResolver } from 'src/app/widget/payment-status-resolver';
 
 export const mainRoutes: Routes = [
   {
@@ -13,7 +15,7 @@ export const mainRoutes: Routes = [
       import('../../../pages/perfil/perfil-page/perfil.page').then(
         (m) => m.PerfilPage
       ),
-      canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'categorias',
@@ -72,13 +74,8 @@ export const mainRoutes: Routes = [
       import('../successful-payment/successful-payment.page').then(
         (m) => m.SuccessfulPaymentPage
       ),
-  },
-  {
-    path: 'pedente-pagamento',
-    loadComponent: () =>
-      import('../peding-payment/peding-payment.page').then(
-        (m) => m.PedingPaymentPage
-      ),
+    // resolve: { payment: PaymentStatusResolver },
+    // canActivate: [PaymentSuccessGuard],
   },
   {
     path: 'falha-pagamento',

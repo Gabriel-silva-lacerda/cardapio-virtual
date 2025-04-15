@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-food-view',
@@ -25,18 +26,27 @@ export class FoodViewPage {
   private foodService = inject(FoodService);
   private extraService = inject(ExtraService);
   private localStorageService = inject(LocalStorageService);
-  public carts = this.localStorageService.getSignal<iCartItem[]>('cart', []);
+  private authService = inject(AuthService);
 
   public food = signal<iFood | null>(null);
   public extras = signal<iExtra[]>([]);
-
   public id!: string | null;
   public itemId!: string | null;
+  public carts = signal<iCartItem[]>([]);
 
   public newItem = false;
 
   ngOnInit() {
     this.getRouteId();
+
+    const userId = this.authService.currentUser()?.id;
+
+    if (userId) {
+      const cartKey = `cart-${userId}`;
+      this.carts.set(
+        this.localStorageService.getItem<iCartItem[]>(cartKey) || []
+      );
+    }
   }
 
   private async getRouteId(): Promise<void> {
@@ -68,6 +78,7 @@ export class FoodViewPage {
 
   private loadCartItemData(itemId: string) {
     const cartItem = this.carts().find((item) => item.id === itemId);
+
     if (cartItem) {
       this.foodService.selectedAdditions.set(cartItem.extras);
       this.foodService.observations.set(cartItem.observations || '');

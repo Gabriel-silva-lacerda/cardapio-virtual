@@ -1,32 +1,45 @@
 <div class="bg-white-light p-6 rounded-2x">
-  <h2 class="text-xl font-medium text-black-dark mb-4">
-    Formas de Pagamento
-  </h2>
+  <h2 class="text-xl font-medium text-black-dark mb-4">Formas de Pagamento</h2>
 
   <div class="space-y-3">
-    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
-      [class.border-primary]="selectedPayment === 'creditCard'">
-      <input [(ngModel)]="selectedPayment" type="radio" value="creditCard" class="hidden" />
-      <span class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
-        [class.border-primary]="selectedPayment === 'creditCard'">
+    <label
+      class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
+      [class.border-primary]="selectedPayment === 'creditCard'"
+    >
+      <input
+        [(ngModel)]="selectedPayment"
+        type="radio"
+        value="creditCard"
+        class="hidden"
+      />
+      <span
+        class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
+        [class.border-primary]="selectedPayment === 'creditCard'"
+      >
         @if(selectedPayment === 'creditCard') {
-        <span class="w-[13px] h-[13px] bg-primary rounded-full">
-        </span>
+        <span class="w-[13px] h-[13px] bg-primary rounded-full"> </span>
         }
-
       </span>
       <span class="text-black text-lg">Cartão</span>
     </label>
 
     <div>
-      <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
-        [class.border-primary]="selectedPayment === 'pix'">
-        <input [(ngModel)]="selectedPayment" type="radio" value="pix" class="hidden" />
-        <span class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
-          [class.border-primary]="selectedPayment === 'pix'">
+      <label
+        class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
+        [class.border-primary]="selectedPayment === 'pix'"
+      >
+        <input
+          [(ngModel)]="selectedPayment"
+          type="radio"
+          value="pix"
+          class="hidden"
+        />
+        <span
+          class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
+          [class.border-primary]="selectedPayment === 'pix'"
+        >
           @if(selectedPayment === 'pix') {
-          <span class="w-[13px] h-[13px] bg-primary rounded-full">
-          </span>
+          <span class="w-[13px] h-[13px] bg-primary rounded-full"> </span>
           }
         </span>
         <span class="text-black text-lg">PIX</span>
@@ -34,10 +47,15 @@
 
       @if(selectedPayment === 'pix') {
       <div class="mt-4 flex flex-col items-center">
-        <p class="text-center text-gray-700 mb-2">Escaneie o QR Code para pagar</p>
+        <p class="text-center text-gray-700 mb-2">
+          Escaneie o QR Code para pagar
+        </p>
 
-        <img src="assets/images/qr_code.png" alt="QR Code PIX"
-          class="w-32 h-32 border border-gray-300 rounded-lg shadow-md" />
+        <img
+          src="assets/images/qr_code.png"
+          alt="QR Code PIX"
+          class="w-32 h-32 border border-gray-300 rounded-lg shadow-md"
+        />
         <button class="flex items-center gap-2">
           <span>Copiar</span>
           <i class="fa-solid fa-copy"></i>
@@ -45,20 +63,27 @@
       </div>
       }
     </div>
-
   </div>
   <p class="text-lg font-medium text-black-light mt-4">
-    Total: <span class="text-green-500">{{ total | currency: 'BRL' }}</span>
+    Total: <span class="text-green-500">{{ total | currency : "BRL" }}</span>
   </p>
 
-
-
   <div class="flex gap-3 mt-4">
-    <button  class="text-gray-600 bg-gray-200 rounded-md w-1/2" (click)="backToPaymentAddress()">
+    <button
+      class="text-gray-600 bg-gray-200 rounded-md w-1/2"
+      (click)="backToPaymentAddress()"
+    >
       Voltar
     </button>
-    <button [matTooltip]="selectedPayment === 'pix' ? 'Faça o pagamento via Pix' : ''" (click)="onConfirm()" [disabled]="selectedPayment !== 'creditCard'" class="button-primary text-text4 w-1/2">
-      Confirmar
+    <button
+      [matTooltip]="selectedPayment === 'pix' ? 'Faça o pagamento via Pix' : ''"
+      (click)="onConfirm()"
+      [disabled]="loadingService.loading() || selectedPayment !== 'creditCard'"
+      class="button-primary text-text4 w-1/2 flex items-center gap-2 justify-center"
+    >
+      Confirmar @if(loadingService.loading()) {
+      <app-loading />
+      }
     </button>
   </div>
 </div>

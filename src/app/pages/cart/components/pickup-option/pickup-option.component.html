@@ -1,0 +1,18 @@
+<div class="space-y-3 mb-3">
+  <label
+    class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
+    [class.border-primary]="isSelected()"
+    (click)="select()"
+    [matTooltip]="matTooltip"
+  >
+    <input type="radio" class="hidden" [checked]="isSelected()" />
+    <span
+      class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
+      [class.border-primary]="isSelected()"
+    >
+      @if(isSelected()) {
+      <span class="w-[14px] h-[14px] bg-primary rounded-full"></span> }
+    </span>
+    <span>{{ text }}</span>
+  </label>
+</div>
