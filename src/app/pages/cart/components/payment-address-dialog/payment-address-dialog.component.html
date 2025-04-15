@@ -1,61 +1,97 @@
 @if(!showPayment()) {
 
-<div class="relative bg-white-light p-6">
+<div class="relative bg-white-light p-6 overflow-auto">
   <div class="space-y-3 mb-3">
-    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
-      [class.border-primary]="!selectedDelivery()" (click)="setSelectedDelivery(false)"
-      [matTooltip]="!selectedDelivery() ? 'Informe o número do pedido na retirada!' : ''">
+    <label
+      class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
+      [class.border-primary]="!selectedDelivery()"
+      (click)="setSelectedDelivery(false)"
+      [matTooltip]="
+        !selectedDelivery() ? 'Informe o número do pedido na retirada!' : ''
+      "
+    >
       <input type="radio" class="hidden" [checked]="selectedDelivery()" />
-      <span class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
-        [class.border-primary]="!selectedDelivery()">
+      <span
+        class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
+        [class.border-primary]="!selectedDelivery()"
+      >
         @if(!selectedDelivery()) {
-        <span class="w-[13px] h-[13px] bg-primary rounded-full">
-        </span>
+        <span class="w-[14px] h-[14px] bg-primary rounded-full"> </span>
         }
       </span>
       <span>Retirar</span>
     </label>
-    <label class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
-      [class.border-primary]="selectedDelivery()" (click)="setSelectedDelivery(true)">
+    <label
+      class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg cursor-pointer"
+      [class.border-primary]="selectedDelivery()"
+      (click)="setSelectedDelivery(true)"
+    >
       <input type="radio" class="hidden" [checked]="selectedDelivery()" />
-      <span class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
-        [class.border-primary]="selectedDelivery()">
+      <span
+        class="ml-[2px] w-5 h-5 border-2 border-gray-400 rounded-full flex items-center justify-center"
+        [class.border-primary]="selectedDelivery()"
+      >
         @if(selectedDelivery()) {
-        <span class="w-[13px] h-[13px] bg-primary rounded-full">
-        </span>
+        <span class="w-[14px] h-[14px] bg-primary rounded-full"> </span>
         }
       </span>
       <span>Entregar</span>
     </label>
   </div>
-
-  @if(selectedDelivery()) {
-  <div [@fadeInOut]>
-    <app-dynamic-form [fields]="addressFields" />
+  @if(selectedDelivery() && this.deliveryAddresses().length > 0 ) {
+  <div class="flex items-center gap-2 mb-2">
+    <button
+      class="button-primary text-text3 w-1/2"
+      (click)="openSaveAddressDialog()"
+    >
+      Endereço salvo
+    </button>
+    <button
+      class="button-primary text-text3 w-1/2"
+      (click)="selectedDelivery.set(true); isSelectAddress.set(false)"
+    >
+      Outro endeço
+    </button>
   </div>
-  }
+  } @if(selectedDelivery() && !isSelectAddress()) {
+  <div [@fadeInOut]>
+    <app-dynamic-form #formAddress [fields]="addressFields" />
+  </div>
+  } @if(selectedDelivery() && isSelectAddress()) {
 
-  @if(isLoadig) {
-  <div class="absolute top-0 left-0 w-full h-full opacity-[32%] bg-opacity-50 flex justify-center items-center"
-    style="background: rgba(0, 0, 0, 0.5);">
+  <app-card-address [isSelectAddress]="true" [address]="selectedAddress()" />
+
+  } @if(isLoading) {
+  <div
+    class="absolute top-0 left-0 w-full h-full opacity-[32%] bg-opacity-50 flex justify-center items-center"
+    style="background: rgba(0, 0, 0, 0.5)"
+  >
     <app-loading />
   </div>
   }
 
-  <div class="flex gap-3 mt-4">
-    <button (click)="onCancel()" class="text-gray-600 bg-gray-200 rounded-md w-1/2">Cancelar</button>
-    <button class="button-primary text-text4 w-1/2" (click)="onConfirm()">
-      <!-- [disabled]="isButtonDisabled" -->
+  <div class="flex gap-3 mt-3">
+    <button
+      (click)="onCancel()"
+      class="text-gray-600 text-text3 bg-gray-200 rounded-md w-1/2"
+    >
+      Cancelar
+    </button>
+    <button
+      class="button-primary text-text3 w-1/2"
+      (click)="onConfirm()"
+      [disabled]="!(isSelectAddress() || dynamicForm?.form?.valid)"
+    >
       Próximo
     </button>
   </div>
-
-
 </div>
-}
-
-@if(showPayment()) {
+} @if(showPayment()) {
 <div [@fadeInOut]>
-  <app-payment [carts]="data" [orderAddress]="formData" />
+  <app-payment
+    [carts]="data"
+    [selectedDelivery]="selectedDelivery()"
+    [deliveryAddressId]="selectedAddress().id"
+  />
 </div>
 }

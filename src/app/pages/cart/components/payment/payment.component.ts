@@ -33,7 +33,8 @@ enum PaymentMethod {
 })
 export class PaymentComponent {
   @Input() carts!: iCartItem[];
-  @Input() orderAddress!: any;
+  @Input() selectedDelivery = true;
+  @Input() deliveryAddressId!: string;
   private stripeService = inject(StripeService);
   private orderService = inject(OrderService);
   private authService = inject(AuthService);
@@ -86,6 +87,8 @@ export class PaymentComponent {
       CompanyId: companyId,
       OrderItems: orderItems,
       OrderItemExtras: orderItemExtras,
+      DeliveryAddressId: this.deliveryAddressId,
+      Delivery: this.selectedDelivery,
     };
 
     const productName = carts.map((item) => item.food.name).join(' + ');

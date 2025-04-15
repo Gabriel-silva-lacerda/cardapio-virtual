@@ -22,21 +22,24 @@ export class FooterCartComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
   public loadingService = inject(LoadingService);
 
   public total!: number;
 
   ngOnInit(): void {
     this.total = this.carts.reduce((accum, item) => accum + item.totalPrice, 0);
-    // this.openAddressDialog();
   }
 
   openAddressDialog() {
-    if(this.authService.isLogged()) {
+    if (this.authService.isLogged()) {
       const dialogRef = this.dialog.open(PaymentAddressDialogComponent, {
         width: '400px',
-        data: this.carts
+        maxHeight: '800px',
+        data: this.carts,
       });
 
       dialogRef.afterClosed().subscribe(async (selectedPayment) => {
@@ -44,10 +47,10 @@ export class FooterCartComponent implements OnInit {
           dialogRef.close();
         }
       });
-
     } else {
-      this.router.navigate(['/auth'], { queryParams: { empresa: this.companyName() } });
+      this.router.navigate(['/auth'], {
+        queryParams: { empresa: this.companyName() },
+      });
     }
   }
-
 }

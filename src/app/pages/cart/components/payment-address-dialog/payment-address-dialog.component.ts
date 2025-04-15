@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   inject,
@@ -27,6 +28,11 @@ import { fadeInOut } from '@shared/utils/animations.utils';
 import { PaymentComponent } from '../payment/payment.component';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { SaveAddressDialogComponent } from '../save-address-dialog/save-address-dialog.component';
+import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
+import { Address } from '../../interfaces/address';
+import { CardAddressComponent } from '../card-address/card-address.component';
 
 @Component({
   selector: 'app-payment-address-dialog',
@@ -36,25 +42,31 @@ import { OrderService } from '@shared/services/order/order.service';
     LoadingComponent,
     MatTooltipModule,
     PaymentComponent,
+    CardAddressComponent,
   ],
   templateUrl: './payment-address-dialog.component.html',
   styleUrl: './payment-address-dialog.component.scss',
   animations: [fadeInOut],
 })
-export class PaymentAddressDialogComponent implements OnInit {
+export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private cdr = inject(ChangeDetectorRef);
   private toastr = inject(ToastrService);
   private orderService = inject(OrderService);
+  private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
+  private localStorageService = inject(LocalStorageService);
 
   public loadingService = inject(LoadingService);
   public selectedDelivery = signal(true);
-
+  public isSelectAddress = signal(false);
+  public selectedAddress = signal<Address>({} as Address);
   public cepSubject = new Subject<string>();
   public destroy$ = new Subject<void>();
-  public isLoadig = false;
+  public isLoading = false;
   public showPayment = this.orderService.showPayment;
   public formData!: any;
+  public deliveryAddresses = signal([]);
 
   public addressFields: iDynamicField[] = [
     {
@@ -103,6 +115,21 @@ export class PaymentAddressDialogComponent implements OnInit {
       validators: [],
       padding: '10px',
     },
+    {
+      name: 'city',
+      label: 'Cidade',
+      type: 'text',
+      validators: [Validators.required],
+      padding: '10px',
+    },
+    {
+      name: 'state',
+      label: 'Estado',
+      type: 'select',
+      options: BRAZILIAN_STATES,
+      validators: [Validators.required],
+      padding: '10px',
+    },
   ];
 
   constructor(
@@ -110,41 +137,58 @@ export class PaymentAddressDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: iCartItem[]
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.cepSubject
       .pipe(debounceTime(500), takeUntil(this.destroy$))
       .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
-
     this.cdr.detectChanges();
+    this.getDeliveryAddresses();
+
+    const selectedAddress = this.localStorageService.getItem<Address>(
+      'selectedAddress'
+    ) as Address;
+    if (selectedAddress) this.isSelectAddress.set(true);
+    this.selectedAddress.set(selectedAddress);
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }
+
+  async getDeliveryAddresses() {
+    const deliveryAddresses = await this.orderService.getAllByField(
+      'delivery_addresses',
+      'user_id',
+      this.authService.currentUser()?.id as string
+    );
+
+    this.deliveryAddresses.set(deliveryAddresses as any);
   }
 
   async searchCep(value: string, form: FormGroup) {
     const control = form.get('cep');
     if (control?.invalid && value.length < 8) return;
 
-    this.isLoadig = true;
+    this.isLoading = true;
 
     try {
-      const addressData = await cepPromise(value);
-
-      form.patchValue({
-        street: addressData.street,
-        neighborhood: addressData.neighborhood,
-        city: addressData.city,
-        state: addressData.state,
-      });
-
-      form.get('street')?.markAsTouched();
-      form.get('neighborhood')?.markAsTouched();
-      form.get('city')?.markAsTouched();
-      form.get('state')?.markAsTouched();
-
-      this.dynamicForm.disableFields([
-        'street',
-        'neighborhood',
-        'city',
-        'state',
-      ]);
+      // const addressData = await cepPromise(value);
+      // form.patchValue({
+      //   street: addressData.street,
+      //   neighborhood: addressData.neighborhood,
+      //   city: addressData.city,
+      //   state: addressData.state,
+      // });
+      // form.get('street')?.markAsTouched();
+      // form.get('neighborhood')?.markAsTouched();
+      // form.get('city')?.markAsTouched();
+      // form.get('state')?.markAsTouched();
+      // this.dynamicForm.disableFields([
+      //   'street',
+      //   'neighborhood',
+      //   'city',
+      //   'state',
+      // ]);
     } catch (error) {
       this.toastr.error('CEP não encontrado ou inválido.');
 
@@ -162,8 +206,23 @@ export class PaymentAddressDialogComponent implements OnInit {
         'state',
       ]);
     } finally {
-      this.isLoadig = false;
+      this.isLoading = false;
     }
+  }
+
+  openSaveAddressDialog() {
+    const dialogRef = this.dialog.open(SaveAddressDialogComponent, {
+      width: '400px',
+      maxWidth: '100%',
+      data: this.deliveryAddresses(),
+    });
+
+    dialogRef.afterClosed().subscribe((selectedAddress) => {
+      if (selectedAddress) {
+        this.isSelectAddress.set(true);
+        this.selectedAddress.set(selectedAddress);
+      }
+    });
   }
 
   setSelectedDelivery(selectedDelivery: boolean) {
@@ -174,21 +233,32 @@ export class PaymentAddressDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  onConfirm(): void {
-    this.orderService.showPayment.set(true);
-    // if (this.selectedDelivery() && this.dynamicForm?.form?.invalid) {
-    //   this.toastr.error('Por favor, preencha todos os campos obrigatórios.');
-    //   return;
-    // }
+  async onConfirm() {
+    if (this.selectedDelivery() && this.dynamicForm?.form?.invalid) {
+      this.toastr.error('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
 
-    this.formData = {
-      delivery: this.selectedDelivery(),
-      address: null,
-    };
+    this.orderService.showPayment.set(true);
 
     if (this.selectedDelivery()) {
-      this.formData.address = this.dynamicForm.form.getRawValue();
-      console.log(this.formData);
+      const deliveryAddresses = {
+        user_id: this.authService.currentUser()?.id,
+        ...(this.dynamicForm?.form.getRawValue() || this.selectedAddress()),
+      };
+
+      const existingAddress = await this.orderService.getAddressByFields(
+        deliveryAddresses
+      );
+
+      if (!existingAddress) {
+        this.selectedAddress.set(
+          await this.orderService.insert(
+            'delivery_addresses',
+            deliveryAddresses
+          )
+        );
+      }
     }
   }
 

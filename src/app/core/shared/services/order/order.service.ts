@@ -72,6 +72,24 @@ export class OrderService extends BaseSupabaseService {
     return { orderId };
   }
 
+  getAddressByFields(address: any) {
+    return this.supabaseService.supabase
+      .from('delivery_addresses')
+      .select('*')
+      .eq('street', address.street)
+      .eq('number', address.number)
+      .eq('neighborhood', address.neighborhood)
+      .eq('city', address.city)
+      .eq('state', address.state)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) {
+          return false;
+        }
+        return data ? true : false;
+      });
+  }
+
   async updatePaymentStatus(
     orderId: number,
     paymentStatus: string

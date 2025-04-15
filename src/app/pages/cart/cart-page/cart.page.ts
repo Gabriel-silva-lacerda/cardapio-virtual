@@ -25,7 +25,9 @@ export class CartPage implements OnInit {
 
     if (userId) {
       const cartKey = `cart-${userId}`;
-      this.carts.set(this.localStorageService.getItem<iCartItem[]>(cartKey) || []);
+      this.carts.set(
+        this.localStorageService.getItem<iCartItem[]>(cartKey) || []
+      );
     }
   }
 }
