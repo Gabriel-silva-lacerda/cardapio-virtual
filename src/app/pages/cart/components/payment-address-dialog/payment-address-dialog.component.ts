@@ -1,6 +1,18 @@
-import { ChangeDetectorRef, Component, inject, Inject, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Inject,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { FormGroup, FormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
@@ -18,10 +30,16 @@ import { OrderService } from '@shared/services/order/order.service';
 
 @Component({
   selector: 'app-payment-address-dialog',
-  imports: [FormsModule, DynamicFormComponent, LoadingComponent, MatTooltipModule, PaymentComponent],
+  imports: [
+    FormsModule,
+    DynamicFormComponent,
+    LoadingComponent,
+    MatTooltipModule,
+    PaymentComponent,
+  ],
   templateUrl: './payment-address-dialog.component.html',
   styleUrl: './payment-address-dialog.component.scss',
-  animations: [fadeInOut]
+  animations: [fadeInOut],
 })
 export class PaymentAddressDialogComponent implements OnInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
@@ -46,53 +64,56 @@ export class PaymentAddressDialogComponent implements OnInit {
       validators: [Validators.required],
       onChange: (cep: string | unknown) => {
         if (!cep)
-          this.dynamicForm.clearFields(['street', 'neighborhood', 'city', 'state']);
-         else
-          this.cepSubject.next(cep as string);
+          this.dynamicForm.clearFields([
+            'street',
+            'neighborhood',
+            'city',
+            'state',
+          ]);
+        else this.cepSubject.next(cep as string);
       },
       mask: '00000-000',
-      padding: '10px'
+      padding: '10px',
     },
     {
       name: 'street',
       label: 'Rua',
       type: 'text',
       validators: [Validators.required],
-      padding: '10px'
+      padding: '10px',
     },
     {
       name: 'number',
       label: 'Número',
       type: 'text',
       validators: [Validators.required],
-      padding: '10px'
+      padding: '10px',
     },
     {
       name: 'neighborhood',
       label: 'Bairro',
       type: 'text',
       validators: [Validators.required],
-      padding: '10px'
+      padding: '10px',
     },
     {
       name: 'complement',
       label: 'Complemento',
       type: 'text',
       validators: [],
-      padding: '10px'
+      padding: '10px',
     },
   ];
 
   constructor(
     public dialogRef: MatDialogRef<PaymentAddressDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: iCartItem[]
-  ) {
-  }
-
+  ) {}
 
   ngOnInit(): void {
-    this.cepSubject.pipe(debounceTime(500), takeUntil(this.destroy$))
-    .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
+    this.cepSubject
+      .pipe(debounceTime(500), takeUntil(this.destroy$))
+      .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
 
     this.cdr.detectChanges();
   }
@@ -118,9 +139,12 @@ export class PaymentAddressDialogComponent implements OnInit {
       form.get('city')?.markAsTouched();
       form.get('state')?.markAsTouched();
 
-
-      this.dynamicForm.disableFields(['street', 'neighborhood', 'city', 'state']);
-
+      this.dynamicForm.disableFields([
+        'street',
+        'neighborhood',
+        'city',
+        'state',
+      ]);
     } catch (error) {
       this.toastr.error('CEP não encontrado ou inválido.');
 
@@ -131,19 +155,16 @@ export class PaymentAddressDialogComponent implements OnInit {
         state: null,
       });
 
-      this.dynamicForm.enableFields(['street', 'neighborhood', 'city', 'state']);
+      this.dynamicForm.enableFields([
+        'street',
+        'neighborhood',
+        'city',
+        'state',
+      ]);
     } finally {
       this.isLoadig = false;
     }
   }
-
-  // get isButtonDisabled() {
-
-  //   if (this.isDelivery())
-  //     return this.dynamicForm?.form?.invalid;
-
-  //   return false;
-  // }
 
   setSelectedDelivery(selectedDelivery: boolean) {
     this.selectedDelivery.set(selectedDelivery);
@@ -155,18 +176,19 @@ export class PaymentAddressDialogComponent implements OnInit {
 
   onConfirm(): void {
     this.orderService.showPayment.set(true);
-    if (this.selectedDelivery() && this.dynamicForm?.form?.invalid) {
-      this.toastr.error('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
+    // if (this.selectedDelivery() && this.dynamicForm?.form?.invalid) {
+    //   this.toastr.error('Por favor, preencha todos os campos obrigatórios.');
+    //   return;
+    // }
 
     this.formData = {
       delivery: this.selectedDelivery(),
-      address: null
+      address: null,
     };
 
     if (this.selectedDelivery()) {
       this.formData.address = this.dynamicForm.form.getRawValue();
+      console.log(this.formData);
     }
   }
 

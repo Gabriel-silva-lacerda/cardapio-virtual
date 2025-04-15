@@ -201,31 +201,44 @@ export class SubscriptionPage {
       return;
     }
 
-
-
-
     try {
       const formData = this.dynamicForm.form.getRawValue();
 
       const unique_url = this.generateUniqueUrl(formData.name);
-      const { exists, company, email } = await this.companyService.checkIfCompanyOrEmailExists(formData.name, formData.email, unique_url);
+      const { exists, company, email } =
+        await this.companyService.checkIfCompanyOrEmailExists(
+          formData.name,
+          formData.email,
+          unique_url
+        );
       if (exists) {
         const fieldErrors = {
-          company: { field: 'name', message: 'Já existe uma empresa com este nome!' },
+          company: {
+            field: 'name',
+            message: 'Já existe uma empresa com este nome!',
+          },
           email: { field: 'email', message: 'Este e-mail já está cadastrado!' },
-          unique_url: { field: 'name', message: 'Já existe uma empresa com este nome!' }
-
+          unique_url: {
+            field: 'name',
+            message: 'Já existe uma empresa com este nome!',
+          },
         };
 
-         Object.entries({ company, unique_url, email }).forEach(([key, value]) => {
+        Object.entries({ company, unique_url, email }).forEach(
+          ([key, value]) => {
             if (value) {
-              const field = key === 'unique_url' ? 'name' : fieldErrors[key as keyof typeof fieldErrors].field;
+              const field =
+                key === 'unique_url'
+                  ? 'name'
+                  : fieldErrors[key as keyof typeof fieldErrors].field;
 
               this.dynamicForm.form.controls[field].setErrors({
-                customError: fieldErrors[key as keyof typeof fieldErrors].message,
+                customError:
+                  fieldErrors[key as keyof typeof fieldErrors].message,
               });
             }
-          });
+          }
+        );
 
         return;
       }

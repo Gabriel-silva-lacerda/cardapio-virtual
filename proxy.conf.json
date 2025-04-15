@@ -1,0 +1,10 @@
+{
+  "/cep": {
+    "target": "https://cdn.apicep.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/cep": ""
+    }
+  }
+}
