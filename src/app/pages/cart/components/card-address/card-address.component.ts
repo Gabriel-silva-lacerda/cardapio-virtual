@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { Address } from '../../interfaces/address';
+import { DeliveryAddress } from '../../interfaces/address';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
@@ -10,10 +10,10 @@ import { NgClass } from '@angular/common';
   styleUrl: './card-address.component.scss',
 })
 export class CardAddressComponent {
-  @Input() address!: Address;
-  @Input() selectedAddress = signal<Address | null>(null);
+  @Input() address!: DeliveryAddress;
+  @Input() selectedAddress = signal<DeliveryAddress | null>(null);
   @Input() isSelectAddress = false;
-  @Output() select = new EventEmitter<Address>();
+  @Output() select = new EventEmitter<DeliveryAddress>();
 
   onClick() {
     this.select.emit(this.address);

@@ -8,4 +8,7 @@ export const environment = {
   SUPABASE_STORAGE:
     'https://jdrfxrssvyjcagfzybwf.supabase.co/storage/v1/object/public/images',
   VIACEP_URL: 'https://viacep.com.br/ws/',
+  MAPBOX_TOKEN:
+    'pk.eyJ1IjoiZ2FicmllbHNpbGx2ZSIsImEiOiJjbTlvYzgwZzcwODI5MmtweTB5aHRvNzJwIn0.Jb_zT03_2f9kJTt5QZwKjw', // Adicionando o token Mapbox
+  DELIVERY_FEE_CACHE_EXPIRATION: 86400000,
 };

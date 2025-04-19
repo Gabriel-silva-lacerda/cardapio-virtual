@@ -29,11 +29,13 @@ import { OrderService } from '@shared/services/order/order.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { SaveAddressDialogComponent } from '../save-address-dialog/save-address-dialog.component';
 import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
-import { Address } from '../../interfaces/address';
 import { CardAddressComponent } from '../card-address/card-address.component';
 import { PickupOptionComponent } from '../pickup-option/pickup-option.component';
 import { ViacepService } from '@shared/services/via-cep/viacep.service';
 import { ViaCep, ViaCepError } from '@shared/interfaces/via-cep/via-cep';
+import { DeliveryAddress } from '../../interfaces/address';
+import { SkeletonCardComponent } from '../skeleton-card/skeleton-card.component';
+import { SkeletonButtonComponent } from '../skeleton-button/skeleton-button.component';
 
 @Component({
   selector: 'app-payment-address-dialog',
@@ -45,6 +47,8 @@ import { ViaCep, ViaCepError } from '@shared/interfaces/via-cep/via-cep';
     PaymentComponent,
     CardAddressComponent,
     PickupOptionComponent,
+    SkeletonCardComponent,
+    SkeletonButtonComponent,
   ],
   templateUrl: './payment-address-dialog.component.html',
   styleUrl: './payment-address-dialog.component.scss',
@@ -65,15 +69,16 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   public loadingService = inject(LoadingService);
   public selectedDelivery = signal(true);
   public isSelectAddress = signal(false);
-  public selectedAddress = signal<Address>({} as Address);
+  public selectedAddress = signal<DeliveryAddress>({} as DeliveryAddress);
   public cepSubject = new Subject<string>();
   public destroy$ = new Subject<void>();
   public loading = {
     viaCep: false,
     insertDelivery: false,
+    selectedAddressFromDatabase: false,
   };
   public showPayment = this.orderService.showPayment;
-  public deliveryAddresses = signal([]);
+  public deliveryAddressSaved = signal<DeliveryAddress[]>([]);
 
   public addressFields: iDynamicField[] = [
     {
@@ -141,8 +146,8 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.initCepListener();
-    this.getDeliveryAddresses();
-    this.loadSelectedAddressFromStorage();
+    this.getDeliveryAddressSaved();
+    this.loadSelectedAddressFromDatabase();
   }
 
   ngAfterViewInit() {
@@ -155,24 +160,34 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
       .subscribe((cep) => this.searchCep(cep, this.dynamicForm.form));
   }
 
-  private loadSelectedAddressFromStorage(): void {
-    const selectedAddress = this.localStorageService.getItem<Address>(
-      'selectedAddress'
-    ) as Address;
-    if (selectedAddress) {
-      this.isSelectAddress.set(true);
-      this.selectedAddress.set(selectedAddress);
+  private async loadSelectedAddressFromDatabase(): Promise<void> {
+    this.loading.selectedAddressFromDatabase = true;
+    try {
+      const selected = await this.orderService.getByField<DeliveryAddress>(
+        'delivery_addresses',
+        'is_default',
+        true
+      );
+
+      if (selected && selected.is_default) {
+        this.isSelectAddress.set(true);
+        this.selectedAddress.set(selected);
+      }
+    } catch (error) {
+      this.orderService.toastr.error('Erro ao carregar endereço padrão');
+    } finally {
+      this.loading.selectedAddressFromDatabase = false;
     }
   }
 
-  async getDeliveryAddresses() {
-    const deliveryAddresses = await this.orderService.getAllByField(
+  async getDeliveryAddressSaved() {
+    const deliveryAddressSaved = await this.orderService.getAllByField(
       'delivery_addresses',
       'user_id',
       this.authService.currentUser()?.id as string
     );
 
-    this.deliveryAddresses.set(deliveryAddresses as any);
+    this.deliveryAddressSaved.set(deliveryAddressSaved as any);
   }
 
   async searchCep(value: string, form: FormGroup) {
@@ -249,7 +264,8 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(SaveAddressDialogComponent, {
       width: '400px',
       maxWidth: '100%',
-      data: this.deliveryAddresses(),
+      maxHeight: '800px',
+      data: this.deliveryAddressSaved(),
     });
 
     dialogRef.afterClosed().subscribe((selectedAddress) => {
@@ -258,10 +274,6 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
         this.selectedAddress.set(selectedAddress);
       }
     });
-  }
-
-  setSelectedDelivery(selectedDelivery: boolean) {
-    this.selectedDelivery.set(selectedDelivery);
   }
 
   onCancel(): void {
@@ -296,9 +308,12 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
               deliveryAddresses
             )
           );
+          this.getDeliveryAddressSaved();
         } finally {
           this.loading.insertDelivery = false;
         }
+      } else {
+        this.selectedAddress.set(existingAddress as DeliveryAddress);
       }
     }
   }

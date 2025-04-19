@@ -1,5 +1,14 @@
+import { ToastrService } from 'ngx-toastr';
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, Inject, Input } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  Inject,
+  Input,
+  Signal,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
@@ -20,36 +29,85 @@ import { StripeService } from '@shared/services/stripe/stripe.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-
-enum PaymentMethod {
-  Entrega = 'entrega',
-  CreditCard = 'creditCard',
-  Pix = 'pix',
-}
+import { PickupOptionComponent } from '../pickup-option/pickup-option.component';
+import { DeliveryFeeService } from '../../services/delivery-fee.service';
+import { CompanyService } from '@shared/services/company/company.service';
+import { DeliveryAddress } from '../../interfaces/address';
+import { Company } from '@shared/interfaces/company/company';
+import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 
 @Component({
   selector: 'app-payment',
-  imports: [CurrencyPipe, FormsModule, MatTooltipModule, LoadingComponent],
+  imports: [
+    CurrencyPipe,
+    FormsModule,
+    MatTooltipModule,
+    LoadingComponent,
+    PickupOptionComponent,
+    LoadingScreenComponent,
+  ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss',
 })
 export class PaymentComponent {
   @Input() carts!: iCartItem[];
-  @Input() selectedDelivery = true;
-  @Input() deliveryAddressId!: string;
+  @Input() selectedDelivery = signal(false);
+  @Input() selectedAddress = signal({} as DeliveryAddress);
+
   private stripeService = inject(StripeService);
   private orderService = inject(OrderService);
   private authService = inject(AuthService);
+  private deliveryFeeService = inject(DeliveryFeeService);
+  private companyService = inject(CompanyService);
+  private localStorageService = inject(LocalStorageService);
+  private toastrService = inject(ToastrService);
+
+  public companyId = this.localStorageService.getSignal('companyId', '0');
   public loadingService = inject(LoadingService);
-
-  public selectedPayment: PaymentMethod | null = null;
+  public selectedPayment: string = 'Cartão';
   public total!: number;
+  public company = signal<Company>({} as Company);
+  public loadingAddress = signal(false);
 
-  ngOnInit() {
-    this.total = this.carts.reduce(
-      (accum: any, item: any) => accum + item.totalPrice,
-      0
+  constructor() {
+    effect(() => {
+      const client = this.selectedAddress();
+      if (!client?.street || !this.company) return;
+
+      const clientAddress = `${client.street}, ${client.number} - ${client.neighborhood}, ${client.city} - ${client.state}, ${client.cep}`;
+      const company = this.company();
+      const companyAddress = `${company.street}, ${company.number} - ${company.neighborhood}, ${company.city} - ${company.state}, ${company.cep}`;
+
+      this.loadingAddress.set(true);
+
+      this.deliveryFeeService
+        .getDeliveryFee(companyAddress, clientAddress)
+        .subscribe({
+          next: (fee) => {
+            this.total =
+              this.carts.reduce((accum, item) => accum + item.totalPrice, 0) +
+              fee;
+          },
+          error: () => {
+            this.toastrService.error('Erro ao calcular taxa de entrega');
+            this.loadingAddress.set(false);
+          },
+          complete: () => {
+            this.loadingAddress.set(false);
+          },
+        });
+    });
+  }
+
+  async ngOnInit() {
+    const company = await this.companyService.getById<Company>(
+      'companies',
+      this.companyId()
     );
+
+    if (company) {
+      this.company.set(company);
+    }
   }
 
   backToPaymentAddress() {
@@ -69,13 +127,13 @@ export class PaymentComponent {
       items: transformCartItemsToOrderItems(carts),
     };
 
-    const orderItems = order.items.map((item, index) => ({
+    const orderItems = order.items.map((item) => ({
       FoodId: item.food_id,
       Quantity: item.quantity,
       Observations: item.observations || '',
     }));
 
-    const orderItemExtras = order.items.flatMap((item, index) =>
+    const orderItemExtras = order.items.flatMap((item) =>
       item.extras.map((extra) => ({
         ExtraId: extra.extra_id,
         ExtraQuantity: extra.extra_quantity,
@@ -87,11 +145,9 @@ export class PaymentComponent {
       CompanyId: companyId,
       OrderItems: orderItems,
       OrderItemExtras: orderItemExtras,
-      DeliveryAddressId: this.deliveryAddressId,
-      Delivery: this.selectedDelivery,
+      DeliveryAddressId: this.selectedAddress().id,
+      Delivery: this.selectedDelivery(),
     };
-
-    console.log(order.items);
 
     const productName = carts.map((item) => item.food.name).join(' + ');
     const amountInCents = this.total * 100;

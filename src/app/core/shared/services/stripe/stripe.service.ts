@@ -96,9 +96,8 @@ export class StripeService extends BaseService {
     this.post<iApiResponse<{ sessionId: string }>>(
       body,
       'payment/create-order-checkout'
-    )
-      .pipe(finalize(() => this.loadingService.hideLoading()))
-      .subscribe(async (response) => {
+    ).subscribe({
+      next: async (response) => {
         if (response.error) {
           this.toastr.error(
             response.message,
@@ -112,6 +111,12 @@ export class StripeService extends BaseService {
 
         this.localStorageService.setItem('payment_pending', 'true');
         await stripe!.redirectToCheckout({ sessionId });
-      });
+      },
+      error: (err) => {
+        console.error('❌ Erro na requisição:', err);
+        this.toastr.error('Erro inesperado ao iniciar pagamento.');
+        this.loadingService.hideLoading();
+      },
+    });
   }
 }

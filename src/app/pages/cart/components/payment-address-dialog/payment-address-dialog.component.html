@@ -18,7 +18,7 @@
     text="Entregar"
   />
 
-  @if(selectedDelivery() && this.deliveryAddresses().length > 0 ) {
+  @if(selectedDelivery() && this.deliveryAddressSaved().length > 0 ) {
   <div class="flex items-center gap-2 mb-2">
     <button
       class="button-primary text-text3 w-1/2"
@@ -33,11 +33,17 @@
       Outro endeço
     </button>
   </div>
-  } @if(selectedDelivery() && !isSelectAddress()) {
+  } @if(loading.selectedAddressFromDatabase) {
+  <app-skeleton-button />
+  } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
+  !isSelectAddress()) {
   <div [@fadeInOut]>
     <app-dynamic-form #formAddress [fields]="addressFields" />
   </div>
-  } @if(selectedDelivery() && isSelectAddress()) {
+  } @if(loading.selectedAddressFromDatabase) {
+  <app-skeleton-card />
+  } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
+  isSelectAddress()) {
 
   <app-card-address [isSelectAddress]="true" [address]="selectedAddress()" />
 
@@ -76,8 +82,8 @@
 <div [@fadeInOut]>
   <app-payment
     [carts]="data"
-    [selectedDelivery]="selectedDelivery()"
-    [deliveryAddressId]="selectedAddress().id"
+    [selectedDelivery]="selectedDelivery"
+    [selectedAddress]="selectedAddress"
   />
 </div>
 }

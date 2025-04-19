@@ -2,8 +2,8 @@ import { Injectable, signal } from '@angular/core';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { iInsertOrder } from '@shared/interfaces/insert-order/insert-order.interface';
 import { iOrder } from '@shared/interfaces/order/order.interface';
-import { iOrderItem } from '@shared/interfaces/order-item/order-item.interface';
-import { iOrderItemExtra } from '@shared/interfaces/order-item-extra/order-item-extra.interface';
+import { iOrderItem } from '@shared/interfaces/order/order-item.interface';
+import { iOrderItemExtra } from '@shared/interfaces/order/order-item-extra.interface';
 
 interface teste {
   id: number;
@@ -72,7 +72,7 @@ export class OrderService extends BaseSupabaseService {
     return { orderId };
   }
 
-  getAddressByFields(address: any) {
+  async getAddressByFields(address: any) {
     return this.supabaseService.supabase
       .from('delivery_addresses')
       .select('*')
@@ -86,7 +86,7 @@ export class OrderService extends BaseSupabaseService {
         if (error) {
           return false;
         }
-        return data ? true : false;
+        return data;
       });
   }
 
