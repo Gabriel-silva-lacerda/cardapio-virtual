@@ -9,7 +9,7 @@ import {
   Signal,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogContent,
@@ -35,6 +35,7 @@ import { CompanyService } from '@shared/services/company/company.service';
 import { DeliveryAddress } from '../../interfaces/address';
 import { Company } from '@shared/interfaces/company/company';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
+import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.directive';
 
 @Component({
   selector: 'app-payment',
@@ -45,6 +46,8 @@ import { LoadingScreenComponent } from '@shared/components/loading-screen/loadin
     LoadingComponent,
     PickupOptionComponent,
     LoadingScreenComponent,
+    FormsModule,
+    OnlyNumbersDirective,
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss',
@@ -64,7 +67,8 @@ export class PaymentComponent {
 
   public companyId = this.localStorageService.getSignal('companyId', '0');
   public loadingService = inject(LoadingService);
-  public selectedPayment: string = 'Cartão';
+  public changeFor = signal<number | null>(null);
+  public selectedPayment = signal<string>('cartao');
   public total!: number;
   public company = signal<Company>({} as Company);
   public loadingAddress = signal(false);
@@ -86,7 +90,7 @@ export class PaymentComponent {
           next: (fee) => {
             this.total =
               this.carts.reduce((accum, item) => accum + item.totalPrice, 0) +
-              fee;
+              (this.selectedDelivery() ? fee : 0);
           },
           error: () => {
             this.toastrService.error('Erro ao calcular taxa de entrega');
@@ -118,6 +122,10 @@ export class PaymentComponent {
     this.processPayment(this.carts);
   }
 
+  setSelectedPayment(method: string) {
+    this.selectedPayment.set(method);
+  }
+
   async processPayment(carts: iCartItem[]): Promise<void> {
     const userId = this.authService.currentUser()?.id;
     const companyId = carts[0].food.company_id;
@@ -147,15 +155,18 @@ export class PaymentComponent {
       OrderItemExtras: orderItemExtras,
       DeliveryAddressId: this.selectedAddress().id,
       Delivery: this.selectedDelivery(),
+      ChangeFor:
+        this.selectedPayment() === 'dinheiro' ? this.changeFor() : null,
     };
 
     const productName = carts.map((item) => item.food.name).join(' + ');
     const amountInCents = this.total * 100;
 
-    await this.stripeService.createOrderCheckoutSession(
-      productName,
-      amountInCents,
-      metadata
-    );
+    console.log(this.changeFor());
+    // await this.stripeService.createOrderCheckoutSession(
+    //   productName,
+    //   amountInCents,
+    //   metadata
+    // );
   }
 }

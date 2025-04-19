@@ -8,12 +8,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './pickup-option.component.scss',
 })
 export class PickupOptionComponent {
-  @Input() selectedDelivery: boolean = false; // estado atual
-  @Input() value: boolean = false; // valor que representa esta opção
-  @Input() text: string = ''; // "Retirar" ou "Entregar"
+  @Input() selectedDelivery: any = '';
+  @Input() value: any = '';
+  @Input() text: string = '';
   @Input() matTooltip: string = '';
 
-  @Output() selectedDeliveryChange = new EventEmitter<boolean>();
+  @Output() selectedDeliveryChange = new EventEmitter<any>();
 
   select() {
     this.selectedDeliveryChange.emit(this.value);
