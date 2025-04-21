@@ -21,6 +21,10 @@ import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skel
 import { SkeletonFoodComponent } from '../components/skeleton-food/skeleton-food.component';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { FormsModule } from '@angular/forms';
+import { CompanyService } from '@shared/services/company/company.service';
+import { Company } from '@shared/interfaces/company/company';
+import { AddFeeDialogComponent } from '../components/add-fee-dialog/add-fee-dialog.component';
 
 @Component({
   selector: 'app-food-page',
@@ -30,6 +34,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
     KeyValuePipe,
     SkeletonLoaderComponent,
     SkeletonFoodComponent,
+    FormsModule,
   ],
   templateUrl: './food.page.html',
   styleUrl: './food.page.scss',
@@ -44,6 +49,7 @@ export class FoodPage {
   private toastr = inject(ToastrService);
   private authService = inject(AuthService);
   private localStorageService = inject(LocalStorageService);
+  private companyService = inject(CompanyService);
 
   public foods = signal<iFood[] | null>(null);
   public title = signal<string>('');
@@ -53,9 +59,11 @@ export class FoodPage {
   public skeletonItems = Array.from({ length: 5 });
   public isAdmin = this.authService.isAdmin;
   public companyId = this.localStorageService.getSignal('companyId', '0');
+  public company = signal<Company>({} as Company);
 
   ngOnInit(): void {
     this.getAllFoods();
+    this.getCompanyId();
   }
 
   private async getAllFoods(): Promise<void> {
@@ -79,6 +87,17 @@ export class FoodPage {
     }
   }
 
+  private async getCompanyId(): Promise<void> {
+    const company = await this.companyService.getById<Company>(
+      'companies',
+      this.companyId()
+    );
+    if (company) {
+      this.company.set(company);
+      console.log(company);
+    }
+  }
+
   public async getFoodsByCategory(
     id: string,
     companyId: string
@@ -97,7 +116,7 @@ export class FoodPage {
     this.foods.set(foods);
   }
 
-  public addFood(foodId?: string) {
+  public openDialogFood(foodId?: string) {
     const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
       width: '400px',
       height: '739px',
@@ -113,7 +132,7 @@ export class FoodPage {
     });
   }
 
-  public removeFood(food: iFoodDetails) {
+  public openDialogRemoveFood(food: iFoodDetails) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: {
@@ -146,5 +165,12 @@ export class FoodPage {
     });
 
     this.loadingService.hideLoading();
+  }
+
+  public openDialogFee() {
+    const dialogRef = this.dialog.open(AddFeeDialogComponent, {
+      width: '400px',
+      data: this.company(),
+    });
   }
 }

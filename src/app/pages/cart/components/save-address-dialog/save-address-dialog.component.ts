@@ -6,10 +6,16 @@ import { CardAddressComponent } from '../card-address/card-address.component';
 import { DeliveryAddress } from '../../interfaces/address';
 import { OrderService } from '@shared/services/order/order.service';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
+import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 
 @Component({
   selector: 'app-save-address-dialog',
-  imports: [FormsModule, CardAddressComponent, LoadingScreenComponent],
+  imports: [
+    FormsModule,
+    CardAddressComponent,
+    LoadingScreenComponent,
+    GenericDialogComponent,
+  ],
   templateUrl: './save-address-dialog.component.html',
   styleUrl: './save-address-dialog.component.scss',
 })
@@ -83,5 +89,9 @@ export class SaveAddressDialogComponent {
     } finally {
       this.loadingSaveAddress.set(false);
     }
+  }
+
+  onClose() {
+    this.dialogRef.close();
   }
 }

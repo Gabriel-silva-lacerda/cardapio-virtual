@@ -1,0 +1,62 @@
+<app-generic-dialog title="Taxa de entrega a ser cobrada" (close)="onClose()">
+  <ng-container body>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label for="fee" class="text-sm font-medium text-gray-700">
+          Taxa de entrega por km
+        </label>
+        <input
+          id="fee"
+          class="input-primary w-full"
+          placeholder="Ex: 2,50"
+          mask="separator.2"
+          prefix="R$ "
+          thousandSeparator="."
+          decimalMarker=","
+          [(ngModel)]="company.delivery_fee_per_km"
+          (blur)="onDeliveryFeeBlur()"
+        />
+      </div>
+
+      <div class="border-t border-gray-200 pt-4 flex flex-col gap-3">
+        <h2 class="text-sm font-semibold text-gray-800">Simulação</h2>
+
+        <div class="flex gap-2">
+          <div class="relative w-full">
+            <input
+              class="input-primary w-full mb-0"
+              placeholder="Ex: 3,5"
+              mask="separator.2"
+              thousandSeparator="."
+              decimalMarker=","
+              [(ngModel)]="distanceInput"
+            />
+            <span
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none"
+            >
+              km
+            </span>
+          </div>
+
+          <button
+            (click)="simulateFee()"
+            class="bg-primary hover:bg-primary-dark text-white px-4 py-1.5 rounded-md text-sm transition"
+          >
+            Simular
+          </button>
+        </div>
+
+        <div class="text-sm text-gray-700">
+          Total a ser cobrado:
+          <span class="font-semibold text-gray-900">
+            R$ {{ deliveryFee() | currency : "BRL" : "symbol" : "1.2-2" }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</app-generic-dialog>
+
+@if (loading()) {
+<app-loading-screen />
+}

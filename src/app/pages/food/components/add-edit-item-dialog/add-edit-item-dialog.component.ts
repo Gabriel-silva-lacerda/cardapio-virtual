@@ -28,10 +28,11 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.component';
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { ExtraService } from '@shared/services/extra/extra.service';
+import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
-  imports: [DynamicFormComponent, ButtonComponent],
+  imports: [DynamicFormComponent, ButtonComponent, GenericDialogComponent],
   templateUrl: './add-edit-item-dialog.component.html',
   styleUrl: './add-edit-item-dialog.component.scss',
 })
@@ -85,8 +86,7 @@ export class AddEditItemDialogComponent implements OnInit {
       onChange: (data: unknown, form: FormGroup) => {
         const categoryId = String(data);
 
-          this.loadExtrasByCategory(categoryId);
-
+        this.loadExtrasByCategory(categoryId);
       },
     },
     {
@@ -143,9 +143,15 @@ export class AddEditItemDialogComponent implements OnInit {
   }
 
   public async getCategories() {
-    this.categories.set(await this.categoryService.getAllByField<iCategory>('company_categories_view', 'company_id', (this.companyId())),  );
+    this.categories.set(
+      await this.categoryService.getAllByField<iCategory>(
+        'company_categories_view',
+        'company_id',
+        this.companyId()
+      )
+    );
     this.foodFields.find((f) => f.name === 'category_id')!.options =
-    this.categories().map((c) => ({ label: c.name, value: c.id }));
+      this.categories().map((c) => ({ label: c.name, value: c.id }));
     this.dynamicForm.isDisabled['extras'] = true;
     this.dynamicForm.showButton = true;
   }
@@ -293,5 +299,9 @@ export class AddEditItemDialogComponent implements OnInit {
         (field) => field.name !== 'day_of_week'
       );
     }
+  }
+
+  onClose() {
+    this.dialogRef.close();
   }
 }

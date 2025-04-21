@@ -21,7 +21,6 @@ import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { fadeInOut } from '@shared/utils/animations.utils';
 import { PaymentComponent } from '../payment/payment.component';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
@@ -36,6 +35,7 @@ import { ViaCep, ViaCepError } from '@shared/interfaces/via-cep/via-cep';
 import { DeliveryAddress } from '../../interfaces/address';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card.component';
 import { SkeletonButtonComponent } from '../skeleton-button/skeleton-button.component';
+import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 
 @Component({
   selector: 'app-payment-address-dialog',
@@ -49,6 +49,7 @@ import { SkeletonButtonComponent } from '../skeleton-button/skeleton-button.comp
     PickupOptionComponent,
     SkeletonCardComponent,
     SkeletonButtonComponent,
+    GenericDialogComponent,
   ],
   templateUrl: './payment-address-dialog.component.html',
   styleUrl: './payment-address-dialog.component.scss',
@@ -61,7 +62,6 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   private orderService = inject(OrderService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
-  private localStorageService = inject(LocalStorageService);
   private dialogRef = inject(MatDialogRef<PaymentAddressDialogComponent>);
   private viaCepService = inject(ViacepService);
 
@@ -276,8 +276,9 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onCancel(): void {
+  onClose(): void {
     this.dialogRef.close();
+    this.showPayment.set(false);
   }
 
   async onConfirm() {

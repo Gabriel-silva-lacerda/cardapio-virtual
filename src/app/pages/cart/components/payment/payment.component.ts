@@ -70,8 +70,10 @@ export class PaymentComponent {
   public changeFor = signal<number | null>(null);
   public selectedPayment = signal<string>('cartao');
   public total!: number;
+  public subTotal!: number;
   public company = signal<Company>({} as Company);
   public loadingAddress = signal(false);
+  public deliveryFee = signal(0);
 
   constructor() {
     effect(() => {
@@ -85,9 +87,15 @@ export class PaymentComponent {
       this.loadingAddress.set(true);
 
       this.deliveryFeeService
-        .getDeliveryFee(companyAddress, clientAddress)
+        .getDeliveryFee(
+          companyAddress,
+          clientAddress,
+          company.delivery_fee_per_km as number
+        )
         .subscribe({
           next: (fee) => {
+            this.deliveryFee.set(fee);
+
             this.total =
               this.carts.reduce((accum, item) => accum + item.totalPrice, 0) +
               (this.selectedDelivery() ? fee : 0);
@@ -112,6 +120,11 @@ export class PaymentComponent {
     if (company) {
       this.company.set(company);
     }
+
+    this.subTotal = this.carts.reduce(
+      (accum, item) => accum + item.totalPrice,
+      0
+    );
   }
 
   backToPaymentAddress() {
@@ -163,10 +176,10 @@ export class PaymentComponent {
     const amountInCents = this.total * 100;
 
     console.log(this.changeFor());
-    // await this.stripeService.createOrderCheckoutSession(
-    //   productName,
-    //   amountInCents,
-    //   metadata
-    // );
+    await this.stripeService.createOrderCheckoutSession(
+      productName,
+      amountInCents,
+      metadata
+    );
   }
 }

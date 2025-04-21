@@ -14,7 +14,11 @@ import { provideToastr } from 'ngx-toastr';
 import { providePrimeNG } from 'primeng/config';
 
 import { registerLocaleData } from '@angular/common';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
 import { ErrorInterceptor } from '@shared/interceptors/error-interceptor';
 import { provideNgxMask } from 'ngx-mask';
 
@@ -29,7 +33,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(AuthService).load()),
     provideAnimationsAsync(),
     provideToastr(),
-    provideHttpClient(withFetch(),  withInterceptors([ErrorInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([ErrorInterceptor])),
     providePrimeNG({
       theme: {
         preset: Aura,
@@ -39,6 +43,6 @@ export const appConfig: ApplicationConfig = {
       provide: LOCALE_ID,
       useValue: 'pt-BR',
     },
-    provideNgxMask()
+    provideNgxMask(),
   ],
 };

@@ -83,7 +83,8 @@ export class DeliveryFeeService extends BaseService {
 
   getDeliveryFee(
     originAddress: string,
-    destinationAddress: string
+    destinationAddress: string,
+    feePerKm: number = 2
   ): Observable<number> {
     const cachedFee = this.localStorageService.getItem<number>('deliveryFee');
     const lastAddress =
@@ -115,7 +116,6 @@ export class DeliveryFeeService extends BaseService {
         return this.calculateDistance(origin, destination);
       }),
       map((distanceKm) => {
-        const feePerKm = 2;
         const calculatedFee = Math.round(distanceKm * feePerKm * 100) / 100;
         this.localStorageService.setItem('deliveryFee', calculatedFee);
         this.localStorageService.setItem(

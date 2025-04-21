@@ -1,17 +1,29 @@
-<div class="overflow-auto">
-  <div class="bg-primary py-4 px-6 border-b">
-    <span class="text-title5 text-white">{{ data.foodId ? 'Editar Item' : 'Adicionar Item' }}</span>
-  </div>
-  <div class="bg-[#fff]">
-    <div class="bg-[#fff] pt-4 px-6">
-      <app-dynamic-form #formMenu [fields]="foodFields"></app-dynamic-form>
-    </div>
+<app-generic-dialog
+  [title]="data.foodId ? 'Editar Item' : 'Adicionar Item'"
+  (close)="onClose()"
+>
+  <ng-container body>
+    <div class="bg-[#fff]">
+      <div class="bg-[#fff]">
+        <app-dynamic-form #formMenu [fields]="foodFields"></app-dynamic-form>
+      </div>
 
-    <div class="py-4 px-6 flex gap-2">
-      <app-button [label]="'Cancelar'" class="w-1/2" [isLoading]="this.loadingService.loading()" [isCanceled]="true"
-        (click)="onCancel()"></app-button>
-      <app-button [label]="'Salvar'" class="w-1/2" (click)="onSave()" [isLoading]="this.loadingService.loading()"
-        [disabled]="formMenu.form.invalid || this.loadingService.loading()"></app-button>
+      <div class="flex gap-2 mt-3">
+        <app-button
+          [label]="'Cancelar'"
+          class="w-1/2"
+          [isLoading]="this.loadingService.loading()"
+          [isCanceled]="true"
+          (click)="onCancel()"
+        ></app-button>
+        <app-button
+          [label]="'Salvar'"
+          class="w-1/2"
+          (click)="onSave()"
+          [isLoading]="this.loadingService.loading()"
+          [disabled]="formMenu.form.invalid || this.loadingService.loading()"
+        ></app-button>
+      </div>
     </div>
-  </div>
-</div>
+  </ng-container>
+</app-generic-dialog>

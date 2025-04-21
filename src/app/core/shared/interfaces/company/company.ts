@@ -1,13 +1,12 @@
 export interface Company {
   id?: string;
   account_id?: string;
-  // full_name: string;
   cep: string;
   city: string;
   complement: string | null;
   created_at?: string;
   email: string;
-
+  delivery_fee_per_km: number | string;
   name: string;
   neighborhood: string;
   number: string;

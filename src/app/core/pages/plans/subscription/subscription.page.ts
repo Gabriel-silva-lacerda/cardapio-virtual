@@ -254,6 +254,7 @@ export class SubscriptionPage {
         city: formData.city,
         state: formData.state,
         plan_id: this.plan().id,
+        delivery_fee_per_km: 2,
       };
 
       await this.stripeService.createCheckoutSession(

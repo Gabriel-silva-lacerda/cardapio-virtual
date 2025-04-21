@@ -1,89 +1,103 @@
-@if(!showPayment()) {
+<app-generic-dialog
+  [title]="
+    showPayment()
+      ? 'Escolha a forma de pagamento'
+      : 'Escolha uma das opções de entrega'
+  "
+  customClass="text-text3"
+  (close)="onClose()"
+>
+  @if(!showPayment()) {
 
-<div class="relative bg-white-light p-6 overflow-auto">
-  <app-pickup-option
-    [selectedDelivery]="selectedDelivery()"
-    (selectedDeliveryChange)="selectedDelivery.set($event)"
-    [value]="false"
-    text="Retirar"
-    [matTooltip]="
-      !selectedDelivery() ? 'Informe o número do pedido na retirada!' : ''
-    "
-  />
+  <div class="relative bg-white-light p-6 overflow-auto" body>
+    <app-pickup-option
+      [selectedDelivery]="selectedDelivery()"
+      (selectedDeliveryChange)="selectedDelivery.set($event)"
+      [value]="false"
+      text="Retirar"
+      [matTooltip]="
+        !selectedDelivery() ? 'Informe o número do pedido na retirada!' : ''
+      "
+    />
 
-  <app-pickup-option
-    [selectedDelivery]="selectedDelivery()"
-    (selectedDeliveryChange)="selectedDelivery.set($event)"
-    [value]="true"
-    text="Entregar"
-  />
+    <app-pickup-option
+      [selectedDelivery]="selectedDelivery()"
+      (selectedDeliveryChange)="selectedDelivery.set($event)"
+      [value]="true"
+      text="Entregar"
+    />
 
-  @if(selectedDelivery() && this.deliveryAddressSaved().length > 0 ) {
-  <div class="flex items-center gap-2 mb-2">
-    <button
-      class="button-primary text-text3 w-1/2"
-      (click)="openSaveAddressDialog()"
+    @if(selectedDelivery() && this.deliveryAddressSaved().length > 0 ) {
+    <div class="flex items-center gap-2 mb-2">
+      <button
+        class="button-primary text-text3 w-1/2"
+        (click)="openSaveAddressDialog()"
+      >
+        Endereço salvo
+      </button>
+      <button
+        class="button-primary text-text3 w-1/2"
+        (click)="selectedDelivery.set(true); isSelectAddress.set(false)"
+      >
+        Outro endeço
+      </button>
+    </div>
+    } @if(loading.selectedAddressFromDatabase) {
+    <app-skeleton-button />
+    } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
+    !isSelectAddress()) {
+    <div [@fadeInOut]>
+      <app-dynamic-form #formAddress [fields]="addressFields" />
+    </div>
+    } @if(loading.selectedAddressFromDatabase) {
+    <app-skeleton-card />
+    } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
+    isSelectAddress()) {
+
+    <app-card-address [isSelectAddress]="true" [address]="selectedAddress()" />
+
+    } @if(loading.viaCep) {
+    <div
+      class="absolute top-0 left-0 w-full h-full opacity-[32%] bg-opacity-50 flex justify-center items-center"
+      style="background: rgba(0, 0, 0, 0.5)"
     >
-      Endereço salvo
-    </button>
-    <button
-      class="button-primary text-text3 w-1/2"
-      (click)="selectedDelivery.set(true); isSelectAddress.set(false)"
-    >
-      Outro endeço
-    </button>
-  </div>
-  } @if(loading.selectedAddressFromDatabase) {
-  <app-skeleton-button />
-  } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
-  !isSelectAddress()) {
-  <div [@fadeInOut]>
-    <app-dynamic-form #formAddress [fields]="addressFields" />
-  </div>
-  } @if(loading.selectedAddressFromDatabase) {
-  <app-skeleton-card />
-  } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
-  isSelectAddress()) {
+      <app-loading />
+    </div>
+    }
 
-  <app-card-address [isSelectAddress]="true" [address]="selectedAddress()" />
+    <div class="flex gap-3 mt-3">
+      <button
+        (click)="onClose()"
+        class="text-gray-600 text-text3 bg-gray-200 rounded-md w-1/2"
+      >
+        Cancelar
+      </button>
+      <button
+        class="button-primary text-text3 w-1/2 flex items-center gap-2 justify-center"
+        (click)="onConfirm()"
+        [disabled]="
+          loading.insertDelivery ||
+          !(
+            isSelectAddress() ||
+            !selectedDelivery() ||
+            dynamicForm?.form?.valid
+          )
+        "
+      >
+        Próximo @if(loading.insertDelivery) {
 
-  } @if(loading.viaCep) {
-  <div
-    class="absolute top-0 left-0 w-full h-full opacity-[32%] bg-opacity-50 flex justify-center items-center"
-    style="background: rgba(0, 0, 0, 0.5)"
-  >
-    <app-loading />
+        <app-loading />
+        }
+      </button>
+    </div>
+  </div>
+  } @if(showPayment()) {
+  <div [@fadeInOut] body>
+    <app-payment
+      [carts]="data"
+      [selectedDelivery]="selectedDelivery"
+      [selectedAddress]="selectedAddress"
+    />
   </div>
   }
-
-  <div class="flex gap-3 mt-3">
-    <button
-      (click)="onCancel()"
-      class="text-gray-600 text-text3 bg-gray-200 rounded-md w-1/2"
-    >
-      Cancelar
-    </button>
-    <button
-      class="button-primary text-text3 w-1/2 flex items-center gap-2 justify-center"
-      (click)="onConfirm()"
-      [disabled]="
-        loading.insertDelivery ||
-        !(isSelectAddress() || !selectedDelivery() || dynamicForm?.form?.valid)
-      "
-    >
-      Próximo @if(loading.insertDelivery) {
-
-      <app-loading />
-      }
-    </button>
-  </div>
-</div>
-} @if(showPayment()) {
-<div [@fadeInOut]>
-  <app-payment
-    [carts]="data"
-    [selectedDelivery]="selectedDelivery"
-    [selectedAddress]="selectedAddress"
-  />
-</div>
-}
+</app-generic-dialog>

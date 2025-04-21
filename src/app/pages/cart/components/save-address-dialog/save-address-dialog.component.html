@@ -1,19 +1,22 @@
-<div class="bg-white">
-  <div class="flex justify-between items-center p-5 bg-primary">
-    <span class="text-lg font-semibold text-white">Endereço de entrega</span>
-  </div>
-
-  <div class="p-5">
-    @for (address of data; track address.id) {
-    <app-card-address
-      [address]="address"
-      [selectedAddress]="selectedAddress"
-      (select)="selectAddress($event)"
-    />
+<app-generic-dialog
+  title="Endereço de entrega"
+  customClass="text-text3"
+  (close)="onClose()"
+>
+  <div body>
+    <div class="bg-white">
+      <div class="p-5">
+        @for (address of data; track address.id) {
+        <app-card-address
+          [address]="address"
+          [selectedAddress]="selectedAddress"
+          (select)="selectAddress($event)"
+        />
+        }
+      </div>
+    </div>
+    @if(loadingSaveAddress()) {
+    <app-loading-screen />
     }
   </div>
-</div>
-
-@if(loadingSaveAddress()) {
-<app-loading-screen />
-}
+</app-generic-dialog>

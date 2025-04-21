@@ -63,16 +63,25 @@
       }
     </div>
   </div>
-  <p class="text-lg font-medium text-black-light mt-4 flex items-center gap-2">
-    <span>Total:</span>
+  <div class="text-lg font-medium text-black-light mt-4 flex flex-col gap-1">
     @if(this.loadingAddress()) {
     <app-loading />
     } @else {
-    <span class="text-green-500">{{ total | currency : "BRL" }}</span>
-    @if(this.selectedDelivery()) {
-    <small class="text-gray-500 text-[12px]">* Inclui taxa de entrega</small>
-    } }
-  </p>
+    <div class="flex flex-col">
+      <span>Resumo dos valores</span>
+      <small class="text-gray-700 font-normal text-[12px]"
+        >SubTotal: {{ subTotal | currency : "BRL" }}</small
+      >
+      @if(this.selectedDelivery()) {
+      <small class="text-gray-700 font-normal text-[12px]">
+        Taxa de entrega: {{ deliveryFee() | currency : "BRL" }}
+      </small>
+      }
+      <span class="text-text4 mt-2">Total: {{ total | currency : "BRL" }}</span>
+    </div>
+
+    }
+  </div>
 
   <div class="flex gap-3 mt-4">
     <button
