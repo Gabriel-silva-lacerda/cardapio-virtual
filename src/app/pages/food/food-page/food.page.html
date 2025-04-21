@@ -28,19 +28,50 @@
         <app-skeleton-food />
         }
       </app-skeleton-loader>
-      } @else { @if (!this.id) { @for (category of groupedFoods() | keyvalue;
-      track category.key) {
-      <span class="text-gray-500 text-xl block">{{ category.key }}</span>
-      @for (food of category.value; track food.id) {
+      } @else { @if (!this.id) { @for (categoryEntry of groupedFoods() |
+      keyvalue; track categoryEntry.key) {
+      <!-- Título da Categoria -->
+      <span class="text-primary font-medium text-xl block">
+        {{ categoryEntry.value.name }}
+      </span>
+
+      <!-- Para cada subcategoria dentro da categoria -->
+      @for (subcategoryEntry of categoryEntry.value.subcategories | keyvalue;
+      track subcategoryEntry.key) {
+      <!-- Título da Subcategoria -->
+      <div class="border border-gray-200 py-2 px-2 mb-2">
+        <span class="text-gray-500 text-md font-medium">
+          {{ subcategoryEntry.value.name }}
+        </span>
+      </div>
+
+      <!-- Exibe as comidas da subcategoria -->
+      @for (food of subcategoryEntry.value.foods; track food.id) {
       <app-food-menu
         [food]="food"
         [showItem]="true"
         (editItem)="openDialogFood($event)"
         (deleteItem)="openDialogRemoveFood($event)"
       ></app-food-menu>
-      } } } @else { @for (food of this.foods(); track $index) {
+      } } } } @else {
+      <!-- Primeiro título: Nomes das subcategorias -->
+      @for (subcategory of groupedSubFoods() | keyvalue; track subcategory.key)
+      {
+      <div class="border border-gray-200 py-2 px-2">
+        <span class="text-gray-500 text-xl block">{{ subcategory.key }}</span>
+      </div>
+      }
+
+      <!-- Segundo título: Subcategoria com as comidas -->
+      @for (subcategory of groupedSubFoods() | keyvalue; track subcategory.key)
+      {
+      <!-- Título da subcategoria -->
+      <span class="text-md font-bold mt-4">{{ subcategory.key }}</span>
+
+      <!-- Exibe as comidas da subcategoria -->
+      @for (food of subcategory.value; track food.id) {
       <app-food-menu [food]="food" />
-      } } }
+      } } }}
     </div>
   </div>
 </div>

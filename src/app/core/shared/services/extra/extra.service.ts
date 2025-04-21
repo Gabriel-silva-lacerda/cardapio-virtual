@@ -19,14 +19,14 @@ export class ExtraService extends BaseSupabaseService {
     return this.getAllByFieldIn('extras', 'id', extraIds);
   }
 
-  async getExtrasByCategory(categoryId: string): Promise<iExtra[]> {
+  async getExtrasBySubCategory(subcategoryId: string): Promise<iExtra[]> {
     return this.getAllByField<{ category_id: string; extra_id: string }>(
-      'category_extras',
-      'category_id',
-      categoryId,
+      'subcategory_extras',
+      'subcategory_id',
+      subcategoryId,
       'extra_id'
-    ).then(async (categoryExtras) => {
-      const extraIds = categoryExtras.map((ce) => ce?.extra_id);
+    ).then(async (subcategoryExtras) => {
+      const extraIds = subcategoryExtras.map((ce) => ce?.extra_id);
       if (extraIds.length === 0) return [];
 
       return this.getAllByFieldIn('extras', 'id', extraIds);
@@ -35,7 +35,7 @@ export class ExtraService extends BaseSupabaseService {
 
   async addExtra(
     extra: { name: string; price: number },
-    categoryId: number
+    subcategoryId: string
   ): Promise<iExtra> {
     const extraData = await this.insert<iExtra>('extras', {
       name: extra.name,
@@ -44,8 +44,8 @@ export class ExtraService extends BaseSupabaseService {
 
     const extraId = extraData.id;
 
-    await this.insert('category_extras', {
-      category_id: categoryId,
+    await this.insert('subcategory_extras', {
+      subcategory_id: subcategoryId,
       extra_id: extraId,
     });
 

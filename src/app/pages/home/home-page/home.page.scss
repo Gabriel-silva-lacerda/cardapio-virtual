@@ -1,0 +1,15 @@
+#sticky-subcategories {
+  transition: all 0.3s ease;
+}
+
+/* Ajuste fino para o scroll */
+[id^="subcat-"] {
+  scroll-margin-top: 64px; /* Compensa a barra sticky */
+  padding-top: 4px; /* Pequeno espaço para evitar cortes */
+}
+
+/* Estilo para a barra sticky */
+.sticky-subcategories {
+  height: 56px; /* Defina uma altura fixa */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,25 @@
+<app-generic-dialog title="Adicionar Subcategoria" (close)="onClose()">
+  <ng-container body>
+    <app-dynamic-form
+      #subcategoryForm
+      [fields]="subcategoryFields"
+    ></app-dynamic-form>
+
+    <div class="flex gap-2 mt-3">
+      <app-button
+        label="Cancelar"
+        class="w-1/2"
+        [isCanceled]="true"
+        (click)="onClose()"
+        [isLoading]="loading()"
+      ></app-button>
+      <app-button
+        label="Salvar"
+        class="w-1/2 h-full"
+        (click)="onSave()"
+        [disabled]="subcategoryForm.form.invalid || loading()"
+        [isLoading]="loading()"
+      ></app-button>
+    </div>
+  </ng-container>
+</app-generic-dialog>

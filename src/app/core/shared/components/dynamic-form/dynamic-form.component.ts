@@ -30,7 +30,7 @@ import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.dir
     NgxMaskDirective,
     MultiSelectModule,
     MatTooltipModule,
-    OnlyNumbersDirective
+    OnlyNumbersDirective,
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -39,7 +39,10 @@ import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.dir
 export class DynamicFormComponent implements OnInit {
   @Input() fields: iDynamicField[] = [];
   @Input() buttonText!: string;
-  @Output() fieldChangeEvent = new EventEmitter<{ fieldName: string; value: string }>();
+  @Output() fieldChangeEvent = new EventEmitter<{
+    fieldName: string;
+    value: string;
+  }>();
 
   protected loadingService = inject(LoadingService);
 
@@ -60,9 +63,10 @@ export class DynamicFormComponent implements OnInit {
   creatForm() {
     this.form = this.fb.group(
       this.fields.reduce((acc, field) => {
-        acc[field.name] = field.type === 'multiselect'
-          ? [[], field.validators || []]
-          : ['', field.validators || []];
+        acc[field.name] =
+          field.type === 'multiselect'
+            ? [[], field.validators || []]
+            : ['', field.validators || []];
 
         return acc;
       }, {} as { [key: string]: [any, ValidatorFn | ValidatorFn[]] })
@@ -99,8 +103,6 @@ export class DynamicFormComponent implements OnInit {
       return errorFn ? errorFn(errors[errorKey]) : `Erro desconhecido`;
     });
   }
-
-
 
   disableFields(fieldNames: string[]) {
     fieldNames.forEach((fieldName) => {

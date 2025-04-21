@@ -13,22 +13,33 @@ import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skel
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SkeletonCategoriesComponent } from '../components/skeleton-categories/skeleton-categories.component';
 import { fade } from '@shared/utils/animations.utils';
+import { SubcategoryDialogComponent } from '../components/subcategory-dialog/subcategory-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-categories-page',
-  imports: [HeaderPageComponent, CategoriesComponent, SkeletonLoaderComponent, SkeletonCategoriesComponent],
+  imports: [
+    HeaderPageComponent,
+    CategoriesComponent,
+    SkeletonLoaderComponent,
+    SkeletonCategoriesComponent,
+  ],
   templateUrl: './categories.page.html',
   styleUrl: './categories.page.scss',
-  animations: [fade]
+  animations: [fade],
 })
 export class CategoriesPage implements OnInit {
   private categoryService = inject(CategoryService);
   private localStorageService = inject(LocalStorageService);
+  private dialog = inject(MatDialog);
 
   public loadingService = inject(LoadingService);
   public categories = signal<iCategory[]>([]);
   public companyId = this.localStorageService.getSignal('companyId', 0);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
 
   ngOnInit(): void {
     this.getCategories();
@@ -42,10 +53,19 @@ export class CategoriesPage implements OnInit {
     this.loadingService.showLoading();
 
     try {
-      const categories = await this.categoryService.getAll<iCategory>('categories');
+      const categories = await this.categoryService.getAll<iCategory>(
+        'categories'
+      );
       this.categories.set(categories);
     } finally {
       this.loadingService.hideLoading();
     }
+  }
+
+  openDialogSubcategory() {
+    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
+      width: '400px',
+      data: this.categories,
+    });
   }
 }

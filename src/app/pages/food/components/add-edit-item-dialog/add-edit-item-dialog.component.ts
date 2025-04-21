@@ -52,6 +52,7 @@ export class AddEditItemDialogComponent implements OnInit {
   public extras = signal<{ id: string; name: string }[]>([]);
   public imageUrl: string | null = null;
   public companyId = this.localStorageService.getSignal('companyId', '0');
+  public subcategories = signal<{ id: string; name: string }[]>([]);
 
   public foodFields: iDynamicField[] = [
     {
@@ -86,7 +87,22 @@ export class AddEditItemDialogComponent implements OnInit {
       onChange: (data: unknown, form: FormGroup) => {
         const categoryId = String(data);
 
-        this.loadExtrasByCategory(categoryId);
+        this.loadSubcategoriesByCategory(categoryId);
+      },
+    },
+    {
+      name: 'subcategory_id',
+      label: 'Subcategoria',
+      type: 'select',
+      options: this.subcategories().map((s) => ({
+        label: s.name,
+        value: s.id,
+      })),
+      validators: [Validators.required],
+      padding: '10px',
+      onChange: (data: unknown, form: FormGroup) => {
+        const subcategoryId = String(data);
+        this.loadExtrasBySubCategory(subcategoryId);
       },
     },
     {
@@ -99,29 +115,28 @@ export class AddEditItemDialogComponent implements OnInit {
       tooltip: 'Selecione uma categoria primeiro!',
       onClick: () => this.onAddExtraItem(),
     },
-    {
-      name: 'has_day_of_week',
-      label: 'Esse item pode ter todos os dias da semana?',
-      type: 'select',
-      options: [
-        { label: 'Sim', value: true },
-        { label: 'Não', value: false },
-      ],
-      validators: [Validators.required],
-      padding: '10px',
-      onChange: (data: string | unknown, form: FormGroup) => {
-        if (data === 'true') {
-          this.removeDayOfWeekField(form);
-        } else {
-          this.addDayOfWeekField(form);
-        }
-      },
-    },
+    // {
+    //   name: 'has_day_of_week',
+    //   label: 'Esse item pode ter todos os dias da semana?',
+    //   type: 'select',
+    //   options: [
+    //     { label: 'Sim', value: true },
+    //     { label: 'Não', value: false },
+    //   ],
+    //   validators: [Validators.required],
+    //   padding: '10px',
+    //   onChange: (data: string | unknown, form: FormGroup) => {
+    //     if (data === 'true') {
+    //       this.removeDayOfWeekField(form);
+    //     } else {
+    //       this.addDayOfWeekField(form);
+    //     }
+    //   },
+    // },
     {
       name: 'image_file',
       label: 'Imagem',
       type: 'file',
-      validators: [Validators.required],
       padding: '10px',
       onFileUpload: async (file, form) => {
         form.patchValue({ image_file: file });
@@ -152,7 +167,10 @@ export class AddEditItemDialogComponent implements OnInit {
     );
     this.foodFields.find((f) => f.name === 'category_id')!.options =
       this.categories().map((c) => ({ label: c.name, value: c.id }));
+    this.subcategories.set([]);
+
     this.dynamicForm.isDisabled['extras'] = true;
+    this.dynamicForm.isDisabled['subcategory_id'] = true;
     this.dynamicForm.showButton = true;
   }
 
@@ -186,6 +204,7 @@ export class AddEditItemDialogComponent implements OnInit {
           has_day_of_week: foodData.day_of_week !== null,
           day_of_week: foodData.day_of_week || null,
           image_file: foodData.image_url,
+          subcategory_id: foodData.subcategory_id || null,
         });
         this.dynamicForm.showButton = false;
       }
@@ -194,25 +213,48 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  private async loadExtrasByCategory(categoryId: string) {
-    const extras = await this.extraService.getExtrasByCategory(categoryId);
+  private async loadExtrasBySubCategory(subcategoryId: string) {
+    const extras = await this.extraService.getExtrasBySubCategory(
+      subcategoryId
+    );
     this.extras.set(extras);
 
     this.foodFields.find((f) => f.name === 'extras')!.options =
       this.extras().map((e) => ({ label: e.name, value: e.id }));
+  }
+
+  private async loadSubcategoriesByCategory(categoryId: string) {
+    const subcategories = await this.categoryService.getAllByField<{
+      id: string;
+      name: string;
+    }>('subcategories', 'category_id', categoryId);
+
+    this.subcategories.set(subcategories);
+    const subcategoryField = this.foodFields.find(
+      (f) => f.name === 'subcategory_id'
+    );
+    if (subcategoryField) {
+      subcategoryField.options = subcategories.map((s) => ({
+        label: s.name,
+        value: s.id,
+      }));
+    }
 
     this.dynamicForm.isDisabled['extras'] = false;
+    this.dynamicForm.isDisabled['subcategory_id'] = false;
   }
 
   public onAddExtraItem() {
     const dialogRef = this.dialog.open(AddExtraDialogComponent, {
       width: '400px',
-      data: { categoryId: this.dynamicForm.form.value.category_id },
+      data: { subcategoryId: this.dynamicForm.form.value.subcategory_id },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loadExtrasByCategory(this.dynamicForm.form.value.category_id);
+        this.loadExtrasBySubCategory(
+          this.dynamicForm.form.value.subcategory_id
+        );
       }
     });
   }
@@ -233,14 +275,20 @@ export class AddEditItemDialogComponent implements OnInit {
 
       if (formData.image_file && formData.image_file instanceof File) {
         if (this.data.foodId && this.dynamicForm.selectedFileName) {
-          console.log(this.imageUrl);
           await this.imageService.deleteImage(this.imageUrl as string);
         }
 
+        const sanitizedFileName = this.sanitizeFileName(
+          formData.image_file.name
+        );
+        const path = `food-images/${sanitizedFileName}`;
+
         imageUrl = await this.imageService.uploadImage(
           formData.image_file,
-          `food-images/${formData.image_file.name}`
+          path
         );
+
+        if (!imageUrl) return;
       }
 
       const foodData = {
@@ -249,8 +297,9 @@ export class AddEditItemDialogComponent implements OnInit {
         price: formData.price,
         category_id: formData.category_id,
         company_id: this.companyId(),
-        image_url: imageUrl,
+        image_url: imageUrl ? imageUrl : 'food-images/default-food.png',
         day_of_week: formData.day_of_week || null,
+        subcategory_id: formData.subcategory_id || null,
       };
 
       const extraIds = formData.extras || [];
@@ -271,6 +320,15 @@ export class AddEditItemDialogComponent implements OnInit {
     } finally {
       this.loadingService.hideLoading();
     }
+  }
+
+  sanitizeFileName(fileName: string): string {
+    return fileName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-zA-Z0-9.-]/g, '')
+      .toLowerCase();
   }
 
   private addDayOfWeekField(form: FormGroup): void {

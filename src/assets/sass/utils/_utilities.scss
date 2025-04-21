@@ -6,16 +6,16 @@
 }
 
 .button-primary {
-  @apply
-  bg-primary
+  @apply bg-primary
   w-full
   py-3
   rounded-lg
   text-white cursor-pointer
   transition-all duration-300
+  text-title6 
   ease-in-out
   hover:bg-primary-light
-  flex items-center justify-center gap-2 text-title5;
+  flex items-center justify-center gap-2 h-12;
 
   &:disabled {
     @apply bg-gray-300 cursor-not-allowed;
@@ -23,7 +23,7 @@
 }
 
 .button-canceled {
-  @apply text-gray-600 bg-gray-200 rounded-lg py-3;
+  @apply text-gray-600 bg-gray-200 rounded-lg py-3 h-12;
 }
 
 .input-error {

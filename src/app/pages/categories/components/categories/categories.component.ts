@@ -1,5 +1,12 @@
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { iCategory } from 'src/app/pages/home/interfaces/category.interface';
 import { CategoryService } from 'src/app/pages/home/services/category.service';
@@ -30,7 +37,6 @@ export class CategoriesComponent {
   private toastr = inject(ToastrService);
   private dialog = inject(MatDialog);
 
-
   public loadingService = inject(LoadingService);
   public isLoading = signal<boolean>(false);
   public isAdmin = this.authService.isAdmin;
@@ -52,16 +58,16 @@ export class CategoriesComponent {
     try {
       const data = {
         company_id: this.companyId(),
-        category_id: categoryId
-      }
+        category_id: categoryId,
+      };
 
       await this.categoryService.insert('company_categories', data);
 
       this.isCategoryAssociatedMap[categoryId] = true;
 
-      this.toastr.success("Categoria foi adicionada com sucesso")
+      this.toastr.success('Categoria foi adicionada com sucesso');
     } finally {
-      this.loadingService.hideLoading()
+      this.loadingService.hideLoading();
     }
   }
 
@@ -80,13 +86,29 @@ export class CategoriesComponent {
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         try {
-          const foods = await this.foodService.getFoodsByCategory(categoryId, this.companyId());
+          const foodsGroupedBySubcategory =
+            await this.foodService.getFoodsByCategory(
+              categoryId,
+              this.companyId()
+            );
 
-          if (foods && foods.length > 0) {
-            this.toastr.warning('Não é possível excluir a categoria pois há comidas associadas a ela.');
-            return;
+          if (
+            foodsGroupedBySubcategory &&
+            Object.keys(foodsGroupedBySubcategory).length > 0
+          ) {
+            // Verifica se existem comidas nas subcategorias
+            const hasFoods = Object.values(foodsGroupedBySubcategory).some(
+              (foods) => foods.length > 0
+            );
+
+            if (hasFoods) {
+              this.toastr.warning(
+                'Não é possível excluir a categoria pois há comidas associadas a ela.'
+              );
+              return;
+            }
           }
-          
+
           await this.categoryService.deleteByFilter('company_categories', {
             company_id: this.companyId(),
             category_id: categoryId,
@@ -106,9 +128,10 @@ export class CategoriesComponent {
     this.isLoading.set(true);
 
     try {
-      const associatedCategories = await this.categoryService.getAssociatedCategories(this.companyId());
+      const associatedCategories =
+        await this.categoryService.getAssociatedCategories(this.companyId());
 
-      associatedCategories.forEach(category => {
+      associatedCategories.forEach((category) => {
         this.isCategoryAssociatedMap[category.id] = true;
       });
     } finally {

@@ -16,7 +16,7 @@ export interface ConfirmDialogData {
   selector: 'app-confirm-dialog',
   imports: [ButtonComponent],
   templateUrl: './confirm-dialog.component.html',
-  styleUrl: './confirm-dialog.component.scss'
+  styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
   public loadingService = inject(LoadingService);
@@ -27,7 +27,7 @@ export class ConfirmDialogComponent {
   ) {}
 
   onConfirm(): void {
-    this.loadingService.showLoading();
+    // this.loadingService.showLoading();
     this.dialogRef.close(true);
   }
 

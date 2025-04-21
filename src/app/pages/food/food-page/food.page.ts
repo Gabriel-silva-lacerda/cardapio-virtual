@@ -26,6 +26,18 @@ import { CompanyService } from '@shared/services/company/company.service';
 import { Company } from '@shared/interfaces/company/company';
 import { AddFeeDialogComponent } from '../components/add-fee-dialog/add-fee-dialog.component';
 
+interface SubcategoryGroup {
+  id: string;
+  name: string;
+  foods: iFood[];
+}
+
+interface CategoryGroup {
+  id: string;
+  name: string;
+  subcategories: Record<string, SubcategoryGroup>;
+}
+
 @Component({
   selector: 'app-food-page',
   imports: [
@@ -51,15 +63,18 @@ export class FoodPage {
   private localStorageService = inject(LocalStorageService);
   private companyService = inject(CompanyService);
 
-  public foods = signal<iFood[] | null>(null);
+  public foods = signal<iFood[]>([]);
   public title = signal<string>('');
+  public category = signal<iCategory>({} as iCategory);
   public id!: string | null;
-  public groupedFoods = signal<Record<string, iFood[]>>({});
+  public groupedFoods = signal<Record<string, CategoryGroup>>({});
+  public groupedSubFoods = signal<Record<string, iFood[]>>({});
   public loadingService = inject(LoadingService);
   public skeletonItems = Array.from({ length: 5 });
   public isAdmin = this.authService.isAdmin;
   public companyId = this.localStorageService.getSignal('companyId', '0');
   public company = signal<Company>({} as Company);
+  public subCategories = signal<any[]>([]);
 
   ngOnInit(): void {
     this.getAllFoods();
@@ -75,7 +90,7 @@ export class FoodPage {
       );
 
       if (this.id) {
-        await this.getFoodsByCategory(this.id, this.companyId());
+        this.getFoodsByCategory(this.id, this.companyId());
       } else {
         const groupedFoods =
           await this.foodService.getAllFoodsGroupedByCategory(this.companyId());
@@ -94,7 +109,6 @@ export class FoodPage {
     );
     if (company) {
       this.company.set(company);
-      console.log(company);
     }
   }
 
@@ -102,18 +116,36 @@ export class FoodPage {
     id: string,
     companyId: string
   ): Promise<void> {
-    const foods = await this.foodService.getFoodsByCategory(id, companyId);
-    const category = await this.categoryService.getById<iCategory>(
-      'categories',
-      id
+    const groupedSubFoods = await this.foodService.getFoodsByCategory(
+      id,
+      companyId
     );
 
-    if (!category) {
-      return;
+    if (groupedSubFoods) {
+      this.groupedSubFoods.set(groupedSubFoods);
+      const category = await this.categoryService.getById<iCategory>(
+        'categories',
+        id
+      );
+      if (category) {
+        this.category.set(category);
+        this.title.set(category.name);
+      }
     }
+  }
 
-    this.title.set(category.name);
-    this.foods.set(foods);
+  async getSubcategoriesByCategoryId(categoryId: string): Promise<void> {
+    try {
+      const subcategories = await this.categoryService.getAllByField<any>(
+        'subcategories',
+        'category_id',
+        categoryId
+      );
+      this.subCategories.set(subcategories);
+    } catch (error) {
+      console.error('Erro ao buscar subcategorias:', error);
+      this.subCategories.set([]);
+    }
   }
 
   public openDialogFood(foodId?: string) {

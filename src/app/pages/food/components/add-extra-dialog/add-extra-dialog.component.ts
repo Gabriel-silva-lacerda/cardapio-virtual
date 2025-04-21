@@ -41,7 +41,7 @@ export class AddExtraDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<AddExtraDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { categoryId: number }
+    @Inject(MAT_DIALOG_DATA) public data: { subcategoryId: string }
   ) {}
 
   async onSave() {
@@ -53,7 +53,7 @@ export class AddExtraDialogComponent {
 
     const extra = await this.extraService.addExtra(
       formData,
-      this.data.categoryId
+      this.data.subcategoryId
     );
 
     if (extra) {

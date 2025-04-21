@@ -1,50 +1,110 @@
-<div class="min-h-screen " [@fade]>
+<div class="min-h-screen" [@fade]>
   <app-header-page [isHome]="true" />
 
-  <div class="h-[70%] mt-10 px-3 pb-16">
-    <div class="flex justify-between items-center mb-2">
-      <span class="text-gray-500 text-xl block ">Categorias</span>
-      <a class="text-gray-500 py-2 text-text4" routerLink="categorias" [queryParams]="{ empresa: companyName() }">Ver
-        mais +</a>
-    </div>
-    <div class="flex gap-4 overflow-x-auto">
-      @if(loadingService.loading()) {
-      @for (i of skeletonItems; track $index) {
-      <app-skeleton-loader>
-        <app-skeleton-categories customClass="px-10 py-4" />
-      </app-skeleton-loader>
-      }
-
-      } @else {
-      @for (category of this.categories(); track $index) {
-      <app-categories [category]="category" customClass="py-3 px-4" />
-      } @empty {
-      <span>Sem Categorias para mostrar</span>
-      }
-      }
-    </div>
-
-    <div  [ngClass]="{ 'mt-6': this.loadingService.loading()}">
-      @if (this.loadingService.loading()) {
-        <app-skeleton-loader >
-          @for (i of skeletonItems; track $index) {
-          <app-skeleton-food class="mt-6" [showTitle]="false"/>
-          }
+  <div class="h-[70%] mt-10 pb-16">
+    <div class="px-3">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-gray-500 text-xl block">Categorias</span>
+        <a
+          class="text-gray-500 py-2 text-text4"
+          routerLink="categorias"
+          [queryParams]="{ empresa: companyName() }"
+          >Ver mais +</a
+        >
+      </div>
+      <div class="flex gap-4 overflow-x-auto">
+        @if(loadingService.loading()) { @for (i of skeletonItems; track $index)
+        {
+        <app-skeleton-loader>
+          <app-skeleton-categories customClass="px-10 py-4" />
         </app-skeleton-loader>
-        } @else {
-      <div class="flex justify-between items-center mt-2">
+        } } @else { @for (category of this.categories(); track $index) {
+        <app-categories [category]="category" customClass="py-3 px-4" />
+        } @empty {
+        <span>Sem Categorias para mostrar</span>
+        } }
+      </div>
+    </div>
+
+    <div [ngClass]="{ 'mt-6': this.loadingService.loading()}">
+      @if (this.loadingService.loading()) {
+      <app-skeleton-loader>
+        @for (i of skeletonItems; track $index) {
+        <app-skeleton-food class="mt-6" [showTitle]="false" />
+        }
+      </app-skeleton-loader>
+      } @else {
+      <div class="flex justify-between items-center mt-2 px-3">
         <span class="text-gray-500 text-xl block my-2">Cardápio</span>
-        <a class="text-gray-500 py-2 text-text4" routerLink="comidas" [queryParams]="{ empresa: companyName() }">Ver
-          mais +</a>
+        <a
+          class="text-gray-500 py-2 text-text4"
+          routerLink="comidas"
+          [queryParams]="{ empresa: companyName() }"
+          >Ver mais +</a
+        >
       </div>
 
-      @for (food of this.foods(); track $index) {
-      <app-food-menu [food]="food" />
-      } @empty {
-      <span>
-        Sem Comidas para mostrar
-      </span>
-      }
+      <div
+        class="sticky top-0 z-50 bg-white shadow-md hidden transition-all duration-300"
+        #stickySubcategories
+      >
+        <div
+          class="border border-gray-200 py-2 px-2 flex overflow-x-auto no-scrollbar"
+        >
+          @for(subcategory of subcategories(); track subcategory.id) {
+          <span
+            class="px-4 py-2 cursor-pointer whitespace-nowrap transition-colors duration-200"
+            [ngClass]="{
+              'font-bold text-primary border-b-2 border-primary': activeSubcategory() === subcategory.id,
+              'text-gray-600 hover:text-gray-800': activeSubcategory() !== subcategory.id
+            }"
+            (click)="scrollToSubcategory(subcategory.id)"
+          >
+            {{ subcategory.name }}
+          </span>
+          }
+        </div>
+      </div>
+
+      <div
+        class="border border-gray-200 py-2 px-2 mb-4 flex overflow-x-auto no-scrollbar"
+        #normalSubcategories
+      >
+        @for(subcategory of subcategories(); track subcategory.id) {
+        <span
+          class="px-4 py-2 cursor-pointer whitespace-nowrap transition-colors duration-200"
+          [ngClass]="{
+            'font-bold text-primary border-b-2 border-primary': activeSubcategory() === subcategory.id,
+            'text-gray-600 hover:text-gray-800': activeSubcategory() !== subcategory.id
+          }"
+          (click)="scrollToSubcategory(subcategory.id)"
+        >
+          {{ subcategory.name }}
+        </span>
+        }
+      </div>
+
+      <div class="px-3">
+        @for (category of groupedFoods() | keyvalue; track category.key) {
+        <span
+          class="text-primary font-medium text-xl block mt-6 mb-2"
+          id="cat-{{category.value.id}}"
+        >
+          {{ category.value.name }}
+        </span>
+
+        @for (subcategory of category.value.subcategories | keyvalue; track
+        subcategory.key) {
+        <div class="mt-4 mb-3" id="subcat-{{subcategory.value.id}}">
+          <span class="text-gray-600 text-lg font-medium">
+            {{ subcategory.value.name }}
+          </span>
+        </div>
+
+        @for (food of subcategory.value.foods; track food.id) {
+        <app-food-menu [food]="food" class="mb-4" />
+        } } }
+      </div>
       }
     </div>
   </div>

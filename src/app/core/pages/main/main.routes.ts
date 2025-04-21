@@ -69,6 +69,13 @@ export const mainRoutes: Routes = [
       import('../../../pages/cart/cart-page/cart.page').then((m) => m.CartPage),
   },
   {
+    path: 'pedidos',
+    loadComponent: () =>
+      import('../../../pages/orders/order-page/order.page').then(
+        (m) => m.OrderPage
+      ),
+  },
+  {
     path: 'sucesso-pagamento',
     loadComponent: () =>
       import('../successful-payment/successful-payment.page').then(
