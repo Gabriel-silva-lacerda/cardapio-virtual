@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-loading',
   imports: [],
-  template:
-    '<div class="w-4 h-4 border-2 border-t-2 border-white border-solid rounded-full animate-spin border-t-[#CE3246]"></div>',
+  template: `<div
+    class="{{
+      size
+    }} border-2 border-t-2 border-white border-solid rounded-full animate-spin border-t-[#CE3246]"
+  ></div>`,
 })
-export class LoadingComponent {}
-
+export class LoadingComponent {
+  @Input() size: string = 'w-4 h-4';
+}

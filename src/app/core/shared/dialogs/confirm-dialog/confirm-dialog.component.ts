@@ -10,6 +10,7 @@ export interface ConfirmDialogData {
   confirmText?: string;
   cancelText?: string;
   loading: boolean;
+  onConfirm: () => void;
 }
 
 @Component({
@@ -27,8 +28,9 @@ export class ConfirmDialogComponent {
   ) {}
 
   onConfirm(): void {
-    // this.loadingService.showLoading();
-    this.dialogRef.close(true);
+    this.loadingService.showLoading(); // mostra o loading
+    this.data.onConfirm(); // chama a função passada
+    this.loadingService.hideLoading(); // mostra o loading
   }
 
   onCancel(): void {

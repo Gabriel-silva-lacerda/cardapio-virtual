@@ -20,17 +20,17 @@ export class ExtraService extends BaseSupabaseService {
   }
 
   async getExtrasBySubCategory(subcategoryId: string): Promise<iExtra[]> {
-    return this.getAllByField<{ category_id: string; extra_id: string }>(
-      'subcategory_extras',
-      'subcategory_id',
-      subcategoryId,
-      'extra_id'
-    ).then(async (subcategoryExtras) => {
-      const extraIds = subcategoryExtras.map((ce) => ce?.extra_id);
-      if (extraIds.length === 0) return [];
+    const { data, error } = await this.supabaseService.supabase
+      .from('subcategory_extras_view')
+      .select('*')
+      .eq('subcategory_id', subcategoryId);
 
-      return this.getAllByFieldIn('extras', 'id', extraIds);
-    });
+    if (error) {
+      this.toastr.error('Erro ao buscar os extras', error.message);
+      return [];
+    }
+
+    return data;
   }
 
   async addExtra(

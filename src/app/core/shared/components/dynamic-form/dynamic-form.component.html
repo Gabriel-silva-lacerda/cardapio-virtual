@@ -80,23 +80,34 @@
         </div>
       </div>
 
-      <select
-        *ngIf="field.type === 'select'"
-        id="{{ field.name }}"
-        [formControlName]="field.name"
-        class="input-primary py-3"
-        [ngClass]="{
-          'input-error':
-            form.get(field.name)?.invalid && form.get(field.name)?.touched
-        }"
-        (ngModelChange)="field.onChange && field.onChange($event, form)"
-        [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
-      >
-        <option value="">Selecione...</option>
-        <option *ngFor="let option of field.options" [value]="option.value">
-          {{ option.label }}
-        </option>
-      </select>
+      <div class="relative w-full">
+        <select
+          *ngIf="field.type === 'select'"
+          id="{{ field.name }}"
+          [formControlName]="field.name"
+          class="input-primary py-3 w-full"
+          [ngClass]="{
+            'input-error':
+              form.get(field.name)?.invalid && form.get(field.name)?.touched
+          }"
+          (ngModelChange)="field.onChange && field.onChange($event, form)"
+          [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
+        >
+          <option value="">Selecione...</option>
+          <option *ngFor="let option of field.options" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+
+        <button
+          *ngIf="field.onClick && !isDisabled[field.name]"
+          type="button"
+          class="absolute cursor-pointer right-7 bg-primary px-3 py-1 rounded-md text-white mt-2 disabled:opacity-50"
+          (click)="field.onClick()"
+        >
+          +
+        </button>
+      </div>
 
       <div
         *ngIf="field.type === 'multiselect'"
@@ -115,10 +126,10 @@
         ></p-multiSelect>
 
         <button
-          *ngIf="showButton"
+          *ngIf="field.onClick && !isDisabled[field.name]"
           type="button"
           class="absolute cursor-pointer right-7 bg-primary px-3 py-1 rounded-md text-white mt-2 disabled:opacity-50"
-          (click)="field.onClick ? field.onClick() : null"
+          (click)="field.onClick()"
           [ngClass]="{ hidden: isDisabled[field.name] }"
         >
           +

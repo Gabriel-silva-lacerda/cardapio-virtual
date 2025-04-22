@@ -1,48 +1,45 @@
 <div class="min-h-screen" [@fade]>
   <app-header-page [title]="title()" />
 
-  <div>
-    <div class="h-[70%] mt-10 px-3 pb-16">
-      @if(isAdmin() && !this.id) {
-      <div
-        class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2 mb-3"
+  <div class="h-[70%] mt-10 pb-16">
+    @if(isAdmin() && !id) {
+    <div
+      class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2 mb-3"
+    >
+      <button
+        class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
+        (click)="openDialogFood()"
       >
-        <button
-          class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
-          (click)="openDialogFood()"
-        >
-          <i class="fa-solid fa-plus"></i>
-          Adicinar
-        </button>
-        <button
-          class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
-          (click)="openDialogFee()"
-        >
-          <i class="fa-solid fa-plus"></i>
-          Taxa de entrega
-        </button>
-      </div>
-      }
-      <app-subcategories [subcategories]="subcategories"></app-subcategories>
+        <i class="fa-solid fa-plus"></i>
+        Adicinar
+      </button>
+      <button
+        class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
+        (click)="openDialogFee()"
+      >
+        <i class="fa-solid fa-plus"></i>
+        Taxa de entrega
+      </button>
+    </div>
+    } @if(loading().foodAndSubcategory) {
+    <div class="border border-gray-200 py-5 px-3 mb-4 flex justify-center">
+      <app-loading />
+    </div>
+    } @else {
+    <app-subcategories [subcategories]="subcategories"></app-subcategories>
 
-      @if (this.loadingService.loading()) {
-      <app-skeleton-loader>
-        @for (i of skeletonItems; track $index) {
-        <app-skeleton-food />
-        }
-      </app-skeleton-loader>
-      } @else { @if (!this.id) { @for (category of groupedFoods() | keyvalue;
-      track category.key) {
+    } @if (loading().foodAndSubcategory) {
+    <div class="flex items-center justify-center h-full min-h-[50vh]">
+      <app-loading size="w-20 h-20" />
+    </div>
+    } @else { @if (!id) {
+    <div class="px-3">
+      @for (category of foodsGroupedCategory() | keyvalue; track category.key) {
       <span class="text-primary font-medium text-xl block mt-6 mb-2">
         {{ category.value.name }}
       </span>
-
       @for (subcategory of category.value.subcategories; track $index) {
-      <div class="mt-4 mb-3 py-2 border-y" id="subcat-{{subcategory.id}}">
-        <span class="text-gray-600 text-lg font-medium">
-          {{ subcategory.name }}
-        </span>
-      </div>
+      <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
 
       @for (food of subcategory.foods; track food.id) {
       <app-food-menu
@@ -51,17 +48,17 @@
         (editItem)="openDialogFood($event)"
         (deleteItem)="openDialogRemoveFood($event)"
       ></app-food-menu>
-      } } } } @else { @for (subcategory of groupedSubFoods().subcategories;
-      track subcategory.id) {
-      <div class="mt-4 mb-3 py-2 border-y" id="subcat-{{subcategory.id}}">
-        <span class="text-gray-600 text-lg font-medium">
-          {{ subcategory.name }}
-        </span>
-      </div>
+      } } }
+    </div>
+    } @else { @for (subcategory of foodsGroupedCategoryId().subcategories; track
+    subcategory.id) {
+    <div class="px-3">
+      <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
 
       @for (food of subcategory.foods; track food.id) {
       <app-food-menu [food]="food" />
-      } } }}
+      }
     </div>
+    } } }
   </div>
 </div>

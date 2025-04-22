@@ -29,6 +29,7 @@ import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.co
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { ExtraService } from '@shared/services/extra/extra.service';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
+import { SubcategoryDialogComponent } from 'src/app/pages/categories/components/subcategory-dialog/subcategory-dialog.component';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -104,6 +105,7 @@ export class AddEditItemDialogComponent implements OnInit {
         const subcategoryId = String(data);
         this.loadExtrasBySubCategory(subcategoryId);
       },
+      onClick: () => this.openDialogSubcategories(),
     },
     {
       name: 'extras',
@@ -113,8 +115,9 @@ export class AddEditItemDialogComponent implements OnInit {
       validators: [],
       padding: '10px',
       tooltip: 'Selecione uma categoria primeiro!',
-      onClick: () => this.onAddExtraItem(),
+      onClick: () => this.openDialogExtra(),
     },
+
     // {
     //   name: 'has_day_of_week',
     //   label: 'Esse item pode ter todos os dias da semana?',
@@ -151,7 +154,6 @@ export class AddEditItemDialogComponent implements OnInit {
 
   async ngOnInit() {
     this.getCategories();
-
     if (this.data.foodId) {
       this.loadFoodDataById(this.data.foodId);
     }
@@ -171,7 +173,7 @@ export class AddEditItemDialogComponent implements OnInit {
 
     this.dynamicForm.isDisabled['extras'] = true;
     this.dynamicForm.isDisabled['subcategory_id'] = true;
-    this.dynamicForm.showButton = true;
+    // this.dynamicForm.showButton = true;
   }
 
   async loadFoodDataById(foodId: number): Promise<void> {
@@ -206,7 +208,7 @@ export class AddEditItemDialogComponent implements OnInit {
           image_file: foodData.image_url,
           subcategory_id: foodData.subcategory_id || null,
         });
-        this.dynamicForm.showButton = false;
+        // this.dynamicForm.showButton = false;
       }
     } finally {
       this.loadingService.hideLoading();
@@ -221,6 +223,7 @@ export class AddEditItemDialogComponent implements OnInit {
 
     this.foodFields.find((f) => f.name === 'extras')!.options =
       this.extras().map((e) => ({ label: e.name, value: e.id }));
+    this.dynamicForm.isDisabled['extras'] = false;
   }
 
   private async loadSubcategoriesByCategory(categoryId: string) {
@@ -229,7 +232,6 @@ export class AddEditItemDialogComponent implements OnInit {
       name: string;
     }>('subcategories', 'category_id', categoryId);
 
-    this.subcategories.set(subcategories);
     const subcategoryField = this.foodFields.find(
       (f) => f.name === 'subcategory_id'
     );
@@ -240,11 +242,10 @@ export class AddEditItemDialogComponent implements OnInit {
       }));
     }
 
-    this.dynamicForm.isDisabled['extras'] = false;
     this.dynamicForm.isDisabled['subcategory_id'] = false;
   }
 
-  public onAddExtraItem() {
+  public openDialogExtra() {
     const dialogRef = this.dialog.open(AddExtraDialogComponent, {
       width: '400px',
       data: { subcategoryId: this.dynamicForm.form.value.subcategory_id },
@@ -255,6 +256,19 @@ export class AddEditItemDialogComponent implements OnInit {
         this.loadExtrasBySubCategory(
           this.dynamicForm.form.value.subcategory_id
         );
+      }
+    });
+  }
+
+  private openDialogSubcategories() {
+    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
+      width: '400px',
+      data: this.categories,
+    });
+
+    dialogRef.afterClosed().subscribe(async (categoryId) => {
+      if (categoryId) {
+        this.loadSubcategoriesByCategory(categoryId);
       }
     });
   }
@@ -315,8 +329,9 @@ export class AddEditItemDialogComponent implements OnInit {
         await this.foodService.createFoodWithExtras(foodData, extraIds);
         this.toastr.success('Item criado com sucesso!');
       }
-
       this.dialogRef.close(true);
+    } catch {
+      this.dialogRef.close(false);
     } finally {
       this.loadingService.hideLoading();
     }

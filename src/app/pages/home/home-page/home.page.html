@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div [ngClass]="{ 'mt-6': loadingService.loading() }">
+    <div>
       @if (loadingService.loading()) {
       <app-skeleton-loader>
         @for (i of skeletonItems; track $index) {
@@ -45,7 +45,9 @@
         >
       </div>
       <!-- Sticky Subcategories -->
+      @if(subcategories.length > 0) {
       <app-subcategories [subcategories]="subcategories"></app-subcategories>
+      }
 
       <!-- Conteúdo do Cardápio -->
       <div class="px-3">
@@ -58,15 +60,13 @@
         </span>
 
         @for (subcategory of category.value.subcategories; track $index) {
-        <div class="mt-4 mb-3 py-2 border-y" id="subcat-{{ subcategory.id }}">
-          <span class="text-gray-600 text-lg font-medium">
-            {{ subcategory.name }}
-          </span>
-        </div>
+        <app-subcategory-item
+          [subcategory]="subcategory"
+        ></app-subcategory-item>
 
         @for (food of subcategory.foods; track food.id) {
         <app-food-menu [food]="food" class="mb-4" />
-        } } }
+        } } } @empty { <span>Sem itens para mostrar</span> }
       </div>
       }
     </div>

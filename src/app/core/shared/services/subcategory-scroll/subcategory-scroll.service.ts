@@ -41,7 +41,6 @@ export class SubcategoryScrollService {
     stickyElement: HTMLElement;
     normalElement: HTMLElement;
   }) {
-    console.log(stickyElement, normalElement);
     if (!stickyElement || !normalElement) {
       console.error('Elementos não encontrados!');
       return;

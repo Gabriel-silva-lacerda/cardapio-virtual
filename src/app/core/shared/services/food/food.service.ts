@@ -1,8 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { BaseSupabaseService } from '../base/base-supabase.service';
-import { iFoodWithCategory } from 'src/app/pages/home/interfaces/food-with-category';
-import { environment } from '@enviroment/environment.development';
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
@@ -70,53 +68,41 @@ export class FoodService extends BaseSupabaseService {
   }
 
   async getFoodsGroupedByCategoryId(
-    categoryId: string,
-    companyId: string
+    categoryId: string
   ): Promise<iCategoryGroup | null> {
-    const { data: categoryData } = await this.supabaseService.supabase
+    const { data: categories } = await this.supabaseService.supabase
       .from('categories')
-      .select('id, name')
+      .select(
+        `
+          id,
+          name,
+          subcategories (
+            id,
+            name,
+            foods (
+              *,
+              image_url
+            )
+          )
+  `
+      )
       .eq('id', categoryId)
       .single();
 
-    if (!categoryData) return null;
-
-    const { data: subcategories } = await this.supabaseService.supabase
-      .from('subcategories')
-      .select('id, name')
-      .eq('category_id', categoryId);
-
-    if (!subcategories || subcategories.length === 0) return null;
-
-    const subcategoryIds = subcategories.map((s) => s.id);
-
-    const { data: foods } = await this.supabaseService.supabase
-      .from('foods')
-      .select('*')
-      .in('subcategory_id', subcategoryIds)
-      .eq('company_id', companyId);
+    if (!categories) return null;
 
     const categoryGroup: iCategoryGroup = {
-      id: categoryData.id,
-      name: categoryData.name,
-      subcategories: [],
+      id: categories.id,
+      name: categories.name,
+      subcategories: categories.subcategories.map((subcat) => ({
+        id: subcat.id,
+        name: subcat.name,
+        foods: (subcat.foods || []).map((food) => ({
+          ...food,
+          image_url: getImageUrl(food.image_url),
+        })),
+      })),
     };
-
-    subcategories.forEach((subcategory) => {
-      const subFoods =
-        foods
-          ?.filter((food) => food.subcategory_id === subcategory.id)
-          .map((food) => ({
-            ...food,
-            image_url: getImageUrl(food.image_url),
-          })) || [];
-
-      categoryGroup.subcategories.push({
-        id: subcategory.id,
-        name: subcategory.name,
-        foods: subFoods,
-      });
-    });
 
     categoryGroup.subcategories.sort((a, b) => a.name.localeCompare(b.name));
 

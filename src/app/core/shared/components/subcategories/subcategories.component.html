@@ -4,7 +4,7 @@
   #stickySubcategories
 >
   <div
-    class="border border-gray-200 py-2 px-2 flex overflow-x-auto no-scrollbar"
+    class="border border-gray-200 py-2 px-2 flex overflow-auto no-scrollbar sticky-subcategories"
   >
     @for (subcategory of subcategories(); track $index) {
 
@@ -26,7 +26,7 @@
 
 <!-- Normal Subcategories -->
 <div
-  class="border border-gray-200 py-2 px-2 mb-4 flex overflow-x-auto no-scrollbar"
+  class="border border-gray-200 py-2 px-2 mb-4 flex overflow-auto no-scrollbar normal-subcategories"
   #normalSubcategories
 >
   @for (subcategory of subcategories(); track $index) {

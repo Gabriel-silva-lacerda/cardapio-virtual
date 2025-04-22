@@ -13,6 +13,7 @@ import { GenericDialogComponent } from '@shared/components/generic-dialog/generi
 import { iCategory } from 'src/app/pages/home/interfaces/category.interface';
 import { CategoryService } from 'src/app/pages/home/services/category.service';
 import { Validators } from '@angular/forms';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-subcategory-dialog',
@@ -25,8 +26,12 @@ export class SubcategoryDialogComponent {
 
   private dialogRef = inject(MatDialogRef<SubcategoryDialogComponent>);
   private categoryService = inject(CategoryService);
+
   private toastr = inject(ToastrService);
   public loading = signal(false);
+
+  private localStorageService = inject(LocalStorageService);
+  public companyId = this.localStorageService.getSignal('companyId', '0');
 
   public categories = inject<WritableSignal<iCategory[]>>(MAT_DIALOG_DATA);
 
@@ -69,10 +74,11 @@ export class SubcategoryDialogComponent {
       const value = await this.categoryService.insert('subcategories', {
         name,
         category_id,
+        company_id: this.companyId(),
       });
 
       this.toastr.success('Subcategoria criada com sucesso!');
-      this.dialogRef.close(true);
+      this.dialogRef.close(category_id);
     } finally {
       this.loading.set(false);
     }

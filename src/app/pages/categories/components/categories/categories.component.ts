@@ -87,10 +87,7 @@ export class CategoriesComponent {
       if (result) {
         try {
           const groupedCategory =
-            await this.foodService.getFoodsGroupedByCategoryId(
-              categoryId,
-              this.companyId()
-            );
+            await this.foodService.getFoodsGroupedByCategoryId(categoryId);
 
           const hasFoods = groupedCategory?.subcategories?.some(
             (subcategory) => subcategory.foods.length > 0
