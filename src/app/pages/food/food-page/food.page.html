@@ -22,54 +22,44 @@
           Taxa de entrega
         </button>
       </div>
-      } @if (this.loadingService.loading()) {
+      }
+      <app-subcategories [subcategories]="subcategories"></app-subcategories>
+
+      @if (this.loadingService.loading()) {
       <app-skeleton-loader>
         @for (i of skeletonItems; track $index) {
         <app-skeleton-food />
         }
       </app-skeleton-loader>
-      } @else { @if (!this.id) { @for (categoryEntry of groupedFoods() |
-      keyvalue; track categoryEntry.key) {
-      <!-- Título da Categoria -->
-      <span class="text-primary font-medium text-xl block">
-        {{ categoryEntry.value.name }}
+      } @else { @if (!this.id) { @for (category of groupedFoods() | keyvalue;
+      track category.key) {
+      <span class="text-primary font-medium text-xl block mt-6 mb-2">
+        {{ category.value.name }}
       </span>
 
-      <!-- Para cada subcategoria dentro da categoria -->
-      @for (subcategoryEntry of categoryEntry.value.subcategories | keyvalue;
-      track subcategoryEntry.key) {
-      <!-- Título da Subcategoria -->
-      <div class="border border-gray-200 py-2 px-2 mb-2">
-        <span class="text-gray-500 text-md font-medium">
-          {{ subcategoryEntry.value.name }}
+      @for (subcategory of category.value.subcategories; track $index) {
+      <div class="mt-4 mb-3 py-2 border-y" id="subcat-{{subcategory.id}}">
+        <span class="text-gray-600 text-lg font-medium">
+          {{ subcategory.name }}
         </span>
       </div>
 
-      <!-- Exibe as comidas da subcategoria -->
-      @for (food of subcategoryEntry.value.foods; track food.id) {
+      @for (food of subcategory.foods; track food.id) {
       <app-food-menu
         [food]="food"
         [showItem]="true"
         (editItem)="openDialogFood($event)"
         (deleteItem)="openDialogRemoveFood($event)"
       ></app-food-menu>
-      } } } } @else {
-      <!-- Primeiro título: Nomes das subcategorias -->
-      @for (subcategory of groupedSubFoods() | keyvalue; track subcategory.key)
-      {
-      <div class="border border-gray-200 py-2 px-2">
-        <span class="text-gray-500 text-xl block">{{ subcategory.key }}</span>
+      } } } } @else { @for (subcategory of groupedSubFoods().subcategories;
+      track subcategory.id) {
+      <div class="mt-4 mb-3 py-2 border-y" id="subcat-{{subcategory.id}}">
+        <span class="text-gray-600 text-lg font-medium">
+          {{ subcategory.name }}
+        </span>
       </div>
-      }
 
-      <!-- Segundo título: Subcategoria com as comidas -->
-      @for (subcategory of groupedSubFoods() | keyvalue; track subcategory.key)
-      {
-      <!-- Título da subcategoria -->
-      <span class="text-md font-bold mt-4">{{ subcategory.key }}</span>
-
-      <!-- Exibe as comidas da subcategoria -->
-      @for (food of subcategory.value; track food.id) {
+      @for (food of subcategory.foods; track food.id) {
       <app-food-menu [food]="food" />
       } } }}
     </div>

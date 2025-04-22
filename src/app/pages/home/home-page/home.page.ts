@@ -26,18 +26,9 @@ import { SkeletonCategoriesComponent } from '../../categories/components/skeleto
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skeleton-food.component';
 import { KeyValuePipe, NgClass } from '@angular/common';
-
-interface SubcategoryGroup {
-  id: string;
-  name: string;
-  foods: iFood[];
-}
-
-interface CategoryGroup {
-  id: string;
-  name: string;
-  subcategories: Record<string, SubcategoryGroup>;
-}
+import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
+import { SubcategoryScrollService } from '@shared/services/subcategory-scroll/subcategory-scroll.service';
+import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 
 @Component({
   selector: 'app-home-page',
@@ -51,22 +42,20 @@ interface CategoryGroup {
     SkeletonFoodComponent,
     NgClass,
     KeyValuePipe,
+    SubcategoriesComponent,
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   animations: [fade],
 })
-export class HomePage implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('stickySubcategories') stickySubcategories!: ElementRef;
-  @ViewChild('normalSubcategories') normalSubcategories!: ElementRef;
+export class HomePage implements OnInit {
   private localStorageService = inject(LocalStorageService);
   private route = inject(ActivatedRoute);
-  private intersectionObserver?: IntersectionObserver;
 
   public loadingService = inject(LoadingService);
   public foodService = inject(FoodService);
   public categoryService = inject(CategoryService);
-  public groupedFoods = signal<Record<string, CategoryGroup>>({});
+  public groupedFoods = signal<Record<string, iCategoryGroup>>({});
   public groupedSubFoods = signal<Record<string, iFood[]>>({});
   public subcategories = signal<any>([]);
 
@@ -76,27 +65,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     '[]'
   );
   public companyId = this.localStorageService.getSignal('companyId', '0');
-  public activeSubcategory = signal<string | null>(null);
 
   ngOnInit() {
     this.getAllFoodAndCategories();
     this.getSubCategories();
     sessionStorage.removeItem('paymentRedirect');
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      if (
-        this.stickySubcategories?.nativeElement &&
-        this.normalSubcategories?.nativeElement
-      ) {
-        this.setupScrollObserver();
-      }
-    }, 1000);
-  }
-
-  ngOnDestroy() {
-    this.intersectionObserver?.disconnect();
   }
 
   get skeletonItems(): number[] {
@@ -124,82 +97,6 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private async getSubCategories() {
-    const { data, error } = await this.categoryService.supabaseService.supabase
-      .from('subcategories')
-      .select('*')
-      .order('name', { ascending: true });
-
-    if (error) {
-      console.error('Erro ao buscar subcategorias:', error);
-      return;
-    }
-
-    this.subcategories.set(data);
-  }
-
-  private setupScrollObserver() {
-    // Agora usamos as referências nativas
-    const stickyElement = this.stickySubcategories?.nativeElement;
-    const normalElement = this.normalSubcategories?.nativeElement;
-
-    if (!stickyElement || !normalElement) {
-      console.error('Elementos não encontrados!');
-      return;
-    }
-
-    // Observer para mostrar/ocultar a barra sticky
-    const headerObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.target === normalElement) {
-            stickyElement.classList.toggle('hidden', entry.isIntersecting);
-            stickyElement.classList.toggle('block', !entry.isIntersecting);
-          }
-        });
-      },
-      { threshold: [0] }
-    );
-
-    headerObserver.observe(normalElement);
-
-    // Observer para as subcategorias
-    this.intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const subcategoryId = entry.target.id.replace('subcat-', '');
-            console.log('Subcategoria ativa:', subcategoryId);
-            this.activeSubcategory.set(subcategoryId);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '-50px 0px -80% 0px' }
-    );
-
-    // Observar todas as subcategorias
-    document.querySelectorAll('[id^="subcat-"]').forEach((el) => {
-      this.intersectionObserver?.observe(el);
-    });
-  }
-
-  scrollToSubcategory(subcategoryId: string) {
-    const element = document.getElementById(`subcat-${subcategoryId}`);
-    if (element) {
-      // Calcula a posição considerando a barra sticky (64px é a altura estimada da barra)
-      const offset = 64;
-      const elementPosition =
-        element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-
-      // Atualiza a subcategoria ativa apenas após o scroll completar
-      setTimeout(() => {
-        this.activeSubcategory.set(subcategoryId);
-      }, 500); // Tempo estimado para o scroll completar
-    }
+    this.subcategories.set(await this.categoryService.getSubcategories());
   }
 }

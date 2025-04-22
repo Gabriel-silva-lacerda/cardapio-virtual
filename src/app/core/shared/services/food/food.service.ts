@@ -6,18 +6,7 @@ import { environment } from '@enviroment/environment.development';
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
-
-interface SubcategoryGroup {
-  id: string;
-  name: string;
-  foods: iFood[];
-}
-
-interface CategoryGroup {
-  id: string;
-  name: string;
-  subcategories: Record<string, SubcategoryGroup>;
-}
+import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -30,47 +19,108 @@ export class FoodService extends BaseSupabaseService {
 
   async getAllFoodsGroupedByCategory(
     companyId: string
-  ): Promise<Record<string, CategoryGroup>> {
+  ): Promise<Record<string, iCategoryGroup>> {
     const { data, error } = await this.supabaseService.supabase
-      .from('foods')
-      .select('*, categories(id, name), subcategories(id, name)')
+      .from('foods_categories_view')
+      .select('*')
       .eq('company_id', companyId)
-      .order('name', { ascending: true });
+      .order('subcategory_name', { ascending: true, nullsFirst: false });
 
     if (error) throw error;
 
-    const grouped: Record<string, CategoryGroup> = {};
+    const grouped: Record<string, iCategoryGroup> = {};
 
     for (const food of data) {
-      const category = food.categories || { id: '0', name: 'Outros' };
-      const subcategory = food.subcategories || {
-        id: '0',
-        name: 'Sem Subcategoria',
-      };
+      const categoryId = food.category_id || '0';
+      const categoryName = food.category_name || 'Outros';
+      const subcategoryId = food.subcategory_id || '0';
+      const subcategoryName = food.subcategory_name || 'Sem Subcategoria';
 
-      if (!grouped[category.id]) {
-        grouped[category.id] = {
-          id: category.id,
-          name: category.name,
-          subcategories: {},
+      if (!grouped[categoryId]) {
+        grouped[categoryId] = {
+          id: categoryId,
+          name: categoryName,
+          subcategories: [],
         };
       }
 
-      if (!grouped[category.id].subcategories[subcategory.id]) {
-        grouped[category.id].subcategories[subcategory.id] = {
-          id: subcategory.id,
-          name: subcategory.name,
+      let subcategoryGroup = grouped[categoryId].subcategories.find(
+        (sub) => sub.id === subcategoryId
+      );
+
+      if (!subcategoryGroup) {
+        subcategoryGroup = {
+          id: subcategoryId,
+          name: subcategoryName,
           foods: [],
         };
+        grouped[categoryId].subcategories.push(subcategoryGroup);
       }
 
-      grouped[category.id].subcategories[subcategory.id].foods.push({
+      subcategoryGroup.foods.push({
         ...food,
-        image_url: getImageUrl(food.image_url as string),
+        image_url: getImageUrl(food.image_url),
       });
+    }
+    for (const cat of Object.values(grouped)) {
+      cat.subcategories.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return grouped;
+  }
+
+  async getFoodsGroupedByCategoryId(
+    categoryId: string,
+    companyId: string
+  ): Promise<iCategoryGroup | null> {
+    const { data: categoryData } = await this.supabaseService.supabase
+      .from('categories')
+      .select('id, name')
+      .eq('id', categoryId)
+      .single();
+
+    if (!categoryData) return null;
+
+    const { data: subcategories } = await this.supabaseService.supabase
+      .from('subcategories')
+      .select('id, name')
+      .eq('category_id', categoryId);
+
+    if (!subcategories || subcategories.length === 0) return null;
+
+    const subcategoryIds = subcategories.map((s) => s.id);
+
+    const { data: foods } = await this.supabaseService.supabase
+      .from('foods')
+      .select('*')
+      .in('subcategory_id', subcategoryIds)
+      .eq('company_id', companyId);
+
+    const categoryGroup: iCategoryGroup = {
+      id: categoryData.id,
+      name: categoryData.name,
+      subcategories: [],
+    };
+
+    subcategories.forEach((subcategory) => {
+      const subFoods =
+        foods
+          ?.filter((food) => food.subcategory_id === subcategory.id)
+          .map((food) => ({
+            ...food,
+            image_url: getImageUrl(food.image_url),
+          })) || [];
+
+      categoryGroup.subcategories.push({
+        id: subcategory.id,
+        name: subcategory.name,
+        foods: subFoods,
+      });
+    });
+
+    categoryGroup.subcategories.sort((a, b) => a.name.localeCompare(b.name));
+
+    return categoryGroup;
   }
 
   async getFoodById(id: string): Promise<iFood | null> {
@@ -82,51 +132,6 @@ export class FoodService extends BaseSupabaseService {
       ...food,
       image_url: getImageUrl(food.image_url as string),
     };
-  }
-
-  async getFoodsByCategory(
-    categoryId: string,
-    companyId: string
-  ): Promise<Record<string, iFood[]> | null> {
-    const subcategories = await this.supabaseService.supabase
-      .from('subcategories')
-      .select('id, name')
-      .eq('category_id', categoryId);
-
-    if (!subcategories.data || subcategories.data.length === 0) return null;
-
-    const subcategoryIds = subcategories.data.map((s) => s.id);
-
-    const subcategoryNames = subcategories.data.reduce((acc, subcategory) => {
-      acc[subcategory.id] = subcategory.name;
-      return acc;
-    }, {} as Record<string, string>);
-
-    const foods = await this.supabaseService.supabase
-      .from('foods')
-      .select('*')
-      .in('subcategory_id', subcategoryIds)
-      .eq('company_id', companyId);
-
-    if (!foods.data) return null;
-
-    const groupedFoods: Record<string, iFood[]> = {};
-
-    foods.data.forEach((food) => {
-      const subcategoryId = food.subcategory_id as string;
-      const subcategoryName = subcategoryNames[subcategoryId];
-
-      if (!groupedFoods[subcategoryName]) {
-        groupedFoods[subcategoryName] = [];
-      }
-
-      groupedFoods[subcategoryName].push({
-        ...food,
-        image_url: getImageUrl(food.image_url as string),
-      });
-    });
-
-    return groupedFoods;
   }
 
   async createFoodWithExtras(

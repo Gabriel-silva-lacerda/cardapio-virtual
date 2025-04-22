@@ -1,0 +1,46 @@
+<!-- Sticky Subcategories -->
+<div
+  class="sticky top-0 z-50 bg-white shadow-md hidden transition-all duration-300"
+  #stickySubcategories
+>
+  <div
+    class="border border-gray-200 py-2 px-2 flex overflow-x-auto no-scrollbar"
+  >
+    @for (subcategory of subcategories(); track $index) {
+
+    <span
+      class="px-4 py-2 cursor-pointer whitespace-nowrap transition-colors duration-200"
+      [ngClass]="{
+        'font-bold text-primary border-b-2 border-primary':
+          scrollService.activeSubcategory() === subcategory.id,
+        'text-gray-600 hover:text-gray-800':
+          scrollService.activeSubcategory() !== subcategory.id
+      }"
+      (click)="scrollToSubcategory(subcategory.id)"
+    >
+      {{ subcategory.name }}
+    </span>
+    }
+  </div>
+</div>
+
+<!-- Normal Subcategories -->
+<div
+  class="border border-gray-200 py-2 px-2 mb-4 flex overflow-x-auto no-scrollbar"
+  #normalSubcategories
+>
+  @for (subcategory of subcategories(); track $index) {
+  <span
+    class="px-4 py-2 cursor-pointer whitespace-nowrap transition-colors duration-200"
+    [ngClass]="{
+      'font-bold text-primary border-b-2 border-primary':
+        scrollService.activeSubcategory() === subcategory.id,
+      'text-gray-600 hover:text-gray-800':
+        scrollService.activeSubcategory() !== subcategory.id
+    }"
+    (click)="scrollToSubcategory(subcategory.id)"
+  >
+    {{ subcategory.name }}
+  </span>
+  }
+</div>

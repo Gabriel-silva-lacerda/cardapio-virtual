@@ -86,27 +86,21 @@ export class CategoriesComponent {
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         try {
-          const foodsGroupedBySubcategory =
-            await this.foodService.getFoodsByCategory(
+          const groupedCategory =
+            await this.foodService.getFoodsGroupedByCategoryId(
               categoryId,
               this.companyId()
             );
 
-          if (
-            foodsGroupedBySubcategory &&
-            Object.keys(foodsGroupedBySubcategory).length > 0
-          ) {
-            // Verifica se existem comidas nas subcategorias
-            const hasFoods = Object.values(foodsGroupedBySubcategory).some(
-              (foods) => foods.length > 0
-            );
+          const hasFoods = groupedCategory?.subcategories?.some(
+            (subcategory) => subcategory.foods.length > 0
+          );
 
-            if (hasFoods) {
-              this.toastr.warning(
-                'Não é possível excluir a categoria pois há comidas associadas a ela.'
-              );
-              return;
-            }
+          if (hasFoods) {
+            this.toastr.warning(
+              'Não é possível excluir a categoria pois há comidas associadas a ela.'
+            );
+            return;
           }
 
           await this.categoryService.deleteByFilter('company_categories', {
