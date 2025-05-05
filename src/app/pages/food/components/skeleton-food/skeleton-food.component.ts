@@ -7,5 +7,6 @@ import { Component, Input } from '@angular/core';
   templateUrl: './skeleton-food.component.html',
 })
 export class SkeletonFoodComponent {
- @Input() showTitle = true;
+  @Input() showTitle = true;
+  @Input() customClass = '';
 }

@@ -28,9 +28,7 @@ export class ConfirmDialogComponent {
   ) {}
 
   onConfirm(): void {
-    this.loadingService.showLoading(); // mostra o loading
-    this.data.onConfirm(); // chama a função passada
-    this.loadingService.hideLoading(); // mostra o loading
+    this.data.onConfirm();
   }
 
   onCancel(): void {

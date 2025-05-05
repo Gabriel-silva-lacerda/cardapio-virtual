@@ -1,23 +1,23 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
 import { fade } from '@shared/utils/animations.utils';
-import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
-import { FoodService } from '../../../core/shared/services/food/food.service';
-import { CategoryService } from '../services/category.service';
-import { iCategory } from '../interfaces/category.interface';
-import { iFood } from '@shared/interfaces/food/food.interface';
-import { RouterLink } from '@angular/router';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { CategoriesComponent } from '../../categories/components/categories/categories.component';
-import { LoadingService } from '@shared/services/loading/loading.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
-import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
-import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skeleton-food.component';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
 import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
+import { FoodService } from '@shared/services/food/food.service';
+import { iFood } from '@shared/interfaces/food/food.interface';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+
+import { CategoryService } from '../services/category.service';
+import { iCategory } from '../interfaces/category.interface';
+import { CategoriesComponent } from '../../categories/components/categories/categories.component';
+import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
+import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
+import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skeleton-food.component';
 
 @Component({
   selector: 'app-home-page',
@@ -26,10 +26,8 @@ import { SubcategoryItemComponent } from '@shared/components/subcategory-item/su
     FoodMenuComponent,
     HeaderPageComponent,
     RouterLink,
-    SkeletonLoaderComponent,
     SkeletonCategoriesComponent,
     SkeletonFoodComponent,
-    NgClass,
     KeyValuePipe,
     SubcategoriesComponent,
     SubcategoryItemComponent,
@@ -41,7 +39,6 @@ import { SubcategoryItemComponent } from '@shared/components/subcategory-item/su
 export class HomePage implements OnInit {
   private localStorageService = inject(LocalStorageService);
 
-  public loadingService = inject(LoadingService);
   public foodService = inject(FoodService);
   public categoryService = inject(CategoryService);
   public groupedFoods = signal<Record<string, iCategoryGroup>>({});

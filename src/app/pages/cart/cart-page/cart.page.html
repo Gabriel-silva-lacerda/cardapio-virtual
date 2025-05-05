@@ -1,14 +1,16 @@
 <div class="min-h-screen" [@fade]>
   <app-header-page [showInput]="false" title="Carrinho" />
   <div class="h-[70%] mt-10 px-3">
-    @for (cart of this.carts(); track $index) {
-    <app-food-menu [isInCart]="true" [cartItem]="cart" />
-    }
+    <ul class="flex flex-col gap-3">
+      @for (cart of this.carts(); track $index) {
+      <app-food-menu [isInCart]="true" [cartItem]="cart" />
+      }
+    </ul>
 
     @if(this.carts().length === 0) {
-      <div class="flex items-center justify-self-center">
-          Sem itens no carrinho :(
-      </div>
+    <div class="flex items-center justify-self-center">
+      Sem itens no carrinho :(
+    </div>
     }
   </div>
   <app-footer-cart [carts]="this.carts()" />

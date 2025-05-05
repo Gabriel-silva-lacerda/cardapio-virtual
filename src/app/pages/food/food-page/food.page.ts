@@ -8,7 +8,7 @@ import { FoodService } from '@shared/services/food/food.service';
 import { firstValueFrom } from 'rxjs';
 import { CategoryService } from '../../home/services/category.service';
 import { iCategory } from '../../home/interfaces/category.interface';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
@@ -16,7 +16,6 @@ import { ImageService } from '@shared/services/image/image.service';
 import { ToastrService } from 'ngx-toastr';
 import { iFoodDetails } from '@shared/interfaces/food-details/food-datails.interface';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
 import { SkeletonFoodComponent } from '../components/skeleton-food/skeleton-food.component';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
@@ -28,7 +27,7 @@ import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
 import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcategories/skeleton-subcategories.component';
 
 @Component({
   selector: 'app-food-page',
@@ -36,12 +35,11 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
     FoodMenuComponent,
     HeaderPageComponent,
     KeyValuePipe,
-    SkeletonLoaderComponent,
     SkeletonFoodComponent,
     FormsModule,
     SubcategoriesComponent,
     SubcategoryItemComponent,
-    LoadingComponent,
+    SkeletonSubcategoriesComponent,
   ],
   templateUrl: './food.page.html',
   styleUrl: './food.page.scss',
@@ -65,17 +63,13 @@ export class FoodPage {
   public foodsGroupedCategory = signal<Record<string, iCategoryGroup>>({});
   public foodsGroupedCategoryId = signal<iCategoryGroup>({} as iCategoryGroup);
   public loadingService = inject(LoadingService);
-  public skeletonItems = Array.from({ length: 5 });
   public isAdmin = this.authService.isAdmin;
   public companyId = this.localStorageService.getSignal('companyId', '0');
   public company = signal<Company>({} as Company);
   public subcategories = signal<iSubcategory[]>([]);
   public activeSubcategory = signal<string | null>(null);
 
-  public loading = signal({
-    foodAndSubcategory: false,
-    subcategory: false,
-  });
+  public loading = signal(false);
 
   ngOnInit(): void {
     this.getAllFoods();
@@ -84,10 +78,7 @@ export class FoodPage {
 
   private async getAllFoods(): Promise<void> {
     try {
-      this.loading.update((state) => ({
-        ...state,
-        foodAndSubcategory: true,
-      }));
+      this.loading.set(true);
 
       this.id = await firstValueFrom(this.route.paramMap).then((params) =>
         params.get('id')
@@ -104,10 +95,7 @@ export class FoodPage {
         this.title.set('Cardápio');
       }
     } finally {
-      this.loading.update((state) => ({
-        ...state,
-        foodAndSubcategory: false,
-      }));
+      this.loading.set(false);
     }
   }
 
@@ -171,60 +159,31 @@ export class FoodPage {
         message: 'Tem certeza que deseja excluir este item?',
         confirmText: 'Excluir',
         cancelText: 'Cancelar',
-        loading: this.loading().subcategory,
         onConfirm: async () => {
-          this.loading.update((state) => ({ ...state, subcategory: true }));
+          try {
+            this.loadingService.showLoading();
 
-          if (food.imageUrl && food.id) {
-            const imageUrl = food.imageUrl.replace(
-              /^.*\/food-images\//,
-              'food-images/'
-            );
+            if (food.imageUrl && food.id) {
+              const imageUrl = food.imageUrl.replace(
+                /^.*\/food-images\//,
+                'food-images/'
+              );
 
-            const deleted = await this.imageService.deleteImage(imageUrl);
-            const error = await this.foodService.delete('foods', food.id);
+              const deleted = await this.imageService.deleteImage(imageUrl);
+              const error = await this.foodService.delete('foods', food.id);
 
-            this.loading.update((state) => ({ ...state, subcategory: false }));
-
-            if (!error && deleted) {
-              this.toastr.success('Item deletado com sucesso!');
-              this.loading.update((state) => ({
-                ...state,
-                subcategory: false,
-              }));
-
-              this.getAllFoods();
+              if (!error && deleted) {
+                this.toastr.success('Item deletado com sucesso!');
+                this.getAllFoods();
+                dialogRef.close(true);
+              }
             }
-
-            dialogRef.close(true); // <-- só fecha depois que tudo terminar
+          } finally {
+            this.loadingService.hideLoading();
           }
         },
       },
     });
-
-    // dialogRef.afterClosed().subscribe(async (result) => {
-    //   if (result) {
-    //     if (food.imageUrl && food.id) {
-    //       const imageUrl = food.imageUrl.replace(
-    //         /^.*\/food-images\//,
-    //         'food-images/'
-    //       );
-
-    //       const deleted = await this.imageService.deleteImage(imageUrl);
-    //       const error = await this.foodService.delete('foods', food.id);
-    //       this.loading.update((state) => ({
-    //         ...state,
-    //         subcategory: false,
-    //       }));
-
-    //       if (!error && deleted) {
-    //         this.toastr.success('Item deletado com sucesso!');
-    //         this.getAllFoods();
-    //         this.loadingService.hideLoading();
-    //       }
-    //     }
-    //   }
-    // });
   }
 
   public openDialogFee() {

@@ -21,17 +21,12 @@
         Taxa de entrega
       </button>
     </div>
-    } @if(loading().foodAndSubcategory) {
-    <div class="border border-gray-200 py-5 px-3 mb-4 flex justify-center">
-      <app-loading />
-    </div>
+    } @if(loading()) {
+    <app-skeleton-subcategories />
     } @else {
     <app-subcategories [subcategories]="subcategories"></app-subcategories>
-
-    } @if (loading().foodAndSubcategory) {
-    <div class="flex items-center justify-center h-full min-h-[50vh]">
-      <app-loading size="w-20 h-20" />
-    </div>
+    } @if (loading()) {
+    <app-skeleton-food [showTitle]="false" />
     } @else { @if (!id) {
     <div class="px-3">
       @for (category of foodsGroupedCategory() | keyvalue; track category.key) {
@@ -41,23 +36,28 @@
       @for (subcategory of category.value.subcategories; track $index) {
       <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
 
-      @for (food of subcategory.foods; track food.id) {
-      <app-food-menu
-        [food]="food"
-        [showItem]="true"
-        (editItem)="openDialogFood($event)"
-        (deleteItem)="openDialogRemoveFood($event)"
-      ></app-food-menu>
-      } } }
+      <ul class="flex flex-col gap-3">
+        @for (food of subcategory.foods; track food.id) {
+        <app-food-menu
+          [food]="food"
+          [showItem]="true"
+          (editItem)="openDialogFood($event)"
+          (deleteItem)="openDialogRemoveFood($event)"
+        />
+        }
+      </ul>
+      } }
     </div>
     } @else { @for (subcategory of foodsGroupedCategoryId().subcategories; track
     subcategory.id) {
     <div class="px-3">
       <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
 
-      @for (food of subcategory.foods; track food.id) {
-      <app-food-menu [food]="food" />
-      }
+      <ul class="flex flex-col gap-3">
+        @for (food of subcategory.foods; track food.id) {
+        <app-food-menu [food]="food" />
+        }
+      </ul>
     </div>
     } } }
   </div>

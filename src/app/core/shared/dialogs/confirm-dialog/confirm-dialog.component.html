@@ -13,7 +13,7 @@
     <app-button
       [label]="data.cancelText || 'Cancelar'"
       class="w-1/2"
-      [isLoading]="this.loadingService.loading()"
+      [isLoading]="loadingService.loading()"
       [isCanceled]="true"
       (click)="onCancel()"
     ></app-button>
@@ -21,8 +21,8 @@
       [label]="data.confirmText || 'Confirmar'"
       class="w-1/2"
       (click)="onConfirm()"
-      [isLoading]="this.loadingService.loading()"
-      [disabled]="this.loadingService.loading()"
+      [isLoading]="loadingService.loading()"
+      [disabled]="loadingService.loading()"
     ></app-button>
   </div>
 </div>

@@ -3,6 +3,9 @@
 
   <div class="h-[70%] mt-10 pb-16">
     <div class="px-3">
+      @if (loading()) {
+      <app-skeleton-categories customClass="px-10 py-4" />
+      } @else {
       <div class="flex justify-between items-center mb-2">
         <span class="text-gray-500 text-xl block">Categorias</span>
         <a
@@ -12,27 +15,17 @@
           >Ver mais +</a
         >
       </div>
-      <div class="flex gap-4 overflow-x-auto">
-        @if (loadingService.loading()) { @for (i of skeletonItems; track $index)
-        {
-        <app-skeleton-loader>
-          <app-skeleton-categories customClass="px-10 py-4" />
-        </app-skeleton-loader>
-        } } @else { @for (category of categories(); track $index) {
+      <ul class="flex gap-4 overflow-auto">
+        @for (category of categories(); track $index) {
         <app-categories [category]="category" customClass="py-3 px-4" />
-        } @empty {
-        <span>Sem Categorias para mostrar</span>
-        } }
-      </div>
+        }
+      </ul>
+      }
     </div>
 
     <div>
-      @if (loadingService.loading()) {
-      <app-skeleton-loader>
-        @for (i of skeletonItems; track $index) {
-        <app-skeleton-food class="mt-6" [showTitle]="false" />
-        }
-      </app-skeleton-loader>
+      @if (loading()) {
+      <app-skeleton-food customClass="mt-6" [showTitle]="true" />
       } @else {
 
       <div class="flex justify-between items-center mt-2 px-3">
@@ -53,7 +46,7 @@
       <div class="px-3">
         @for (category of groupedFoods() | keyvalue; track category.key) {
         <span
-          class="text-primary font-medium text-xl block mt-6 mb-2"
+          class="text-primary font-medium text-xl block my-2"
           id="cat-{{ category.value.id }}"
         >
           {{ category.value.name }}
@@ -64,9 +57,12 @@
           [subcategory]="subcategory"
         ></app-subcategory-item>
 
-        @for (food of subcategory.foods; track food.id) {
-        <app-food-menu [food]="food" class="mb-4" />
-        } } } @empty { <span>Sem itens para mostrar</span> }
+        <ul class="flex flex-col gap-3">
+          @for (food of subcategory.foods; track food.id) {
+          <app-food-menu [food]="food" />
+          }
+        </ul>
+        } } @empty { <span>Sem itens para mostrar</span> }
       </div>
       }
     </div>
