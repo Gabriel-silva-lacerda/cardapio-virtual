@@ -6,5 +6,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './skeleton-categories.component.html',
 })
 export class SkeletonCategoriesComponent {
-  @Input() customClass!: string;
+  @Input() customClassLi!: string;
+  @Input() customClassUl!: string;
+  @Input() showTitle = false;
 }

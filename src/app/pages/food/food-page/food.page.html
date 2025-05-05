@@ -2,7 +2,7 @@
   <app-header-page [title]="title()" />
 
   <div class="h-[70%] mt-10 pb-16">
-    @if(isAdmin() && !id) {
+    @if(isAdmin() && !id && !loading()) {
     <div
       class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2 mb-3"
     >
@@ -11,7 +11,7 @@
         (click)="openDialogFood()"
       >
         <i class="fa-solid fa-plus"></i>
-        Adicinar
+        Adicionar
       </button>
       <button
         class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
@@ -24,7 +24,7 @@
     } @if(loading()) {
     <app-skeleton-subcategories />
     } @else {
-    <app-subcategories [subcategories]="subcategories"></app-subcategories>
+    <app-subcategories [subcategories]="subcategories" />
     } @if (loading()) {
     <app-skeleton-food [showTitle]="false" />
     } @else { @if (!id) {
@@ -33,8 +33,8 @@
       <span class="text-primary font-medium text-xl block mt-6 mb-2">
         {{ category.value.name }}
       </span>
-      @for (subcategory of category.value.subcategories; track $index) {
-      <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
+      @for (subcategory of category.value.subcategories; track subcategory.id) {
+      <app-subcategory-item [subcategory]="subcategory" />
 
       <ul class="flex flex-col gap-3">
         @for (food of subcategory.foods; track food.id) {
@@ -51,7 +51,7 @@
     } @else { @for (subcategory of foodsGroupedCategoryId().subcategories; track
     subcategory.id) {
     <div class="px-3">
-      <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
+      <app-subcategory-item [subcategory]="subcategory" />
 
       <ul class="flex flex-col gap-3">
         @for (food of subcategory.foods; track food.id) {

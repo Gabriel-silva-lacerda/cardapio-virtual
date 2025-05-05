@@ -95,16 +95,16 @@
         this.selectedPayment() === 'pix' ? 'Faça o pagamento via Pix' : ''
       "
       (click)="onConfirm()"
-      [disabled]="loadingService.loading() || this.selectedPayment() === 'pix'"
+      [disabled]="loading() || this.selectedPayment() === 'pix'"
       class="button-primary text-text4 w-1/2 flex items-center gap-2 justify-center"
     >
-      Confirmar @if(loadingService.loading()) {
+      Confirmar @if(loading()) {
       <app-loading />
       }
     </button>
   </div>
 </div>
 
-@if(loadingService.loading()) {
+@if(loading()) {
 <app-loading-screen />
 }

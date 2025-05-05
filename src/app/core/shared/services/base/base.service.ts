@@ -22,7 +22,6 @@ export abstract class BaseService {
     const url = path ? `${this.apiUrl}/${path}` : this.apiUrl;
     return this.http.get<T[]>(url).pipe(
       catchError((error) => {
-        this.loadingService.hideLoading();
         // this.toastr.error('Erro ao buscar dados.', 'Erro');
         return throwError(() => error);
       })
@@ -34,7 +33,6 @@ export abstract class BaseService {
     const url = path ? `${this.apiUrl}/${path}/${id}` : `${this.apiUrl}/${id}`;
     return this.http.get<T>(url).pipe(
       catchError((error) => {
-        this.loadingService.hideLoading();
         // this.toastr.error('Erro ao buscar item.', 'Erro');
         return throwError(() => error);
       })
@@ -46,7 +44,6 @@ export abstract class BaseService {
     const url = path ? `${this.apiUrl}/${path}` : this.apiUrl;
     return this.http.post<T>(url, body).pipe(
       catchError((error) => {
-        this.loadingService.hideLoading();
         // this.toastr.error('Erro ao criar item.', 'Erro');
         return throwError(() => error);
       })
@@ -58,7 +55,6 @@ export abstract class BaseService {
     const url = path ? `${this.apiUrl}/${path}/${id}` : `${this.apiUrl}/${id}`;
     return this.http.put<T>(url, body).pipe(
       catchError((error) => {
-        this.loadingService.hideLoading();
         // this.toastr.error('Erro ao atualizar item.', 'Erro');
         return throwError(() => error);
       })
@@ -70,7 +66,6 @@ export abstract class BaseService {
     const url = path ? `${this.apiUrl}/${path}/${id}` : `${this.apiUrl}/${id}`;
     return this.http.delete<void>(url).pipe(
       catchError((error) => {
-        this.loadingService.hideLoading();
         // this.toastr.error('Erro ao excluir item.', 'Erro');
         return throwError(() => error);
       })

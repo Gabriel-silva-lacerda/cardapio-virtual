@@ -1,10 +1,9 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -23,8 +22,7 @@ export class ForgotPasswordComponent {
   private toastr = inject(ToastrService);
   private localStorageService = inject(LocalStorageService);
 
-  protected loadingService = inject(LoadingService);
-
+  public loading = signal(false);
   public forgotFields: iDynamicField[] = [
     {
       name: 'email',
@@ -34,10 +32,13 @@ export class ForgotPasswordComponent {
     },
   ];
 
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
 
   public async submit() {
-    this.loadingService.showLoading();
+    this.loading.set(true);
 
     if (!this.dynamicForm.form.valid) {
       this.toastr.error('Preencha o campo e-mail!', 'Erro!');
@@ -56,6 +57,6 @@ export class ForgotPasswordComponent {
       'E-mail enviado com sucesso! Verifique sua caixa de entrada.',
       'Sucesso!'
     );
-    this.loadingService.hideLoading();
+    this.loading.set(false);
   }
 }

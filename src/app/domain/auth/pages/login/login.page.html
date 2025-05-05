@@ -1,26 +1,44 @@
 <div class="px-5 py-6">
-  <app-dynamic-form #loginForm [fields]="loginFields" buttonText="Login" (submitEvent)="login()" />
+  <app-dynamic-form
+    #loginForm
+    [fields]="loginFields"
+    buttonText="Login"
+    (submitEvent)="login()"
+  />
 
-  <button class="button-primary flex items-center justify-center gap-2" (click)="login()" [disabled]="loginForm.form.invalid || this.loadingService.loading()">
-    Login
-    @if(loadingService.loading()) {
-      <app-loading />
+  <button
+    class="button-primary flex items-center justify-center gap-2"
+    (click)="login()"
+    [disabled]="loginForm.form.invalid || loading()"
+  >
+    Login @if(loading()) {
+    <app-loading />
     }
   </button>
 
   @if(!isEmailConfirmed()) {
-    <button [@fadeIn] class="button-primary mt-2" (click)="resendConfirmation()">
-      Reenviar código de confirmação
-    </button>
+  <button [@fadeIn] class="button-primary mt-2" (click)="resendConfirmation()">
+    Reenviar código de confirmação
+  </button>
   }
-  
-  <button class="button-primary mt-3" routerLink="/">Voltar para a tela de planos</button>
+
+  <button class="button-primary mt-3" routerLink="/">
+    Voltar para a tela de planos
+  </button>
   <div class="flex justify-between my-4">
     <div>
-      <a class="link mt-0 mb-2 block" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
+      <a
+        class="link mt-0 mb-2 block"
+        routerLink="/auth/forgot-password"
+        [queryParams]="{ empresa: companyName() }"
+      >
         Criar um usuário
       </a>
-      <a class="link mt-0 block" routerLink="/auth/forgot-password" [queryParams]="{ empresa: companyName() }">
+      <a
+        class="link mt-0 block"
+        routerLink="/auth/forgot-password"
+        [queryParams]="{ empresa: companyName() }"
+      >
         Esqueceu sua senha?
       </a>
     </div>
@@ -28,6 +46,4 @@
       Visualizar cardápio
     </a>
   </div>
-
-
 </div>

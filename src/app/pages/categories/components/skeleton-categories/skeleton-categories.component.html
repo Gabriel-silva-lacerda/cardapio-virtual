@@ -1,13 +1,15 @@
+@if(showTitle) {
 <div class="flex justify-between items-center">
   <div class="w-32 h-6 bg-gray-200 animate-pulse rounded my-2"></div>
   <div class="w-28 h-6 bg-gray-200 animate-pulse rounded"></div>
 </div>
+}
 
-<ul class="flex gap-4 overflow-x-auto">
+<ul class="{{ customClassUl }} flex gap-4">
   @for (i of [1, 2, 3]; track $index) {
   <li
     class="{{
-      customClass
+      customClassLi
     }} bg-gray-200 animate-pulse border cursor-pointer rounded-md shadow-sm flex flex-col items-center gap-2"
   >
     <div class="h-8 w-8 bg-gray-300 rounded-full"></div>

@@ -1,43 +1,45 @@
-<li
-  [routerLink]="['/app/categorias/comida', category.id]"
-  [queryParams]="{ empresa: companyName() }"
-  class="{{
-    customClass
-  }} border cursor-pointer rounded-md bg-white-light shadow-sm flex flex-col items-center gap-2 hover:shadow-md hover:border-red-300 transition-all"
->
-  <i class="{{ category.icon }} text-2xl text-primary"></i>
-  <span class="block text-gray-600">{{ category.name }}</span>
-</li>
-@if(showItem && isAdmin()) {
-<div class="flex gap-1">
-  @if(isLoading()) {
-  <div class="mt-2">
-    <app-loading />
+<li class="list-none">
+  <div
+    [routerLink]="['/app/categorias/comida', category.id]"
+    [queryParams]="{ empresa: companyName() }"
+    class=" {{
+      customClass
+    }}  border cursor-pointer rounded-md bg-white-light shadow-sm flex flex-col items-center gap-2 hover:shadow-md hover:border-red-300 transition-all"
+  >
+    <i class="{{ category.icon }} text-2xl text-primary"></i>
+    <span class="block text-gray-600">{{ category.name }}</span>
   </div>
-  } @else { @if (isAdmin() && !isCategoryAssociatedMap[category.id]) {
-  <button
-    class="bg-primary px-2 py-1 rounded-md text-white mt-2 disabled:opacity-50"
-    (click)="addCategoryToCompany(category.id)"
-    [disabled]="this.loadingService.loading()"
-  >
+  @if(showItem && isAdmin()) {
+  <div class="flex gap-1">
     @if(isLoading()) {
-    <app-loading />
-    } @else {
-    <i class="fa-solid fa-plus"></i>
-    }
-  </button>
+    <div class="mt-2">
+      <app-loading />
+    </div>
+    } @else { @if (isAdmin() && !isCategoryAssociatedMap[category.id]) {
+    <button
+      class="bg-primary px-2 py-1 rounded-md text-white mt-2 disabled:opacity-50"
+      (click)="addCategoryToCompany(category.id)"
+      [disabled]="this.loadingService.loading()"
+    >
+      @if(isLoading()) {
+      <app-loading />
+      } @else {
+      <i class="fa-solid fa-plus"></i>
+      }
+    </button>
 
-  } @if (isAdmin() && isCategoryAssociatedMap[category.id]) {
-  <button
-    class="bg-primary px-2 py-1 rounded-md text-white mt-2"
-    (click)="removeCategoryFromCompany(category.id)"
-  >
-    @if(isLoading()) {
-    <app-loading />
-    } @else {
-    <i class="fa-solid fa-trash"></i>
-    }
-  </button>
-  } }
-</div>
-}
+    } @if (isAdmin() && isCategoryAssociatedMap[category.id]) {
+    <button
+      class="bg-primary px-2 py-1 rounded-md text-white mt-2"
+      (click)="removeCategoryFromCompany(category.id)"
+    >
+      @if(isLoading()) {
+      <app-loading />
+      } @else {
+      <i class="fa-solid fa-trash"></i>
+      }
+    </button>
+    } }
+  </div>
+  }
+</li>

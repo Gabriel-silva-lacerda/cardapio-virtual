@@ -5,8 +5,6 @@ import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { CommonModule } from '@angular/common';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
-import { ButtonModule } from 'primeng/button';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { CompanyService } from '@shared/services/company/company.service';
 import { ToastrService } from 'ngx-toastr';
@@ -18,15 +16,13 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, DynamicFormComponent, ButtonModule, RouterLink, LoadingComponent],
+  imports: [CommonModule, DynamicFormComponent, RouterLink, LoadingComponent],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
-  animations: [fadeIn, fade]
+  animations: [fadeIn, fade],
 })
 export class LoginPage {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
-
-  protected loadingService = inject(LoadingService);
 
   private companyService = inject(CompanyService);
   private localStorageService = inject(LocalStorageService);
@@ -37,8 +33,12 @@ export class LoginPage {
   private authService = inject(AuthService);
 
   public isEmailConfirmed = signal(true);
+  public loading = signal(false);
 
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    '[]'
+  );
   public loginFields: iDynamicField[] = [
     {
       name: 'email',
@@ -57,10 +57,10 @@ export class LoginPage {
   ];
 
   public async login() {
-    this.loadingService.showLoading();
+    this.loading.set(true);
 
     if (!this.dynamicForm.form.valid) {
-      this.loadingService.hideLoading();
+      this.loading.set(false);
       return;
     }
 
@@ -70,55 +70,73 @@ export class LoginPage {
     if (!companyName) {
       this.toastrService.error('Empresa não informada.', 'Erro');
       this.localStorageService.clearSupabaseAuthToken();
-      this.loadingService.hideLoading();
+      this.loading.set(false);
       return;
     }
 
-    const company = await this.companyService.getByField<any>('companies', 'unique_url', companyName);
+    const company = await this.companyService.getByField<any>(
+      'companies',
+      'unique_url',
+      companyName
+    );
 
     if (!company) {
       this.toastrService.error('Empresa não encontrada.', 'Erro');
       this.localStorageService.clearSupabaseAuthToken();
-      this.loadingService.hideLoading();
+      this.loading.set(false);
       return;
     }
 
     const companyId = company.id;
 
-    const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
-      if (error.message.includes("Email not confirmed")) {
-        this.toastrService.error('Por favor, confirme seu e-mail antes de continuar.', 'Erro');
-        this.loadingService.hideLoading();
+      if (error.message.includes('Email not confirmed')) {
+        this.toastrService.error(
+          'Por favor, confirme seu e-mail antes de continuar.',
+          'Erro'
+        );
+        this.loading.set(false);
         this.isEmailConfirmed.set(false);
         return;
       }
 
       this.errorHandler.handleError(error.message);
-      this.loadingService.hideLoading();
+      this.loading.set(false);
       return;
     }
 
-    const { data: userData, error: userError } = await this.supabase.auth.getUser();
+    const { data: userData, error: userError } =
+      await this.supabase.auth.getUser();
 
     if (userError || !userData?.user) {
       this.toastrService.error('Erro ao obter dados do usuário.', 'Erro');
       this.localStorageService.clearSupabaseAuthToken();
 
-      this.loadingService.hideLoading();
+      this.loading.set(false);
       return;
     }
 
     const userId = userData.user.id;
 
-    const userCompany = await this.companyService.getByField<any>('user_companies', 'user_id', userId);
+    const userCompany = await this.companyService.getByField<any>(
+      'user_companies',
+      'user_id',
+      userId
+    );
 
     if (!userCompany || userCompany.company_id !== companyId) {
-      this.toastrService.error('Usuário não tem acesso a esta empresa.', 'Erro');
+      this.toastrService.error(
+        'Usuário não tem acesso a esta empresa.',
+        'Erro'
+      );
       this.localStorageService.clearSupabaseAuthToken();
 
-      this.loadingService.hideLoading();
+      this.loading.set(false);
       return;
     }
 
@@ -128,7 +146,7 @@ export class LoginPage {
     const firstLogin = userData.user.user_metadata?.['first_login'];
     this.authService.getUser(userId);
     this.authService.isLogged.set(true);
-    this.loadingService.hideLoading();
+    this.loading.set(false);
 
     if (firstLogin) {
       this.router.navigate(['/auth/reset-password']);
@@ -138,24 +156,35 @@ export class LoginPage {
   }
 
   public async resendConfirmation() {
-    this.loadingService.showLoading();
+    this.loading.set(true);
 
     const { email } = this.dynamicForm.form.value;
 
-    const { error } = await this.supabase.auth.resend({ type: 'signup', email, });
+    const { error } = await this.supabase.auth.resend({
+      type: 'signup',
+      email,
+    });
 
     if (error) {
-      this.toastrService.error('Erro ao reenviar o código de confirmação.', 'Erro');
+      this.toastrService.error(
+        'Erro ao reenviar o código de confirmação.',
+        'Erro'
+      );
     } else {
-      this.toastrService.success('Código de confirmação reenviado com sucesso!', 'Sucesso');
+      this.toastrService.success(
+        'Código de confirmação reenviado com sucesso!',
+        'Sucesso'
+      );
       this.isEmailConfirmed.set(true);
     }
 
-    this.loadingService.hideLoading();
+    this.loading.set(false);
   }
 
   public viewMenu() {
     this.authService.isAdmin.set(false);
-    this.router.navigate(['/app'], { queryParams: { empresa: this.companyName() } })
+    this.router.navigate(['/app'], {
+      queryParams: { empresa: this.companyName() },
+    });
   }
 }

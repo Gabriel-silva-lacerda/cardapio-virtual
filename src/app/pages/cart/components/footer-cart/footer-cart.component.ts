@@ -1,17 +1,15 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { LoadingService } from '@shared/services/loading/loading.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { PaymentAddressDialogComponent } from '../payment-address-dialog/payment-address-dialog.component';
 import { Router } from '@angular/router';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
   selector: 'app-footer-cart',
-  imports: [CurrencyPipe, LoadingComponent],
+  imports: [CurrencyPipe],
   templateUrl: './footer-cart.component.html',
   styleUrl: './footer-cart.component.scss',
 })
@@ -26,8 +24,7 @@ export class FooterCartComponent implements OnInit {
     'companyName',
     '[]'
   );
-  public loadingService = inject(LoadingService);
-
+  public loading = signal(false);
   public total!: number;
 
   ngOnInit(): void {

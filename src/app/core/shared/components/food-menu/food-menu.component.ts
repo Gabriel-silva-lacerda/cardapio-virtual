@@ -26,8 +26,6 @@ import { FoodService } from '@shared/services/food/food.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
-import { LoadingComponent } from '../loading/loading.component';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
@@ -41,7 +39,6 @@ import { iCartItem } from '@shared/interfaces/cart/cart.interface';
     DayOfWeekTranslatePipe,
     MatSnackBarModule,
     RouterLink,
-    LoadingComponent,
     IconButtonComponent,
   ],
   templateUrl: './food-menu.component.html',
@@ -61,7 +58,6 @@ export class FoodMenuComponent implements OnInit, OnChanges {
   private localStorageService = inject(LocalStorageService);
   private authService = inject(AuthService);
 
-  public loadingService = inject(LoadingService);
   public tooltipMessage: string = '';
   public companyName = this.localStorageService.getSignal<string>(
     'companyName',

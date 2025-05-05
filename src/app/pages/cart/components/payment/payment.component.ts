@@ -18,7 +18,6 @@ import {
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
-import { PaymentService } from '../../services/payment.service';
 import { OrderService } from '@shared/services/order/order.service';
 import { AuthService } from '../../../../domain/auth/services/auth.service';
 import {
@@ -66,7 +65,7 @@ export class PaymentComponent {
   private toastrService = inject(ToastrService);
 
   public companyId = this.localStorageService.getSignal('companyId', '0');
-  public loadingService = inject(LoadingService);
+  public loading = signal(false);
   public changeFor = signal<number | null>(null);
   public selectedPayment = signal<string>('cartao');
   public total!: number;

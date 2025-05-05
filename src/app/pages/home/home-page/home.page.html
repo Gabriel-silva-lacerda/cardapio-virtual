@@ -4,7 +4,7 @@
   <div class="h-[70%] mt-10 pb-16">
     <div class="px-3">
       @if (loading()) {
-      <app-skeleton-categories customClass="px-10 py-4" />
+      <app-skeleton-categories [showTitle]="true" customClassLi="px-10 py-4" />
       } @else {
       <div class="flex justify-between items-center mb-2">
         <span class="text-gray-500 text-xl block">Categorias</span>

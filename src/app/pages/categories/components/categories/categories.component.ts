@@ -79,39 +79,38 @@ export class CategoriesComponent {
         message: 'Tem certeza que deseja excluir essa categoria?',
         confirmText: 'Excluir',
         cancelText: 'Cancelar',
-        loading: this.loadingService.loading(),
-      },
-    });
+        onConfirm: async () => {
+          try {
+            this.loadingService.showLoading();
 
-    dialogRef.afterClosed().subscribe(async (result) => {
-      if (result) {
-        try {
-          const groupedCategory =
-            await this.foodService.getFoodsGroupedByCategoryId(categoryId);
+            const groupedCategory =
+              await this.foodService.getFoodsGroupedByCategoryId(categoryId);
 
-          const hasFoods = groupedCategory?.subcategories?.some(
-            (subcategory) => subcategory.foods.length > 0
-          );
-
-          if (hasFoods) {
-            this.toastr.warning(
-              'Não é possível excluir a categoria pois há comidas associadas a ela.'
+            const hasFoods = groupedCategory?.subcategories?.some(
+              (subcategory) => subcategory.foods.length > 0
             );
-            return;
+
+            if (hasFoods) {
+              this.toastr.warning(
+                'Não é possível excluir a categoria pois há comidas associadas a ela.'
+              );
+              return;
+            }
+
+            await this.categoryService.deleteByFilter('company_categories', {
+              company_id: this.companyId(),
+              category_id: categoryId,
+            });
+
+            delete this.isCategoryAssociatedMap[categoryId];
+
+            this.toastr.success('Categoria removida com sucesso!');
+            dialogRef.close(true);
+          } finally {
+            this.loadingService.hideLoading();
           }
-
-          await this.categoryService.deleteByFilter('company_categories', {
-            company_id: this.companyId(),
-            category_id: categoryId,
-          });
-
-          delete this.isCategoryAssociatedMap[categoryId];
-
-          this.toastr.success('Categoria removida com sucesso!');
-        } finally {
-          this.loadingService.hideLoading();
-        }
-      }
+        },
+      },
     });
   }
 

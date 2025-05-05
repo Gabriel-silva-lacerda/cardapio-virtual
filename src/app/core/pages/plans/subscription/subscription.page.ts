@@ -7,7 +7,6 @@ import { debounceTime, firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PlansService } from '@shared/services/plans/plans.service';
 import { Plans } from '@shared/interfaces/plans/plans.interface';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { CurrencyPipe } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -39,7 +38,7 @@ export class SubscriptionPage {
   private planId!: number | string | null;
   private companyService = inject(CompanyService);
 
-  public loadingService = inject(LoadingService);
+  public loading = signal(false);
   public destroy$ = new Subject<void>();
   public cepSubject = new Subject<string>();
   public addressFields: iDynamicField[] = [
@@ -157,7 +156,7 @@ export class SubscriptionPage {
     const control = form.get('cep');
     if (control?.invalid && value.length < 8) return;
 
-    this.loadingService.showLoading();
+    this.loading.set(true);
 
     try {
       const addressData = await cepPromise(value);
@@ -192,7 +191,7 @@ export class SubscriptionPage {
         'state',
       ]);
     } finally {
-      this.loadingService.hideLoading();
+      this.loading.set(false);
     }
   }
 

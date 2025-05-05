@@ -1,63 +1,64 @@
-<li
-  [routerLink]="
-    cartItem?.id
-      ? ['/app/comidas/comida', foodDetails?.id, cartItem?.id]
-      : ['/app/comidas/comida', foodDetails?.id]
-  "
-  [queryParams]="{ empresa: companyName() }"
-  class="flex h-[6.4rem] border cursor-pointer rounded-md bg-white-light shadow-sm items-center gap-2 pe-2"
-  [ngClass]="{ ' h-[8.4rem]': cartItem?.id, 'mb-3': !showItem || !isAdmin() }"
->
-  <img
-    class="w-24 h-full object-cover border border-l rounded-md"
-    [src]="foodDetails?.imageUrl"
-    alt="{{ foodDetails?.name }}"
-    [ngClass]="{ 'w-28': cartItem?.id }"
-  />
-  <div class="flex flex-col justify-between gap-3 flex-1">
-    <div class="flex justify-between">
-      <div class="flex flex-col gap-1 max-w-52">
-        <span class="text-black-dark">{{ foodDetails?.name }}</span>
-        <span class="text-text6 text-gray-700">{{
-          foodDetails?.description
-        }}</span>
-      </div>
-
-      @if(cartItem) {
-      <div><button>Lixeira</button></div>
-      }
-    </div>
-    <div class="flex flex-col justify-between">
-      @if(cartItem) {
-      <span>Qtd: {{ foodDetails?.quantity }}</span>
-      }
-
-      <div class="flex justify-between w-full">
-        @if(foodDetails?.day_of_week) {
-        <span [ngClass]="getDayClass(foodDetails?.day_of_week)">
-          {{ foodDetails?.day_of_week | dayOfWeekTranslate }}
-          <i
-            *ngIf="foodDetails?.day_of_week !== getCurrentDayOfWeek()"
-            [matTooltip]="tooltipMessage"
-            class="ml-2 fas fa-info-circle tooltip"
-          >
-          </i>
-        </span>
+<li>
+  <div
+    class="flex h-[6.4rem] border cursor-pointer rounded-md bg-white-light shadow-sm items-center gap-2 pe-2"
+    [ngClass]="{ ' h-[8.4rem]': cartItem?.id, 'mb-3': !showItem || !isAdmin() }"
+    [routerLink]="
+      cartItem?.id
+        ? ['/app/comidas/comida', foodDetails?.id, cartItem?.id]
+        : ['/app/comidas/comida', foodDetails?.id]
+    "
+    [queryParams]="{ empresa: companyName() }"
+  >
+    <img
+      class="w-24 h-full object-cover border border-l rounded-md"
+      [src]="foodDetails?.imageUrl"
+      alt="{{ foodDetails?.name }}"
+      [ngClass]="{ 'w-28': cartItem?.id }"
+    />
+    <div class="flex flex-col justify-between gap-3 flex-1">
+      <div class="flex justify-between">
+        <div class="flex flex-col gap-1 max-w-52">
+          <span class="text-black-dark">{{ foodDetails?.name }}</span>
+          <span class="text-text6 text-gray-700">{{
+            foodDetails?.description
+          }}</span>
+        </div>
+        @if(cartItem) {
+        <div><button>Lixeira</button></div>
         }
-        <span class="flex justify-end text-green-700 font-medium">
-          {{ foodDetails?.price | currency : "BRL" }}
-        </span>
+      </div>
+      <div class="flex flex-col justify-between">
+        @if(cartItem) {
+        <span>Qtd: {{ foodDetails?.quantity }}</span>
+        }
+        <div class="flex justify-between w-full">
+          @if(foodDetails?.day_of_week) {
+          <span [ngClass]="getDayClass(foodDetails?.day_of_week)">
+            {{ foodDetails?.day_of_week | dayOfWeekTranslate }}
+            <i
+              *ngIf="foodDetails?.day_of_week !== getCurrentDayOfWeek()"
+              [matTooltip]="tooltipMessage"
+              class="ml-2 fas fa-info-circle tooltip"
+            >
+            </i>
+          </span>
+          }
+          <span class="flex justify-end text-green-700 font-medium">
+            {{ foodDetails?.price | currency : "BRL" }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
-</li>
-@if(showItem && isAdmin()) {
-<div class="flex gap-2 items-center mb-3">
-  <app-icon-button
-    icon="fa-solid fa-pen-to-square"
-    (click)="edit(foodDetails?.id)"
-  />
 
-  <app-icon-button icon="fa-solid fa-trash" (click)="remove(foodDetails)" />
-</div>
-}
+  @if(showItem && isAdmin()) {
+  <div class="flex gap-2 items-center mb-3">
+    <app-icon-button
+      icon="fa-solid fa-pen-to-square"
+      (click)="edit(foodDetails?.id)"
+    />
+
+    <app-icon-button icon="fa-solid fa-trash" (click)="remove(foodDetails)" />
+  </div>
+  }
+</li>

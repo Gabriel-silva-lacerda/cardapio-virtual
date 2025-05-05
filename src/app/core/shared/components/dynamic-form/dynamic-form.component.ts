@@ -14,7 +14,6 @@ import { ERROR_MESSAGES, ErrorMessages } from './errors/form-errors';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { InputTextModule } from 'primeng/inputtext';
 import { fadeIn } from '@shared/utils/animations.utils';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -43,8 +42,6 @@ export class DynamicFormComponent implements OnInit {
     fieldName: string;
     value: string;
   }>();
-
-  protected loadingService = inject(LoadingService);
 
   private fb = inject(FormBuilder);
 

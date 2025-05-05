@@ -85,12 +85,16 @@ export class FoodPage {
       );
 
       if (this.id) {
-        this.getSubcategoriesByCategoryId(this.id);
-        this.getFoodsByCategory(this.id);
+        await Promise.all([
+          this.getSubcategoriesByCategoryId(this.id),
+          this.getFoodsByCategory(this.id),
+        ]);
       } else {
-        this.getSubCategories();
-        const foodsGroupedCategory =
-          await this.foodService.getAllFoodsGroupedByCategory(this.companyId());
+        const [, foodsGroupedCategory] = await Promise.all([
+          this.getSubCategories(),
+          this.foodService.getAllFoodsGroupedByCategory(this.companyId()),
+        ]);
+
         this.foodsGroupedCategory.set(foodsGroupedCategory);
         this.title.set('Cardápio');
       }
