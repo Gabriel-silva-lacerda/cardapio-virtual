@@ -4,29 +4,17 @@ import {
   Component,
   effect,
   inject,
-  Inject,
   Input,
-  Signal,
   signal,
 } from '@angular/core';
-import { FormsModule, NgModel } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogContent,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { MatRadioModule } from '@angular/material/radio';
+import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';
 import { AuthService } from '../../../../domain/auth/services/auth.service';
-import {
-  createPreferenceItems,
-  transformCartItemsToOrderItems,
-} from '@shared/utils/oder.utils';
+import { transformCartItemsToOrderItems } from '@shared/utils/oder.utils';
 import { StripeService } from '@shared/services/stripe/stripe.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { PickupOptionComponent } from '../pickup-option/pickup-option.component';
 import { DeliveryFeeService } from '../../services/delivery-fee.service';

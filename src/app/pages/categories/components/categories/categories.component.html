@@ -11,7 +11,7 @@
   </div>
   @if(showItem && isAdmin()) {
   <div class="flex gap-1">
-    @if(isLoading()) {
+    @if(loading().getCategories) {
     <div class="mt-2">
       <app-loading />
     </div>
@@ -21,11 +21,7 @@
       (click)="addCategoryToCompany(category.id)"
       [disabled]="this.loadingService.loading()"
     >
-      @if(isLoading()) {
-      <app-loading />
-      } @else {
       <i class="fa-solid fa-plus"></i>
-      }
     </button>
 
     } @if (isAdmin() && isCategoryAssociatedMap[category.id]) {
@@ -33,13 +29,13 @@
       class="bg-primary px-2 py-1 rounded-md text-white mt-2"
       (click)="removeCategoryFromCompany(category.id)"
     >
-      @if(isLoading()) {
-      <app-loading />
-      } @else {
       <i class="fa-solid fa-trash"></i>
-      }
     </button>
     } }
   </div>
   }
 </li>
+
+@if(loading().setCategories) {
+  <app-loading-screen />
+}

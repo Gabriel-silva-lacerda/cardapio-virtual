@@ -53,6 +53,8 @@ export class AddEditItemDialogComponent implements OnInit {
   private toastr = inject(ToastrService);
   private dialog = inject(MatDialog);
 
+  public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
+  public data = inject(MAT_DIALOG_DATA) as { foodId: number };
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
   public categories = signal<{ id: string; name: string }[]>([]);
@@ -159,10 +161,7 @@ export class AddEditItemDialogComponent implements OnInit {
     },
   ];
 
-  constructor(
-    public dialogRef: MatDialogRef<AddEditItemDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { foodId: number }
-  ) {}
+
 
   async ngOnInit() {
     this.getCategories();

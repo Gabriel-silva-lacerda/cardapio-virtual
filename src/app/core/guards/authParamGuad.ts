@@ -7,7 +7,6 @@ import {
 } from '@angular/router';
 import { Company } from '@shared/interfaces/company/company';
 import { CompanyService } from '@shared/services/company/company.service';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Injectable({

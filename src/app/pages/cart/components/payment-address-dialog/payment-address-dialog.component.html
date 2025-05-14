@@ -42,21 +42,21 @@
         Outro endeço
       </button>
     </div>
-    } @if(loading.selectedAddressFromDatabase) {
+    } @if(loading().selectedAddressFromDatabase) {
     <app-skeleton-button />
-    } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
+    } @if(!loading().selectedAddressFromDatabase && selectedDelivery() &&
     !isSelectAddress()) {
     <div [@fadeInOut]>
       <app-dynamic-form #formAddress [fields]="addressFields" />
     </div>
-    } @if(loading.selectedAddressFromDatabase) {
+    } @if(loading().selectedAddressFromDatabase) {
     <app-skeleton-card />
-    } @if(!loading.selectedAddressFromDatabase && selectedDelivery() &&
+    } @if(!loading().selectedAddressFromDatabase && selectedDelivery() &&
     isSelectAddress()) {
 
     <app-card-address [isSelectAddress]="true" [address]="selectedAddress()" />
 
-    } @if(loading.viaCep) {
+    } @if(loading().viaCep) {
     <div
       class="absolute top-0 left-0 w-full h-full opacity-[32%] bg-opacity-50 flex justify-center items-center"
       style="background: rgba(0, 0, 0, 0.5)"
@@ -76,7 +76,7 @@
         class="button-primary text-text3 w-1/2 flex items-center gap-2 justify-center"
         (click)="onConfirm()"
         [disabled]="
-          loading.insertDelivery ||
+          loading().insertDelivery ||
           !(
             isSelectAddress() ||
             !selectedDelivery() ||
@@ -84,7 +84,7 @@
           )
         "
       >
-        Próximo @if(loading.insertDelivery) {
+        Próximo @if(loading().insertDelivery) {
 
         <app-loading />
         }

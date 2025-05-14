@@ -1,18 +1,6 @@
 <div class="min-h-screen" [@fade]>
   <app-header-page title="Categorias" />
   <div class="h-[70%] mt-10 px-3">
-    <div
-      class="flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2 mb-3"
-    >
-      <button
-        class="bg-primary px-2 py-1 rounded-md text-white flex items-center justify-center gap-2"
-        (click)="openDialogSubcategory()"
-      >
-        <i class="fa-solid fa-plus"></i>
-        Adicinar subcategoria
-      </button>
-    </div>
-
     @if(loading()) {
     <app-skeleton-categories
       customClassLi="p-7"

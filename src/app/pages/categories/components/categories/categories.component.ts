@@ -10,7 +10,6 @@ import {
 import { RouterLink } from '@angular/router';
 import { iCategory } from 'src/app/pages/home/interfaces/category.interface';
 import { CategoryService } from 'src/app/pages/home/services/category.service';
-import { CompanyService } from '@shared/services/company/company.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -18,10 +17,11 @@ import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FoodService } from '@shared/services/food/food.service';
+import { LoadingScreenComponent } from "../../../../core/shared/components/loading-screen/loading-screen.component";
 
 @Component({
   selector: 'app-categories',
-  imports: [RouterLink, LoadingComponent],
+  imports: [RouterLink, LoadingComponent, LoadingScreenComponent],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })
@@ -36,9 +36,11 @@ export class CategoriesComponent {
   private authService = inject(AuthService);
   private toastr = inject(ToastrService);
   private dialog = inject(MatDialog);
-
+  public loading = signal({
+    getCategories: false,
+    setCategories: false,
+  });
   public loadingService = inject(LoadingService);
-  public isLoading = signal<boolean>(false);
   public isAdmin = this.authService.isAdmin;
   public existingAssociation!: boolean;
   public isCategoryAssociatedMap: Record<string, boolean> = {};
@@ -54,7 +56,7 @@ export class CategoriesComponent {
   }
 
   async addCategoryToCompany(categoryId: string) {
-    this.loadingService.showLoading();
+    this.loading.update((l) => ({ ...l, setCategories: true }));
     try {
       const data = {
         company_id: this.companyId(),
@@ -67,7 +69,7 @@ export class CategoriesComponent {
 
       this.toastr.success('Categoria foi adicionada com sucesso');
     } finally {
-      this.loadingService.hideLoading();
+      this.loading.update((l) => ({ ...l, setCategories: false }));
     }
   }
 
@@ -115,17 +117,19 @@ export class CategoriesComponent {
   }
 
   private async getCategoryAssociations(): Promise<void> {
-    this.isLoading.set(true);
+    this.loading.update((l) => ({ ...l, getCategories: true }));
 
     try {
-      const associatedCategories =
-        await this.categoryService.getAssociatedCategories(this.companyId());
-
-      associatedCategories.forEach((category) => {
+      const categories = await this.categoryService.getAllByField<iCategory>(
+        'company_categories_view',
+        'company_id',
+        this.companyId()
+      );
+      categories.forEach((category) => {
         this.isCategoryAssociatedMap[category.id] = true;
       });
     } finally {
-      this.isLoading.set(false);
+      this.loading.update((l) => ({ ...l, getCategories: false }));
     }
   }
 

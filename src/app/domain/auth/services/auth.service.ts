@@ -1,10 +1,6 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { injectSupabase } from '@shared/functions/inject-supabase.function';
+import {Injectable, signal } from '@angular/core';
 import { iUser } from '../interfaces/user.interface';
-import { BaseService } from '@shared/services/base/base.service';
 import { BaseSupabaseService } from '@shared/services/base/base-supabase.service';
-import { LoadingService } from '@shared/services/loading/loading.service';
 
 @Injectable({
   providedIn: 'root',

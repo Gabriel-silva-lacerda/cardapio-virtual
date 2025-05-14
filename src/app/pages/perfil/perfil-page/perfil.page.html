@@ -32,9 +32,9 @@
       @if (stripeOpen ) {
         <li class="py-2 px-3 bg-gray-50 border-b border-gray-200"
             @expandAnimation>
-          <button class="button-primary w-52 text-title6" (click)="isActive ? loginStripe() : createStripeAccount()"  [disabled]="loadingService.loading()">
+          <button class="button-primary w-52 text-title6" (click)="isActive ? loginStripe() : createStripeAccount()"  [disabled]="loading()">
 
-            @if(loadingService.loading()) {
+            @if(loading()) {
             <app-loading class="mr-2"></app-loading>
             }
             {{ isActive ? 'Acessar Stripe' : 'Conectar Stripe' }}

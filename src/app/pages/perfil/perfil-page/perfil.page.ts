@@ -4,10 +4,8 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { Company } from '@shared/interfaces/company/company';
 import { CompanyService } from '@shared/services/company/company.service';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { StripeService } from '@shared/services/stripe/stripe.service';
-import { SupabaseService } from '@shared/services/supabase/supabase.service';
 import { expandAnimation, fade } from '@shared/utils/animations.utils';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, takeUntil } from 'rxjs';
@@ -36,7 +34,7 @@ export class PerfilPage {
   private companyId = this.localStorageService.getSignal('companyId', 0);
 
   public authService = inject(AuthService);
-  public loadingService = inject(LoadingService);
+  public loading = signal(false);
   public isLogged = this.authService.isLogged;
   public currentUser = this.authService.currentUser;
   public userInitialSignal = signal<string>('');
@@ -71,13 +69,13 @@ export class PerfilPage {
   }
 
   checkAccountStatus() {
-    this.loadingService.showLoading();
+    this.loading.set(true);
 
     this.stripeService
       .checkAccountStatus(this.companyData().account_id as string)
       .subscribe({
         next: (response) => this.isActive = response.data.isActive,
-        complete: () => this.loadingService.hideLoading(),
+        complete: () => this.loading.set(false),
       });
   }
 
@@ -111,7 +109,7 @@ export class PerfilPage {
   }
 
   loginStripe() {
-    this.loadingService.showLoading();
+    this.loading.set(true);
 
     if (!this.companyData()?.account_id) return;
 

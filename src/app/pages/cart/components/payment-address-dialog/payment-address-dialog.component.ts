@@ -17,7 +17,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
@@ -66,17 +65,17 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   private viaCepService = inject(ViacepService);
 
   public data = inject<iCartItem[]>(MAT_DIALOG_DATA);
-  public loadingService = inject(LoadingService);
   public selectedDelivery = signal(true);
   public isSelectAddress = signal(false);
   public selectedAddress = signal<DeliveryAddress>({} as DeliveryAddress);
   public cepSubject = new Subject<string>();
   public destroy$ = new Subject<void>();
-  public loading = {
+  public loading = signal({
     viaCep: false,
     insertDelivery: false,
     selectedAddressFromDatabase: false,
-  };
+  });
+
   public showPayment = this.orderService.showPayment;
   public deliveryAddressSaved = signal<DeliveryAddress[]>([]);
 
@@ -161,7 +160,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   }
 
   private async loadSelectedAddressFromDatabase(): Promise<void> {
-    this.loading.selectedAddressFromDatabase = true;
+    this.loading.update((l) => ({ ...l, selectedAddressFromDatabase: true }));
     try {
       const selected = await this.orderService.getByField<DeliveryAddress>(
         'delivery_addresses',
@@ -176,7 +175,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     } catch (error) {
       this.orderService.toastr.error('Erro ao carregar endereço padrão');
     } finally {
-      this.loading.selectedAddressFromDatabase = false;
+      this.loading.update((l) => ({ ...l, selectedAddressFromDatabase: false }));
     }
   }
 
@@ -194,7 +193,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     const control = form.get('cep');
     if (control?.invalid && value.length < 8) return;
 
-    this.loading.viaCep = true;
+    this.loading.update((l) => ({ ...l, viaCep: true }));
 
     this.viaCepService.getCep(value).subscribe({
       next: (addressData: ViaCep | ViaCepError) => {
@@ -255,7 +254,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
         ]);
       },
       complete: () => {
-        this.loading.viaCep = false;
+        this.loading.update((l) => ({ ...l, viaCep: false }));
       },
     });
   }
@@ -301,7 +300,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
 
       if (!existingAddress) {
         try {
-          this.loading.insertDelivery = true;
+          this.loading.update((l) => ({ ...l, insertDelivery: true }));
 
           this.selectedAddress.set(
             await this.orderService.insert(
@@ -311,7 +310,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
           );
           this.getDeliveryAddressSaved();
         } finally {
-          this.loading.insertDelivery = false;
+          this.loading.update((l) => ({ ...l, insertDelivery: false }));
         }
       } else {
         this.selectedAddress.set(existingAddress as DeliveryAddress);
