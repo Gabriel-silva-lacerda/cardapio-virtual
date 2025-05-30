@@ -2,6 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import {
   Component,
   inject,
+  OnInit,
   signal,
   ViewChild,
   WritableSignal,
@@ -21,28 +22,18 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
   templateUrl: './subcategory-dialog.component.html',
   styleUrl: './subcategory-dialog.component.scss',
 })
-export class SubcategoryDialogComponent {
+export class SubcategoryDialogComponent implements OnInit{
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
 
   private dialogRef = inject(MatDialogRef<SubcategoryDialogComponent>);
   private categoryService = inject(CategoryService);
-
-  private toastr = inject(ToastrService);
-  public loading = signal(false);
-
   private localStorageService = inject(LocalStorageService);
+  private toastr = inject(ToastrService);
+
+  public loading = signal(false);
   public companyId = this.localStorageService.getSignal('companyId', '0');
-
-  public categories = inject<WritableSignal<iCategory[]>>(MAT_DIALOG_DATA);
-
+  public categories = signal<iCategory[]>([]);
   public subcategoryFields = [
-    {
-      name: 'name',
-      label: 'Nome da subcategoria',
-      type: 'text',
-      validators: [Validators.required],
-      placeholder: 'Ex: Combos, Lanche Família',
-    },
     {
       name: 'category_id',
       label: 'Categoria principal',
@@ -54,16 +45,30 @@ export class SubcategoryDialogComponent {
       })),
       placeholder: 'Selecione a categoria',
     },
+    {
+      name: 'name',
+      label: 'Nome da subcategoria',
+      type: 'text',
+      validators: [Validators.required],
+      placeholder: 'Ex: Combos, Lanche Família',
+    },
+
   ];
 
-  onClose() {
-    this.dialogRef.close();
+  async ngOnInit() {
+    this.categories.set(await this.categoryService.getAll('categories'));
+    const categoryField = this.subcategoryFields.find(f => f.name === 'category_id');
+    if (categoryField) {
+      categoryField.options = this.categories().map(c => ({
+        label: c.name,
+        value: c.id
+      }));
+    }
   }
 
   async onSave() {
     const { name, category_id } = this.dynamicForm.form.value;
 
-    console.log(name, category_id);
     if (!name || !category_id) {
       this.toastr.error('Preencha todos os campos obrigatórios');
       return;
@@ -82,5 +87,9 @@ export class SubcategoryDialogComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onClose() {
+    this.dialogRef.close();
   }
 }

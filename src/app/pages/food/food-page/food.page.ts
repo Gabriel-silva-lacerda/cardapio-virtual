@@ -2,13 +2,13 @@ import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
-import { fade } from '@shared/utils/animations.utils';
+import { fade, fadeScale } from '@shared/utils/animations.utils';
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { FoodService } from '@shared/services/food/food.service';
 import { firstValueFrom } from 'rxjs';
 import { CategoryService } from '../../home/services/category.service';
 import { iCategory } from '../../home/interfaces/category.interface';
-import { KeyValuePipe } from '@angular/common';
+import { KeyValuePipe, NgIf } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
@@ -28,6 +28,8 @@ import { SubcategoriesComponent } from '@shared/components/subcategories/subcate
 import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
 import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcategories/skeleton-subcategories.component';
+import { SubcategoryDialogComponent } from '../../categories/components/subcategory-dialog/subcategory-dialog.component';
+import { AddExtraDialogComponent } from '../components/add-extra-dialog/add-extra-dialog.component';
 
 @Component({
   selector: 'app-food-page',
@@ -43,7 +45,7 @@ import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcatego
   ],
   templateUrl: './food.page.html',
   styleUrl: './food.page.scss',
-  animations: [fade],
+  animations: [fade, fadeScale],
 })
 export class FoodPage {
   private route = inject(ActivatedRoute);
@@ -68,7 +70,7 @@ export class FoodPage {
   public company = signal<Company>({} as Company);
   public subcategories = signal<iSubcategory[]>([]);
   public activeSubcategory = signal<string | null>(null);
-
+  public isOpen = signal<boolean>(false);
   public loading = signal(false);
 
   ngOnInit(): void {
@@ -196,4 +198,35 @@ export class FoodPage {
       data: this.company(),
     });
   }
+
+  public openDialogSubcategories(){
+    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe(async (categoryId) => {
+      if (categoryId) {
+
+      }
+    });
+  }
+
+   public openDialogExtra() {
+     const dialogRef = this.dialog.open(AddExtraDialogComponent, {
+       width: '400px',
+       data: true
+    });
+
+     dialogRef.afterClosed().subscribe((result) => {
+       if (result) {
+        //  this.loadExtrasBySubCategory(
+        //    this.dynamicForm.form.value.subcategory_id
+        //  );
+       }
+     });
+   }
+
+   public openDialogManageExtra() {
+
+   }
 }

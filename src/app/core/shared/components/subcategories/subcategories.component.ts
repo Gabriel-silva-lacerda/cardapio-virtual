@@ -8,18 +8,22 @@ import {
   ViewChild,
   signal,
   OnDestroy,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
 import { SubcategoryScrollService } from '@shared/services/subcategory-scroll/subcategory-scroll.service';
+import { IconButtonComponent } from '../icon-button/icon-button.component';
 
 @Component({
   selector: 'app-subcategories',
-  imports: [NgClass],
+  imports: [NgClass, IconButtonComponent],
   templateUrl: './subcategories.component.html',
   styleUrl: './subcategories.component.scss',
 })
 export class SubcategoriesComponent implements AfterViewInit, OnDestroy {
   @Input() subcategories = signal<iSubcategory[]>([]);
+  @Output() edit = new EventEmitter<{ id: string; name: string }>();
   @ViewChild('stickySubcategories', { static: false }) stickyRef!: ElementRef;
   @ViewChild('normalSubcategories', { static: false }) normalRef!: ElementRef;
 
@@ -42,5 +46,8 @@ export class SubcategoriesComponent implements AfterViewInit, OnDestroy {
 
   scrollToSubcategory(id: string): void {
     this.scrollService.scrollToSubcategory(id);
+  }
+
+  remove(subcategory: iSubcategory): void {
   }
 }

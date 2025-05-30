@@ -39,4 +39,14 @@ export const expandAnimation = trigger('expandAnimation', [
   transition(':leave', [
     animate('200ms ease-in', style({ height: '0px', opacity: 0 }))
   ])
-])
+]);
+
+export const fadeScale = trigger('fadeScale', [
+  transition(':enter', [
+    style({ opacity: 0, transform: 'scale(0.95)' }),
+    animate('150ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+  ]),
+  transition(':leave', [
+    animate('100ms ease-in', style({ opacity: 0, transform: 'scale(0.95)' }))
+  ])
+]);

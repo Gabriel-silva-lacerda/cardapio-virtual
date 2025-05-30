@@ -18,6 +18,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.directive';
+import { IconButtonComponent } from '../icon-button/icon-button.component';
 
 @Component({
   selector: 'app-dynamic-form',
@@ -30,6 +31,7 @@ import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.dir
     MultiSelectModule,
     MatTooltipModule,
     OnlyNumbersDirective,
+    IconButtonComponent
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -38,6 +40,8 @@ import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.dir
 export class DynamicFormComponent implements OnInit {
   @Input() fields: iDynamicField[] = [];
   @Input() buttonText!: string;
+  @Input() isEdit = false;
+
   @Output() fieldChangeEvent = new EventEmitter<{
     fieldName: string;
     value: string;

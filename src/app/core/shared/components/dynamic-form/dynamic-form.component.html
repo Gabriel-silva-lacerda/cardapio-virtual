@@ -98,15 +98,18 @@
             {{ option.label }}
           </option>
         </select>
-
-        <button
-          *ngIf="field.onClick && !isDisabled[field.name]"
-          type="button"
-          class="absolute cursor-pointer right-7 bg-primary px-3 py-1 rounded-md text-white mt-2 disabled:opacity-50"
-          (click)="field.onClick()"
-        >
-          +
-        </button>
+        <app-icon-button
+          *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
+          icon="fas fa-plus"
+          class="absolute right-7"
+          (click)="field?.onClick()"
+        />
+        <app-icon-button
+          *ngIf="isEdit && field.onEdit && form.get(field.name)?.value"
+          icon="fa-solid fa-pen-to-square"
+          class="absolute right-7"
+          (click)="field?.onEdit(form)"
+        />
       </div>
 
       <div
@@ -125,15 +128,19 @@
           [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
         ></p-multiSelect>
 
-        <button
-          *ngIf="field.onClick && !isDisabled[field.name]"
-          type="button"
-          class="absolute cursor-pointer right-7 bg-primary px-3 py-1 rounded-md text-white mt-2 disabled:opacity-50"
-          (click)="field.onClick()"
-          [ngClass]="{ hidden: isDisabled[field.name] }"
-        >
-          +
-        </button>
+        <app-icon-button
+          *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
+          icon="fas fa-plus"
+          class="absolute right-7"
+          (click)="field?.onClick()"
+        />
+
+        <app-icon-button
+          *ngIf="isEdit && field.onEdit && form.get(field.name)?.value !== ''"
+          icon="fa-solid fa-pen-to-square"
+          class="absolute right-7"
+          (click)="field?.onEdit(form)"
+        />
       </div>
     </div>
 

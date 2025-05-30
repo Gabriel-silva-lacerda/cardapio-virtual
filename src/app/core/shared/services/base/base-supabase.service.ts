@@ -16,17 +16,13 @@ export abstract class BaseSupabaseService {
     const { data, error } = await this.supabaseService.supabase
       .from(table)
       .select(selectFields);
+
     if (error) {
-      this.toastr.error(
-        `Erro ao buscar registros da tabela ${table}:`,
-        error.message
-      );
-      throw new Error(error.message);
+      this.throwHandledError(error, `Erro ao buscar registros da tabela ${table}.`);
     }
     return data as T[];
   }
 
-  // Método para obter um único registro pelo ID
   async getById<T>(
     table: string,
     id: number | string | null,
@@ -37,12 +33,9 @@ export abstract class BaseSupabaseService {
       .select(selectFields)
       .eq('id', id)
       .single();
+
     if (error) {
-      this.toastr.error(
-        `Erro ao buscar item na tabela ${table} com ID ${id}:`,
-        error.message
-      );
-      throw new Error(error.message);
+      this.throwHandledError(error,`Erro ao buscar item na tabela ${table} com ID ${id}.`);
     }
     return data as T;
   }
@@ -59,11 +52,7 @@ export abstract class BaseSupabaseService {
       .eq(field, value);
 
     if (error) {
-      this.toastr.error(
-        `Erro ao buscar registros na tabela ${table} com ${field} = ${value}:`,
-        error.message
-      );
-      throw new Error(error.message);
+      this.throwHandledError(error, `Erro ao buscar registros na tabela ${table} com ${field} = ${value}.`);
     }
 
     return data as T[];
@@ -82,8 +71,7 @@ export abstract class BaseSupabaseService {
       .single();
 
     if (error) {
-      this.toastr.error(`Erro`, error.message);
-      throw new Error(error.message);
+      this.throwHandledError(error, `Erro ao buscar registro na tabela ${table}.`);
     }
 
     return data as T;
@@ -105,41 +93,35 @@ export abstract class BaseSupabaseService {
       .in(field, values);
 
     if (error) {
-      this.toastr.error(
-        `Erro ao buscar registros na tabela ${table} onde ${field} está em [${values.join(
+      this.throwHandledError(error, `Erro ao buscar registros na tabela ${table} onde ${field} está em [${values.join(
           ', '
-        )}]:`,
-        error.message
-      );
-      throw new Error(error.message);
+        )}]:`);
     }
 
     return data as T[];
   }
 
-  // Método para inserir um novo registro
   async insert<T>(
     table: string,
     item: Partial<T>,
     options: InsertOptions = {}
   ): Promise<T> {
-    const { wrapInArray = true } = options; // Valor padrão para wrapInArray é true
+    const { wrapInArray = true } = options;
 
     const { data, error } = await this.supabaseService.supabase
       .from(table)
-      .insert(wrapInArray ? [item] : item) // Envolve o item em um array se wrapInArray for true
+      .insert(wrapInArray ? [item] : item)
       .select()
       .single();
 
     if (error) {
-      this.toastr.error(`Erro ao inserir na tabela ${table}:`, error.message);
+      this.handleError(error, `Erro ao inserir na tabela ${table}.`);
       throw new Error(error.message);
     }
 
     return data as T;
   }
 
-  // Método para atualizar um registro pelo ID
   async update<T>(
     table: string,
     id: number | string,
@@ -151,26 +133,20 @@ export abstract class BaseSupabaseService {
       .eq('id', id)
       .single();
     if (error) {
-      this.toastr.error(
-        `Erro ao atualizar o item ${id} na tabela ${table}:`,
-        error.message
-      );
+      this.handleError(error, `Erro ao atualizar o item ${id} na tabela ${table}.`);
       throw new Error(error.message);
     }
     return data as T;
   }
 
-  // Método para deletar um registro pelo ID
   async delete(table: string, id: number | string): Promise<null> {
     const { error } = await this.supabaseService.supabase
       .from(table)
       .delete()
       .eq('id', id);
+
     if (error) {
-      this.toastr.error(
-        `Erro ao excluir o item ${id} na tabela ${table}:`,
-        error.message
-      );
+      this.handleError(error, `Erro ao excluir o item ${id} na tabela ${table}.`);
       throw new Error(error.message);
     }
 
@@ -187,11 +163,25 @@ export abstract class BaseSupabaseService {
       .match(filter);
 
     if (error) {
-      this.toastr.error(
-        `Erro ao excluir o item na tabela ${table}:`,
-        error.message
-      );
-      throw new Error(error.message);
+      this.throwHandledError(error, `Erro ao excluir o item na tabela ${table}.`);
+    }
+  }
+
+  private throwHandledError(error: any, defaultMessage: string): never {
+    this.handleError(error, defaultMessage);
+    throw new Error(error.message);
+  }
+
+  private handleError(error: any, defaultMessage: string): void {
+    if (error?.code && !error?.status) {
+      const supabaseErrors: Record<string, string> = {
+        PGRST116: 'Nenhum resultado encontrado.',
+        PGRST123: 'Erro ao acessar os dados. Verifique os filtros ou permissões.',
+        '42P01': 'Tabela ou relação não encontrada no banco de dados.',
+      };
+
+      const message = supabaseErrors[error.code] || error.message || defaultMessage;
+      this.toastr.error(message, `Erro Supabase: ${error.code}`);
     }
   }
 }

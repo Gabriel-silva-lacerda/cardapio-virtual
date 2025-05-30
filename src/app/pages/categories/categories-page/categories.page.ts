@@ -4,11 +4,8 @@ import { CategoryService } from '../../home/services/category.service';
 import { iCategory } from '../../home/interfaces/category.interface';
 import { CategoriesComponent } from '../components/categories/categories.component';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { SkeletonLoaderComponent } from '@shared/components/skeleton-loader/skeleton-loader.component';
-import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SkeletonCategoriesComponent } from '../components/skeleton-categories/skeleton-categories.component';
 import { fade } from '@shared/utils/animations.utils';
-import { SubcategoryDialogComponent } from '../components/subcategory-dialog/subcategory-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -25,7 +22,6 @@ import { MatDialog } from '@angular/material/dialog';
 export class CategoriesPage implements OnInit {
   private categoryService = inject(CategoryService);
   private localStorageService = inject(LocalStorageService);
-  private dialog = inject(MatDialog);
 
   public loading = signal(false);
   public categories = signal<iCategory[]>([]);
@@ -52,10 +48,4 @@ export class CategoriesPage implements OnInit {
     }
   }
 
-  openDialogSubcategory() {
-    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
-      width: '400px',
-      data: this.categories,
-    });
-  }
 }

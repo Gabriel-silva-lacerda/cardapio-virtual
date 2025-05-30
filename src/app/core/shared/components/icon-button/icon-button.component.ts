@@ -11,4 +11,5 @@ export class IconButtonComponent {
   @Input() icon?: string;
   @Input() isLoading: boolean = false;
   @Input() disabled: boolean = false;
+  @Input() customClass: string = '';
 }

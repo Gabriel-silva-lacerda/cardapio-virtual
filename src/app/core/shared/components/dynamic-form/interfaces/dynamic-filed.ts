@@ -16,6 +16,7 @@ export interface iDynamicField {
   onChange?: (data: unknown | null | object | boolean | string | number, form: FormGroup) => void;
   onFileUpload?: (file: File, form: FormGroup) => void;
   onClick?: () => void;
+  onEdit?: (form: FormGroup) => void;
   options?: { label: string; value: string | number | boolean }[];
   mask?: string;
   padding?: string;

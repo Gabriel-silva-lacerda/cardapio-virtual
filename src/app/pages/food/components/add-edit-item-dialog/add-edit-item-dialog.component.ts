@@ -99,11 +99,20 @@ export class AddEditItemDialogComponent implements OnInit {
       options: this.categories().map((c) => ({ label: c.name, value: c.id })),
       validators: [Validators.required],
       padding: '10px',
-      onChange: (data: unknown, form: FormGroup) => {
-        const categoryId = String(data);
-
-        this.loadSubcategoriesByCategory(categoryId);
-      },
+        onChange: (data: unknown, form: FormGroup) => {
+          const categoryId = String(data);
+          console.log(categoryId);
+          this.loadSubcategoriesByCategory(categoryId);
+        },
+    },
+        {
+      name: 'extras',
+      label: 'Adicionais',
+      type: 'multiselect',
+      options: this.extras().map((e) => ({ label: e.name, value: e.id })),
+      validators: [],
+      padding: '10px',
+      tooltip: 'Selecione uma categoria primeiro!',
     },
     {
       name: 'subcategory_id',
@@ -117,20 +126,12 @@ export class AddEditItemDialogComponent implements OnInit {
       padding: '10px',
       onChange: (data: unknown, form: FormGroup) => {
         const subcategoryId = String(data);
-        this.loadExtrasBySubCategory(subcategoryId);
+        // this.loadExtrasBySubCategory(subcategoryId);
       },
       onClick: () => this.openDialogSubcategories(),
+      onEdit: (form: FormGroup) => this.openDialogEditSubcategories(form.value),
     },
-    {
-      name: 'extras',
-      label: 'Adicionais',
-      type: 'multiselect',
-      options: this.extras().map((e) => ({ label: e.name, value: e.id })),
-      validators: [],
-      padding: '10px',
-      tooltip: 'Selecione uma categoria primeiro!',
-      onClick: () => this.openDialogExtra(),
-    },
+
 
     // {
     //   name: 'has_day_of_week',
@@ -161,13 +162,14 @@ export class AddEditItemDialogComponent implements OnInit {
     },
   ];
 
-
-
   async ngOnInit() {
-    this.getCategories();
     if (this.data.foodId) {
       this.loadFoodDataById(this.data.foodId);
+      return;
     }
+    this.getCategories();
+    this.getExtra();
+
   }
 
   public async getCategories() {
@@ -186,7 +188,7 @@ export class AddEditItemDialogComponent implements OnInit {
 
       this.subcategories.set([]);
 
-      this.dynamicForm.isDisabled['extras'] = true;
+      // this.dynamicForm.isDisabled['extras'] = true;
       this.dynamicForm.isDisabled['subcategory_id'] = true;
     } finally {
       this.loading.update((l) => ({ ...l, categories: false }));
@@ -231,18 +233,17 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  private async loadExtrasBySubCategory(subcategoryId: string) {
+  public async getExtra() {
     try {
       this.loading.update((l) => ({ ...l, extras: true }));
 
-      const extras = await this.extraService.getExtrasBySubCategory(
-        subcategoryId
-      );
+      const extras = await this.extraService.getAll(
+        'extras'
+      ) as any;
       this.extras.set(extras);
-
+      console.log(extras);
       this.foodFields.find((f) => f.name === 'extras')!.options =
         this.extras().map((e) => ({ label: e.name, value: e.id }));
-      this.dynamicForm.isDisabled['extras'] = false;
     } finally {
       this.loading.update((l) => ({ ...l, extras: false }));
     }
@@ -273,22 +274,21 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  public openDialogExtra() {
-    const dialogRef = this.dialog.open(AddExtraDialogComponent, {
+  private openDialogSubcategories() {
+    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
       width: '400px',
-      data: { subcategoryId: this.dynamicForm.form.value.subcategory_id },
+      data: this.categories,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadExtrasBySubCategory(
-          this.dynamicForm.form.value.subcategory_id
-        );
+    dialogRef.afterClosed().subscribe(async (categoryId) => {
+      if (categoryId) {
+        this.loadSubcategoriesByCategory(categoryId);
       }
     });
   }
 
-  private openDialogSubcategories() {
+  private openDialogEditSubcategories(value: any) {
+    console.log(value)
     const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
       width: '400px',
       data: this.categories,

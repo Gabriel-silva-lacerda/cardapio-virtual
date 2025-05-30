@@ -18,7 +18,7 @@
       }"
       (click)="scrollToSubcategory(subcategory.id)"
     >
-      {{ subcategory.name }}
+    {{ subcategory.name }}
     </span>
     }
   </div>
@@ -26,21 +26,39 @@
 
 <!-- Normal Subcategories -->
 <div
-  class="border border-gray-200 py-2 px-2 mb-4 flex overflow-auto no-scrollbar normal-subcategories"
+  class="border border-gray-200 py-2 px-2 mb-4 flex overflow-auto no-scrollbar normal-subcategories items-center gap-2"
   #normalSubcategories
 >
   @for (subcategory of subcategories(); track $index) {
-  <span
-    class="px-4 py-2 cursor-pointer whitespace-nowrap transition-colors duration-200"
-    [ngClass]="{
-      'font-bold text-primary border-b-2 border-primary':
-        scrollService.activeSubcategory() === subcategory.id,
-      'text-gray-600 hover:text-gray-800':
-        scrollService.activeSubcategory() !== subcategory.id
-    }"
-    (click)="scrollToSubcategory(subcategory.id)"
-  >
-    {{ subcategory.name }}
-  </span>
+    <div class="flex items-center bg-gray-50 rounded-full px-3 py-1 gap-1 shadow-sm hover:bg-gray-100 transition">
+      <span
+        class="cursor-pointer whitespace-nowrap transition-colors duration-200 mr-1"
+        [ngClass]="{
+          'font-bold text-primary border-b-2 border-primary':
+            scrollService.activeSubcategory() === subcategory.id,
+          'text-gray-600 hover:text-gray-800':
+            scrollService.activeSubcategory() !== subcategory.id
+        }"
+        (click)="scrollToSubcategory(subcategory.id)"
+      >
+        {{ subcategory.name }}
+      </span>
+      <div class="flex gap-1 ml-1">
+        <app-icon-button
+          icon="fa-solid fa-pen-to-square"
+          customClass="!mt-0 !text-sm"
+          (click)="edit.emit(subcategory)"
+
+        />
+        <app-icon-button
+          icon="fa-solid fa-trash"
+          customClass="!mt-0 !text-sm"
+          (click)="remove(subcategory)"
+
+        />
+      </div>
+    </div>
   }
+
+
 </div>
