@@ -9,6 +9,7 @@ export class AuthService extends BaseSupabaseService {
   public currentUser = signal<iUser | null>(null);
   public isLogged = signal<boolean>(false);
   public isAdmin = signal<boolean>(false);
+  public adminMode = signal<boolean>(false);
 
   public async load() {
     const { data, error } = await this.supabaseService.supabase.auth.getSession();

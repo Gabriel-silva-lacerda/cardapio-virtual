@@ -1,11 +1,19 @@
-<div class="h-[30%] relative ">
+<div class="fixed w-full top-0 z-50 bg-primary">
+  <app-cart />
+
+  @if(authService.isAdmin() && !authService.adminMode()) {
+    <div class="absolute right-2 top-2">
+      <app-menu-hamburguer />
+    </div>
+  }
+
   @if(isHome) {
-    <div class="bg-primary text-white px-3 py-10">
+    <div class="text-white px-3 py-10">
       <span class="text-text3">Olá,</span>
       <h1 class="text-title3">Seja Bem-vindo</h1>
     </div>
   } @else {
-    <div class="bg-primary  text-white px-3 py-10 flex justify-between items-center">
+    <div class="text-white px-3 py-10 flex justify-between items-center">
       <app-back-button customClass="text-text1" />
       <h1 class="text-title3">{{ title }}</h1>
     </div>

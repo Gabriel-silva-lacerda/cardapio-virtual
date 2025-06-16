@@ -1,70 +1,100 @@
-<div class="min-h-screen" [@fade]>
-  <app-header-page [isHome]="true" />
+<div class="h-full" [@fade]>
+  <app-header-page [isHome]="true" [showInput]="!authService.isAdmin() || authService.adminMode()" />
 
-  <div class="h-[70%] mt-10 pb-16">
-    <div class="px-3">
-      @if (loading()) {
-      <app-skeleton-categories [showTitle]="true" customClassLi="px-10 py-4" />
-      } @else {
-      <div class="flex justify-between items-center mb-2">
-        <span class="text-gray-500 text-xl block">Categorias</span>
-        <a
-          class="text-gray-500 py-2 text-text4"
-          routerLink="categorias"
-          [queryParams]="{ empresa: companyName() }"
-          >Ver mais +</a
-        >
-      </div>
-      <ul class="flex gap-4 overflow-auto">
-        @for (category of categories(); track $index) {
-        <app-categories [category]="category" customClass="py-3 px-4" />
-        }
-      </ul>
-      }
+  @if (authService.isAdmin() && !authService.adminMode()) {
+    <!-- Conteúdo exclusivo para admin -->
+    <div class="flex flex-col items-center justify-center h-full" @fadeInOut>
+      <h2 class="text-2xl font-bold text-primary mb-4">Bem-vindo, Administrador!</h2>
+      <p class="text-lg text-gray-600">Aqui você pode gerenciar o cardápio, categorias e pedidos.</p>
+      <!-- Adicione aqui componentes ou links de administração -->
+
+       <!-- Botão para alternar para modo cliente -->
+        <button (click)="authService.adminMode.set(true)" class="bg-primary mt-2 text-white px-5 py-2 rounded-xl shadow hover:bg-primary-dark transition">
+          👀 Visualizar como Cliente
+        </button>
     </div>
+  }
 
-    <div>
-      @if (loading()) {
-      <app-skeleton-food customClass="mt-6" [showTitle]="true" />
-      } @else {
+  @if (authService.isAdmin() && authService.adminMode()) {
+  <!-- Botão flutuante para voltar ao painel do admin -->
+    <div class="fixed bottom-16 right-2 z-50 group">
+    <button
+      (click)="authService.adminMode.set(false)"
+      class="bg-primary text-white w-[50px] h-[50px] flex items-center justify-center rounded-full shadow-lg hover:bg-primary-dark transition relative"
+    >
+      <i class="fas fa-cog text-lg"></i>
+    </button>
 
-      <div class="flex justify-between items-center mt-2 px-3">
-        <span class="text-gray-500 text-xl block my-2">Cardápio</span>
-        <a
-          class="text-gray-500 py-2 text-text4"
-          routerLink="comidas"
-          [queryParams]="{ empresa: companyName() }"
-          >Ver mais +</a
-        >
-      </div>
-      <!-- Sticky Subcategories -->
-      @if(subcategories.length > 0) {
-      <app-subcategories [subcategories]="subcategories"></app-subcategories>
-      }
-
-      <!-- Conteúdo do Cardápio -->
-      <div class="px-3">
-        @for (category of groupedFoods() | keyvalue; track category.key) {
-        <span
-          class="text-primary font-medium text-xl block my-2"
-          id="cat-{{ category.value.id }}"
-        >
-          {{ category.value.name }}
-        </span>
-
-        @for (subcategory of category.value.subcategories; track $index) {
-        <app-subcategory-item
-          [subcategory]="subcategory"
-        ></app-subcategory-item>
-
-        <ul class="flex flex-col gap-3">
-          @for (food of subcategory.foods; track food.id) {
-          <app-food-menu [food]="food" />
-          }
-        </ul>
-        } } @empty { <span>Sem itens para mostrar</span> }
-      </div>
-      }
+    <div
+      class="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-sm px-3 py-1 rounded shadow opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+      Voltar ao Painel do Admin
     </div>
   </div>
+
+    <div class="h-[70%] pb-16 pt-[10rem] border-red-700" @fadeInOut>
+      <div class="px-3">
+        @if (loading()) {
+        <app-skeleton-categories [showTitle]="true" customClassLi="px-10 py-4" />
+        } @else {
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-gray-500 text-xl block">Categorias</span>
+          <a
+            class="text-gray-500 py-2 text-text4"
+            routerLink="categorias"
+            [queryParams]="{ empresa: companyName() }"
+            >Ver mais +</a
+          >
+        </div>
+        <ul class="flex gap-4 overflow-auto">
+          @for (category of categories(); track $index) {
+          <app-categories [category]="category" customClass="py-3 px-4" />
+          }
+        </ul>
+        }
+      </div>
+
+      <div>
+        @if (loading()) {
+        <app-skeleton-food customClass="mt-6" [showTitle]="true" />
+        } @else {
+
+        <div class="flex justify-between items-center mt-2 px-3">
+          <span class="text-gray-500 text-xl block my-2">Cardápio</span>
+          <a
+            class="text-gray-500 py-2 text-text4"
+            routerLink="comidas"
+            [queryParams]="{ empresa: companyName() }"
+            >Ver mais +</a
+          >
+        </div>
+        @if(subcategories.length > 0) {
+        <app-subcategories [subcategories]="subcategories"></app-subcategories>
+        }
+
+        <div class="px-3">
+          @for (category of groupedFoods() | keyvalue; track category.key) {
+          <span
+            class="text-primary font-medium text-xl block my-2"
+            id="cat-{{ category.value.id }}"
+          >
+            {{ category.value.name }}
+          </span>
+
+          @for (subcategory of category.value.subcategories; track $index) {
+          <app-subcategory-item
+            [subcategory]="subcategory"
+          ></app-subcategory-item>
+
+          <ul class="flex flex-col gap-3">
+            @for (food of subcategory.foods; track food.id) {
+            <app-food-menu [food]="food" />
+            }
+          </ul>
+          } } @empty { <span>Sem itens para mostrar</span> }
+        </div>
+        }
+      </div>
+    </div>
+
+  }
 </div>

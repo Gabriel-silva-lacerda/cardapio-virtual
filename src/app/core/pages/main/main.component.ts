@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
 import { fade } from '@shared/utils/animations.utils';
 import { CartComponent } from '@shared/components/cart/cart.component';
+import { MenuHamburguerComponent } from '@shared/components/menu-hamburguer/menu-hamburguer.component';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterOutlet, FooterComponent, CartComponent],
+  imports: [RouterOutlet, FooterComponent, CartComponent, MenuHamburguerComponent],
   templateUrl: './main.component.html',
   animations: [fade],
 })

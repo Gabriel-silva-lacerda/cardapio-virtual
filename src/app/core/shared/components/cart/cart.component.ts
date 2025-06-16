@@ -5,12 +5,14 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { fadeInOut } from '@shared/utils/animations.utils';
 
 @Component({
   selector: 'app-cart',
   imports: [RouterLink],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
+  animations: [fadeInOut],
 })
 export class CartComponent {
   private localStorageService = inject(LocalStorageService);

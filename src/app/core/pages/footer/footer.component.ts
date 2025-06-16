@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
@@ -10,7 +10,7 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, NgClass],
+  imports: [RouterLink, NgClass, NgIf],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss'
 })

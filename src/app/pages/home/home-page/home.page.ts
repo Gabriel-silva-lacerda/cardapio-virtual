@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
-import { fade } from '@shared/utils/animations.utils';
+import { fade, fadeInOut, fadeScale } from '@shared/utils/animations.utils';
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { KeyValuePipe } from '@angular/common';
 import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
@@ -18,6 +18,7 @@ import { CategoriesComponent } from '../../categories/components/categories/cate
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
 import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
 import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skeleton-food.component';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-home-page',
@@ -34,11 +35,12 @@ import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skele
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
-  animations: [fade],
+  animations: [fade, fadeScale, fadeInOut],
 })
 export class HomePage implements OnInit {
   private localStorageService = inject(LocalStorageService);
 
+  public authService = inject(AuthService);
   public foodService = inject(FoodService);
   public categoryService = inject(CategoryService);
   public groupedFoods = signal<Record<string, iCategoryGroup>>({});
