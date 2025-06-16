@@ -5,21 +5,23 @@ import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ShowItemService } from '@shared/services/show-item/show-item.service';
+import { fadeInOut } from '@shared/utils/animations.utils';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, NgClass, NgIf],
+  imports: [RouterLink, NgClass],
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss'
+  styleUrl: './footer.component.scss',
+  animations: [fadeInOut],
 })
 export class FooterComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private localStorageService = inject(LocalStorageService);
   private destroy$ = new Subject<void>();
-  private authService = inject(AuthService);
 
+  public authService = inject(AuthService);
   public showItemService = inject(ShowItemService);
   public links = this.getLinks();
   public activeLinks: { [key: string]: boolean } = {};

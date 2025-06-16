@@ -7,7 +7,7 @@ import { MenuHamburguerComponent } from '@shared/components/menu-hamburguer/menu
 
 @Component({
   selector: 'app-main',
-  imports: [RouterOutlet, FooterComponent, CartComponent, MenuHamburguerComponent],
+  imports: [RouterOutlet, FooterComponent],
   templateUrl: './main.component.html',
   animations: [fade],
 })

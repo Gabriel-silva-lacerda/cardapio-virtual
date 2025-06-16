@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input, signal } from '@angular/core';
+import { iMenuItem } from './menu-hamburguer.interface';
 
 @Component({
   selector: 'app-menu-hamburguer',
@@ -8,12 +9,17 @@ import { Component } from '@angular/core';
   styleUrl: './menu-hamburguer.component.scss'
 })
 export class MenuHamburguerComponent {
-  public menuOpen = false;
-  closeMenu(event: any) {
+  @Input({ required: true }) menuItems: iMenuItem[] = [];
+  public menuOpen = signal(false);
 
+  closeMenu(event: any) {
+    if (event.target.classList.contains('bg-black')) {
+      this.menuOpen.set(false);
+    }
   }
 
   openMenu() {
-
+    alert('Pesquisar Empresa clicado!');
+    this.menuOpen.set(false);
   }
 }

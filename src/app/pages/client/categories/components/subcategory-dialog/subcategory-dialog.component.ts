@@ -11,8 +11,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
-import { iCategory } from 'src/app/pages/home/interfaces/category.interface';
-import { CategoryService } from 'src/app/pages/home/services/category.service';
+import { iCategory } from 'src/app/pages/client/home/interfaces/category.interface';
+import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { Validators } from '@angular/forms';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 

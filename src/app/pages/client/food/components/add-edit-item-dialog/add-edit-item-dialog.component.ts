@@ -29,8 +29,8 @@ import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.co
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { ExtraService } from '@shared/services/extra/extra.service';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
-import { SubcategoryDialogComponent } from 'src/app/pages/categories/components/subcategory-dialog/subcategory-dialog.component';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
+import { SubcategoryDialogComponent } from '../../../categories/components/subcategory-dialog/subcategory-dialog.component';
 
 @Component({
   selector: 'app-add-edit-item-dialog',

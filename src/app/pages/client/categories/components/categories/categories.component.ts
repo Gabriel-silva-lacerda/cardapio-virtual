@@ -8,8 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { iCategory } from 'src/app/pages/home/interfaces/category.interface';
-import { CategoryService } from 'src/app/pages/home/services/category.service';
+import { iCategory } from 'src/app/pages/client/home/interfaces/category.interface';
+import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -17,7 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FoodService } from '@shared/services/food/food.service';
-import { LoadingScreenComponent } from "../../../../core/shared/components/loading-screen/loading-screen.component";
+import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 
 @Component({
   selector: 'app-categories',

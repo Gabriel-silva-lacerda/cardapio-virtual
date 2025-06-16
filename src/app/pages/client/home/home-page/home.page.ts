@@ -55,6 +55,28 @@ export class HomePage implements OnInit {
   );
   public companyId = this.localStorageService.getSignal('companyId', '0');
 
+    public menuItems = [
+    {
+      label: 'Dashboard',
+      href: '/admin/dashboard'
+    },
+    {
+      label: 'Pedidos',
+      href: '/admin/pedidos'
+    },
+    {
+      label: 'Categorias',
+      href: '/admin/categorias'
+    },
+    {
+      label: 'Sair',
+      isButton: true,
+      action: () => {
+        this.authService.logout();
+      }
+    }
+  ];
+
   ngOnInit() {
     this.getAllFoodAndCategories();
     this.getSubCategories();

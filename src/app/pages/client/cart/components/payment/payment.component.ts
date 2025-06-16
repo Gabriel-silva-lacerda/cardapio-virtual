@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';
-import { AuthService } from '../../../../domain/auth/services/auth.service';
+
 import { transformCartItemsToOrderItems } from '@shared/utils/oder.utils';
 import { StripeService } from '@shared/services/stripe/stripe.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
@@ -23,6 +23,7 @@ import { DeliveryAddress } from '../../interfaces/address';
 import { Company } from '@shared/interfaces/company/company';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.directive';
+import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-payment',
