@@ -1,4 +1,4 @@
-<div class="fixed w-full top-0 z-50 bg-primary">
+<div class="fixed w-full top-0 z-50 bg-primary" [@fade]>
   <app-cart />
 
   @if(authService.isAdmin() && !authService.adminMode()) {

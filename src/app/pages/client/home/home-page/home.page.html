@@ -1,21 +1,23 @@
 <div class="h-full" [@fade]>
-  <app-header-page [isHome]="true" [showInput]="!authService.isAdmin() || authService.adminMode()" [menuItems]="menuItems" />
+  <app-header-page [isHome]="true" [showInput]="true"/>
 
-  <!-- @if (authService.isAdmin() && authService.adminMode()) { -->
+  @if (authService.isAdmin()) {
   <!-- Botão flutuante para v oltar ao painel do admin -->
-    <!-- <div class="fixed bottom-16 right-2 z-50 group">
-    <button
-      (click)="authService.adminMode.set(false)"
-      class="bg-primary text-white w-[50px] h-[50px] flex items-center justify-center rounded-full shadow-lg hover:bg-primary-dark transition relative"
-    >
-      <i class="fas fa-cog text-lg"></i>
-    </button>
+    <div class="fixed bottom-16 right-2 z-50 group">
+      <button
+        routerLink="/app/admin"
+        (click)="authService.adminMode.set(false)"
+        class="bg-primary text-white w-[50px] h-[50px] flex items-center justify-center rounded-full shadow-lg hover:bg-primary-dark transition relative"
+      >
+        <i class="fas fa-cog text-lg"></i>
+      </button>
 
-    <div
-      class="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-sm px-3 py-1 rounded shadow opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
-      Voltar ao Painel do Admin
+      <div
+        class="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-sm px-3 py-1 rounded shadow opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+        Voltar ao Painel do Admin
+      </div>
     </div>
-  </div> -->
+  }
 
     <div class="h-[70%] pb-16 pt-[10rem] border-red-700" @fadeInOut>
       <div class="px-3">

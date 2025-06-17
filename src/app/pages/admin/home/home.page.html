@@ -1,12 +1,23 @@
+<app-header-page [isHome]="true" [showInput]="false" [menuItems]="menuItems" />
+
 <!-- Conteúdo exclusivo para admin -->
-<div class="flex flex-col items-center justify-center h-full" @fadeInOut>
+<div class="flex flex-col items-center justify-center h-full" [@fade]>
   <h2 class="text-2xl font-bold text-primary mb-4">Bem-vindo, Administrador!</h2>
   <p class="text-lg text-gray-600">Aqui você pode gerenciar o cardápio, categorias e pedidos.</p>
   <!-- Adicione aqui componentes ou links de administração -->
 
-    <!-- Botão para alternar para modo cliente -->
-    <button class="bg-primary mt-2 text-white px-5 py-2 rounded-xl shadow hover:bg-primary-dark transition">
-      👀 Visualizar como Cliente
-    </button>
-</div>
+  <!-- Texto informativo com ícone de seta para baixo -->
+  <div class="flex items-center mt-4 text-gray-700 text-lg">
+    <span class="mr-2">Acesse o link para ver como cliente</span>
+    <i class="fas fa-arrow-down text-2xl"></i>
+  </div>
 
+  <!-- Link solicitado -->
+  <a
+    (click)="authService.adminMode.set(true)"
+    routerLink="/"
+    class="underline text-primary mt-4"
+  >
+    http://localhost:4200/app?empresa={{ companyName() }}
+  </a>
+</div>

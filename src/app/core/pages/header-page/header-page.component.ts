@@ -4,6 +4,7 @@ import { BackButtonComponent } from '@shared/components/back-button/back-button.
 import { CartComponent } from '@shared/components/cart/cart.component';
 import { MenuHamburguerComponent } from '@shared/components/menu-hamburguer/menu-hamburguer.component';
 import { iMenuItem } from '@shared/components/menu-hamburguer/menu-hamburguer.interface';
+import { fade } from '@shared/utils/animations.utils';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
@@ -11,7 +12,8 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
   imports: [BackButtonComponent, MenuHamburguerComponent, CartComponent],
   templateUrl: './header-page.component.html',
   styleUrl: './header-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [fade]
 })
 export class HeaderPageComponent {
   @Input() menuItems: iMenuItem[] = [];
