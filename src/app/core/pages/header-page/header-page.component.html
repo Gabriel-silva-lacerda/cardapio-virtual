@@ -1,12 +1,6 @@
 <div class="fixed w-full top-0 z-50 bg-primary" [@fade]>
   <app-cart />
 
-  @if(authService.isAdmin() && !authService.adminMode()) {
-    <div class="absolute right-2 top-2">
-      <app-side-menu [menuItems]="menuItems" />
-    </div>
-  }
-
   @if(isHome) {
     <div class="text-white px-3 py-10">
       <span class="text-text3">Olá,</span>

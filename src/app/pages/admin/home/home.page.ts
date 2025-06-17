@@ -20,44 +20,5 @@ export class HomePage {
     ''
   );
   public authService = inject(AuthService);
-  public menuItems = [
-    {
-      label: 'Home',
-      href: '/app/admin',
-      icon: 'fa fa-home'
-    },
-    {
-      label: 'Perfil',
-      href: '/admin/perfil',
-      icon: 'fa fa-user'
-    },
-    {
-      label: 'Dashboard',
-      href: '/admin/dashboard',
-      icon: 'fa fa-chart-bar'
-    },
-    {
-      label: 'Pedidos',
-      href: '/admin/pedidos',
-      icon: 'fa fa-shopping-cart'
-    },
-    {
-      label: 'Produtos',
-      href: '/admin/produtos',
-      icon: 'fa fa-utensils'
-    },
-    {
-      label: 'Subcategorias',
-      href: '/admin/subcategorias',
-      icon: 'fa fa-th-large'
-    },
-    {
-      label: 'Sair',
-      isButton: true,
-      icon: 'fa fa-sign-out-alt',
-      action: () => {
-        this.authService.logout();
-      }
-    }
-  ];
+
 }

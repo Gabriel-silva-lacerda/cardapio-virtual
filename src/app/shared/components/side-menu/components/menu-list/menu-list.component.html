@@ -1,44 +1,44 @@
 <nav class="flex flex-col gap-1 py-2">
-    @for (item of menuItems; track $index) {
-      @if(!item.isButton) {
-        <a
-          [routerLink]="item.href"
-          class="flex items-center gap-3 px-4 py-2 w-full text-base font-medium transition
-            hover:bg-primary/10 hover:text-primary group text-gray-700"
-        >
-          <i class="{{ item.icon }} text-md transition-colors group-hover:text-primary"
-
-             [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"
-          ></i>
-          <span class="flex-1">{{ item.label }}</span>
-          @if(item.hasDropdown) {
-            <i class="fas fa-chevron-down text-xs ml-2" [ngClass]="{ 'rotate-180': item.open }"></i>
-          }
-          @if(item.isPro) {
-            <span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold">
-              <i class="fas fa-crown"></i>
-            </span>
-          }
-        </a>
-        @if(item.hasDropdown && item.open) {
-          <div class="ml-10 flex flex-col gap-1">
-            @for (sub of item.children; track $index) {
-              <a [href]="sub.href" class="px-2 py-1 text-gray-600 hover:text-primary transition">{{ sub.label }}</a>
-            }
-          </div>
+  @for (item of menuItems; track $index) {
+    @if(!item.isButton) {
+      <a
+        [routerLink]="item.href"
+        class="flex items-center gap-3 px-4 py-2 w-full text-base font-medium transition
+          hover:bg-primary/10 hover:text-primary group text-gray-700"
+          [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"
+      >
+        <i class="{{ item.icon }} text-md transition-colors group-hover:text-primary h-[24px] flex items-center"
+           [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"
+        ></i>
+        <span class="flex-1" *ngIf="!this.sideMenuService.collapsed()">{{ item.label }}</span>
+        @if(item.hasDropdown && !this.sideMenuService.collapsed()) {
+          <i class="fas fa-chevron-down text-xs ml-2" [ngClass]="{ 'rotate-180': item.open }"></i>
         }
-      }
-      @if(item.isButton) {
-        <div class="px-2">
-          <button
-            class="flex justify-center items-center gap-3 px-4 py-2 w-full text-base font-medium rounded-lg transition
-              bg-primary text-white hover:bg-primary-dark group mt-2"
-            (click)="item.action && item.action()"
-          >
-            <i class="{{ item.icon }} text-md transition-colors group-hover:text-white"></i>
-            <span>{{ item.label }}</span>
-          </button>
+        @if(item.isPro && !this.sideMenuService.collapsed()) {
+          <span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold">
+            <i class="fas fa-crown"></i>
+          </span>
+        }
+      </a>
+      @if(item.hasDropdown && item.open && !this.sideMenuService.collapsed()) {
+        <div class="ml-10 flex flex-col gap-1">
+          @for (sub of item.children; track $index) {
+            <a [href]="sub.href" class="px-2 py-1 text-gray-600 hover:text-primary transition">{{ sub.label }}</a>
+          }
         </div>
       }
     }
-  </nav>
+    @if(item.isButton) {
+      <div class="px-2">
+        <button
+          class="flex justify-center items-center gap-3 px-4 py-2 w-full text-base font-medium rounded-lg transition
+            bg-primary text-white hover:bg-primary-dark group mt-2"
+          (click)="item.action && item.action()"
+        >
+          <i class="{{ item.icon }} text-md transition-colors group-hover:text-white"></i>
+          <span *ngIf="!this.sideMenuService.collapsed()">{{ item.label }}</span>
+        </button>
+      </div>
+    }
+  }
+</nav>

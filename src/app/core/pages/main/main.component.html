@@ -1,9 +1,17 @@
 <div [@fade] >
-  <main class="flex flex-col h-[calc(100vh-57.98px)] relative" >
-    <div class="h-full">
-      <router-outlet class="flex-grow"></router-outlet>
-    </div>
-  </main>
+  <app-header />
+ <main class="flex flex-col h-[calc(100vh-57.98px)] relative">
+  <div
+    class="h-full transition-all duration-300"
+    [ngClass]="{
+      'md:ml-14': sideMenuService.collapsed(),
+      'md:ml-72': !sideMenuService.collapsed()
+    }"
+  >
+    <router-outlet class="flex-grow"></router-outlet>
+  </div>
+</main>
+
 
   <app-footer />
 </div>
