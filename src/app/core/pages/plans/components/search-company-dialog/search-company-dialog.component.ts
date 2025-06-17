@@ -5,9 +5,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Company } from '@shared/interfaces/company/company';
 import { CompanyService } from '@shared/services/company/company.service';
 import { BehaviorSubject, debounceTime, Subject } from 'rxjs';
-import { SearchInputComponent } from "../../../../shared/components/search-input/search-input.component";
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { Router } from '@angular/router';
+import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
 
 @Component({
   selector: 'app-search-company-dialog',

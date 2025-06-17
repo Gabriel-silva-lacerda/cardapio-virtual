@@ -2,8 +2,8 @@ import { inject, Injectable, signal } from '@angular/core';
 
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { iExtra } from '../../../../../core/shared/interfaces/extra/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
+import { iExtra } from '@shared/interfaces/extra/extra.interface';
 
 @Injectable({
   providedIn: 'root',

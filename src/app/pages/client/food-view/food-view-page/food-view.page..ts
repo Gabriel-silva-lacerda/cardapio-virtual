@@ -5,14 +5,15 @@ import { ActivatedRoute } from '@angular/router';
 import { FooterFoodComponent } from '../components/footer-food/footer-food.component';
 import { FoodService } from '@shared/services/food/food.service';
 import { iFood } from '@shared/interfaces/food/food.interface';
-import { ExtraService } from '../../../../core/shared/services/extra/extra.service';
-import { iExtra } from '../../../../core/shared/interfaces/extra/extra.interface';
+
 import { firstValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { ExtraService } from '@shared/services/extra/extra.service';
+import { iExtra } from '@shared/interfaces/extra/extra.interface';
 
 @Component({
   selector: 'app-food-view',
