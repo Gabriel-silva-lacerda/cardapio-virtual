@@ -3,7 +3,7 @@
 
   @if(authService.isAdmin() && !authService.adminMode()) {
     <div class="absolute right-2 top-2">
-      <app-menu-hamburguer [menuItems]="menuItems" />
+      <app-side-menu [menuItems]="menuItems" />
     </div>
   }
 

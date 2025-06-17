@@ -1,42 +1,24 @@
-<button class="border border-primary-rose-soft text-primary-rose-soft px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition md:hidden"
-  (click)="openMenu()">
-  <i class="fas fa-bars text-sm"></i>
-</button>
-
-@if(menuOpen()) {
-  <div class="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
-    (click)="closeMenu($event)">
-  </div>
-}
-
-<div class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 z-50 border-l-4"
-  [ngClass]="{ 'translate-x-0': menuOpen(), 'translate-x-full': !menuOpen() }">
-  <div class="flex justify-end w-full px-4 pt-2">
-    <button class="text-primary text-2xl hover:text-primary-dark transition" (click)="menuOpen.set(false)">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
-  <nav class="flex flex-col gap-1 py-2">
+<nav class="flex flex-col gap-1 py-2">
     @for (item of menuItems; track $index) {
       @if(!item.isButton) {
         <a
           [routerLink]="item.href"
           class="flex items-center gap-3 px-4 py-2 w-full text-base font-medium transition
             hover:bg-primary/10 hover:text-primary group text-gray-700"
-          [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"
         >
           <i class="{{ item.icon }} text-md transition-colors group-hover:text-primary"
+
              [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"
-           ></i>
+          ></i>
           <span class="flex-1">{{ item.label }}</span>
-            @if(item.hasDropdown) {
+          @if(item.hasDropdown) {
             <i class="fas fa-chevron-down text-xs ml-2" [ngClass]="{ 'rotate-180': item.open }"></i>
-            }
-            @if(item.isPro) {
+          }
+          @if(item.isPro) {
             <span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold">
               <i class="fas fa-crown"></i>
             </span>
-            }
+          }
         </a>
         @if(item.hasDropdown && item.open) {
           <div class="ml-10 flex flex-col gap-1">
@@ -47,7 +29,7 @@
         }
       }
       @if(item.isButton) {
-        <div class="px-2 ">
+        <div class="px-2">
           <button
             class="flex justify-center items-center gap-3 px-4 py-2 w-full text-base font-medium rounded-lg transition
               bg-primary text-white hover:bg-primary-dark group mt-2"
@@ -60,4 +42,3 @@
       }
     }
   </nav>
-</div>

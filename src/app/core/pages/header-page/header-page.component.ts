@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, inject, input, Input } from '@angul
 import { RouterLink } from '@angular/router';
 import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
 import { CartComponent } from '@shared/components/cart/cart.component';
-import { MenuHamburguerComponent } from '@shared/components/menu-hamburguer/menu-hamburguer.component';
-import { iMenuItem } from '@shared/components/menu-hamburguer/menu-hamburguer.interface';
+import { SideMenuComponent } from '@shared/components/side-menu/side-menu.component';
+import { iMenuItem } from '@shared/components/side-menu/components/menu-list/menu-list.interface';
 import { fade } from '@shared/utils/animations.utils';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-header-page',
-  imports: [BackButtonComponent, MenuHamburguerComponent, CartComponent],
+  imports: [BackButtonComponent, SideMenuComponent, CartComponent],
   templateUrl: './header-page.component.html',
   styleUrl: './header-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
