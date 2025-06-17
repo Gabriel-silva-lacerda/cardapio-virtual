@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
 import { CartComponent } from '@shared/components/cart/cart.component';
