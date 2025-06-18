@@ -12,12 +12,16 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
   animations: [fade]
 })
 export class HomePage {
-  private localStorageService = inject(LocalStorageService);
+  public localStorageService = inject(LocalStorageService);
 
   public companyName = this.localStorageService.getSignal<string>(
     'companyName',
     ''
   );
   public authService = inject(AuthService);
+
+  ngOnInit() {
+    this.authService.setAdminMode(true);
+  }
 
 }

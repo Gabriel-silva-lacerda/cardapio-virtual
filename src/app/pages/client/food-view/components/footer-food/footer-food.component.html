@@ -6,10 +6,11 @@
   </div>
       <!-- [disabled]="food?.day_of_week !== getCurrentDayOfWeek()" -->
   <button class="button-primary w-52 text-text4" (click)="addToCart()"
-    [disabled]="food?.day_of_week && food?.day_of_week !== getCurrentDayOfWeek() || authService.isAdmin()"
+
     [matTooltip]="tooltipMessage"
 
   >
+  <!-- [disabled]="food?.day_of_week && food?.day_of_week !== getCurrentDayOfWeek() || authService.isAdmin()" -->
     {{ newItem ? 'Carrinho' : 'Atualizar'  }} {{ totalPrice() | currency: 'BRL' }}
   </button>
 </footer>

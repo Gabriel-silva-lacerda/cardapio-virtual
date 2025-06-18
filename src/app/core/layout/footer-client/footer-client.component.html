@@ -1,4 +1,4 @@
-@if (showItemService.showFooter() && !authService.isAdmin() || authService.adminMode()) {
+@if (!authService.isAdmin() || !authService.adminMode()) {
   <footer class="flex justify-between p-4 border fixed bottom-0 w-full bg-white-light" @fadeInOut>
     @for (link of links ; track $index) {
       <a

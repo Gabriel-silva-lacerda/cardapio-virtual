@@ -1,5 +1,4 @@
-@if(showItemService.showCart() && !authService.isAdmin() || authService.adminMode()) {
-  <div class="cart-count fixed top-1 z-10 right-2 w-20 flex align-center justify-end cursor-pointer" routerLink="cart" [queryParams]="{ empresa: companyName() }" @fadeInOut>
+@if(showItemService.showCart() && !authService.adminMode() || !authService.isAdmin()) {  <div class="cart-count fixed top-1 z-10 right-2 w-20 flex align-center justify-end cursor-pointer" routerLink="cart" [queryParams]="{ empresa: companyName() }" @fadeInOut>
     <i class="fa-solid fa-cart-shopping mt-2 transform text-[20px] text-white-light"></i>
 
     @if(this.cart() && this.cart().length > 0) {

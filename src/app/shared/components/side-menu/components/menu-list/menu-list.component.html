@@ -11,17 +11,17 @@
         <i class="{{ item.icon }} text-md transition-colors group-hover:text-primary h-[24px] flex items-center"
            [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"
         ></i>
-        <span class="flex-1" *ngIf="!this.sideMenuService.collapsed()">{{ item.label }}</span>
-        @if(item.hasDropdown && !this.sideMenuService.collapsed()) {
+        <span class="flex-1" *ngIf="!sideMenuService.collapsed()">{{ item.label }}</span>
+        @if(item.hasDropdown && !sideMenuService.collapsed()) {
           <i class="fas fa-chevron-down text-xs ml-2" [ngClass]="{ 'rotate-180': item.open }"></i>
         }
-        @if(item.isPro && !this.sideMenuService.collapsed()) {
+        @if(item.isPro && !sideMenuService.collapsed()) {
           <span class="ml-2 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold">
             <i class="fas fa-crown"></i>
           </span>
         }
       </a>
-      @if(item.hasDropdown && item.open && !this.sideMenuService.collapsed()) {
+      @if(item.hasDropdown && item.open && !sideMenuService.collapsed()) {
         <div class="ml-10 flex flex-col gap-1">
           @for (sub of item.children; track $index) {
             <a [href]="sub.href" class="px-2 py-1 text-gray-600 hover:text-primary transition">{{ sub.label }}</a>
@@ -37,7 +37,7 @@
           (click)="item.action && item.action()"
         >
           <i class="{{ item.icon }} text-md transition-colors group-hover:text-white"></i>
-          <span *ngIf="!this.sideMenuService.collapsed()">{{ item.label }}</span>
+          <span *ngIf="!sideMenuService.collapsed()">{{ item.label }}</span>
         </button>
       </div>
     }

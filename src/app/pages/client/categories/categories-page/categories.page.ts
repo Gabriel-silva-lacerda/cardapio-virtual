@@ -1,20 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
 import { CategoryService } from '../../home/services/category.service';
 import { iCategory } from '../../home/interfaces/category.interface';
 import { CategoriesComponent } from '../components/categories/categories.component';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { SkeletonCategoriesComponent } from '../components/skeleton-categories/skeleton-categories.component';
 import { fade } from '@shared/utils/animations.utils';
-import { MatDialog } from '@angular/material/dialog';
+import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 
 @Component({
   selector: 'app-categories-page',
   imports: [
-    HeaderPageComponent,
     CategoriesComponent,
     SkeletonCategoriesComponent,
-  ],
+    PageLayoutClientComponent
+],
   templateUrl: './categories.page.html',
   styleUrl: './categories.page.scss',
   animations: [fade],

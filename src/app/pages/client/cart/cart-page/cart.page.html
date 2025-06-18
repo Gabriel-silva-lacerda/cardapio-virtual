@@ -1,7 +1,6 @@
-<div class="min-h-screen" [@fade]>
-  <app-header-page [showInput]="false" title="Carrinho" />
-  <div class="h-[70%] mt-10 px-3">
-    <ul class="flex flex-col gap-3">
+
+<app-page-layout-client title="Carrinho" [showFooter]="false">
+   <ul class="flex flex-col gap-3 px-3">
       @for (cart of this.carts(); track $index) {
       <app-food-menu [isInCart]="true" [cartItem]="cart" />
       }
@@ -12,6 +11,5 @@
       Sem itens no carrinho :(
     </div>
     }
-  </div>
   <app-footer-cart [carts]="this.carts()" />
-</div>
+</app-page-layout-client>

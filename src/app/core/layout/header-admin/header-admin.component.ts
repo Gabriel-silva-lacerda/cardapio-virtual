@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { SideMenuComponent } from '@shared/components/side-menu/side-menu.component';
-import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { AuthService } from '../../../domain/auth/services/auth.service';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-header-admin',
   imports: [SideMenuComponent],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  templateUrl: './header-admin.component.html',
+  styleUrl: './header-admin.component.scss'
 })
-export class HeaderComponent {
+export class HeaderAdminComponent {
   public authService = inject(AuthService);
   public menuItems = [
     {

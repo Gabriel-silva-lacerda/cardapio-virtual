@@ -1,17 +1,43 @@
-<div [@fade] >
-  <app-header />
+<div @fade >
+  @if(authService.isAdmin() && authService.adminMode()) {
+    <app-header-admin />
+  }
+
  <main class="flex flex-col h-[calc(100vh-57.98px)] relative">
   <div
     class="h-full transition-all duration-300"
     [ngClass]="{
-      'md:ml-14': sideMenuService.collapsed(),
-      'md:ml-72': !sideMenuService.collapsed()
+      'md:ml-14': sideMenuService.collapsed() && authService.adminMode(),
+      'md:ml-72': !sideMenuService.collapsed() && authService.adminMode()
     }"
   >
     <router-outlet class="flex-grow"></router-outlet>
   </div>
 </main>
 
+  @if (authService.isAdmin() && !authService.adminMode()) {
+    <div
+      class="fixed right-2 z-50 group transition-all duration-300 ease-in-out"
+      [ngClass]="{
+        'bottom-16': !isCartRoute,
+        'bottom-32': isCartRoute
+      }"
+    >
+    <button
+      routerLink="/app/admin"
+      [queryParams]="{empresa: companyService.companyName() }"
+      (click)="authService.setAdminMode(false)"
+      class="bg-primary text-white w-[50px] h-[50px] flex items-center justify-center rounded-full shadow-lg hover:bg-primary-dark transition relative"
+    >
+      <i class="fas fa-cog text-lg"></i>
+    </button>
 
-  <app-footer />
+    <div
+      class="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-sm px-3 py-1 rounded shadow opacity-0 group-hover:opacity-100 transition whitespace-nowrap">
+      Voltar ao Painel do Admin
+    </div>
+  </div>
+
+  }
+
 </div>

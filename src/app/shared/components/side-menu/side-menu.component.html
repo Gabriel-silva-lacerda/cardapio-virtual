@@ -13,17 +13,17 @@
 
 <aside
   class="hidden md:flex flex-col fixed top-0 left-0 h-full z-50 border-r-2 mt-[73.3px] bg-white transition-all duration-300"
-  [ngClass]="{ 'w-72': !this.sideMenuService.collapsed(), 'w-14': this.sideMenuService.collapsed() }"
+  [ngClass]="{ 'w-72': !sideMenuService.collapsed(), 'w-14': sideMenuService.collapsed() }"
 >
   <!-- Botão para expandir/retrair o aside -->
   <button
     class="absolute top-4 w-8 right-[-20px] bg-primary text-white rounded-md shadow p-1 border border-primary transition hover:bg-primary-dark z-50"
     (click)="toggleCollapsed()"
 
-    [attr.aria-label]="this.sideMenuService.collapsed() ? 'Expandir menu' : 'Reduzir menu'"
+    [attr.aria-label]="sideMenuService.collapsed() ? 'Expandir menu' : 'Reduzir menu'"
     type="button"
   >
-    <i class="fas" [ngClass]="this.sideMenuService.collapsed() ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+    <i class="fas" [ngClass]="sideMenuService.collapsed() ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
   </button>
   <app-menu-list [menuItems]="menuItems" ></app-menu-list>
 </aside>

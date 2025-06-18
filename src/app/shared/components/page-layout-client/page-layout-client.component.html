@@ -1,0 +1,15 @@
+<div class="min-h-screen" [@fade]>
+  <app-header-client [title]="title" [isHome]="isHome" />
+  <div class="min-h-screen pt-[140.2px] pb-[50px] overflow-auto"
+  [ngClass]="{
+    'pt-[140.2px]': !isHome,
+    'pt-[160px]': isHome,
+  }"
+  >
+    <ng-content></ng-content>
+  </div>
+  @if(showFooter) {
+    <app-footer-client />
+  }
+
+</div>

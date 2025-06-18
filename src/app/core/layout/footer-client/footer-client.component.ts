@@ -7,16 +7,16 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { ShowItemService } from '@shared/services/show-item/show-item.service';
 import { fadeInOut } from '@shared/utils/animations.utils';
 import { filter, Subject, takeUntil } from 'rxjs';
-import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { AuthService } from '../../../domain/auth/services/auth.service';
 
 @Component({
-  selector: 'app-footer',
+  selector: 'app-footer-client',
   imports: [RouterLink, NgClass],
-  templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss',
+  templateUrl: './footer-client.component.html',
+  styleUrl: './footer-client.component.scss',
   animations: [fadeInOut],
 })
-export class FooterComponent implements OnInit, OnDestroy {
+export class FooterClientComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private localStorageService = inject(LocalStorageService);
   private destroy$ = new Subject<void>();

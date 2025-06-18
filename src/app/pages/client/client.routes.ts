@@ -26,8 +26,8 @@ export const ClienteRoutes: Routes = [
       {
         path: 'comida/:id',
         loadComponent: () =>
-          import('../../pages/client/food/food-page/food.page').then(
-            (m) => m.FoodPage
+          import('./menu/menu-page/menu.page').then(
+            (m) => m.MenuPage
           ),
       },
     ],
@@ -38,8 +38,8 @@ export const ClienteRoutes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('../../pages/client/food/food-page/food.page').then(
-            (m) => m.FoodPage
+          import('./menu/menu-page/menu.page').then(
+            (m) => m.MenuPage
           ),
       },
       {

@@ -16,23 +16,25 @@ import { CategoryService } from '../services/category.service';
 import { iCategory } from '../interfaces/category.interface';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
-import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
-import { SkeletonFoodComponent } from '../../food/components/skeleton-food/skeleton-food.component';
+import { HeaderClientComponent } from '@core/layout/header-client/header-client.component';
+import { SkeletonFoodComponent } from '../../menu/components/skeleton-food/skeleton-food.component';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 
 @Component({
   selector: 'app-home-page',
   imports: [
     CategoriesComponent,
     FoodMenuComponent,
-    HeaderPageComponent,
+    HeaderClientComponent,
     RouterLink,
     SkeletonCategoriesComponent,
     SkeletonFoodComponent,
     KeyValuePipe,
     SubcategoriesComponent,
     SubcategoryItemComponent,
-  ],
+    PageLayoutClientComponent
+],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   animations: [fade, fadeScale, fadeInOut],

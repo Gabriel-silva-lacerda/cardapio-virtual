@@ -4,21 +4,22 @@ import { BaseSupabaseService } from '@shared/services/base/base-supabase.service
 import { Router } from '@angular/router';
 import { Company } from '@shared/interfaces/company/company';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService extends BaseSupabaseService {
-  private localStorageService = inject(LocalStorageService);
   private router = inject(Router);
-   private companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
+  private companyService = inject(CompanyService);
+  private localStorageService = inject(LocalStorageService);
+
   public currentUser = signal<iUser | null>(null);
   public isLogged = signal<boolean>(false);
   public isAdmin = signal<boolean>(false);
-  public adminMode = signal<boolean>(false);
+
+  private _adminMode = signal<boolean>(false);
+  public adminMode = this._adminMode.asReadonly();
 
   public async load() {
     const { data, error } = await this.supabaseService.supabase.auth.getSession();
@@ -26,8 +27,8 @@ export class AuthService extends BaseSupabaseService {
       return;
     }
 
-    this.getUser(data.session.user.id);
-    this.checkUserRole();
+    await this.getUser(data.session.user.id);
+    await this.checkUserRole();
     this.isLogged.set(true);
   }
 
@@ -40,20 +41,28 @@ export class AuthService extends BaseSupabaseService {
     const { data: userData } = await this.supabaseService.supabase.auth.getUser();
     const user = userData?.user;
 
-    if (user) {
-      const userRole = await this.getUserRole(user.id);
-      if (userRole?.role === 'admin') {
-        this.isAdmin.set(true);
+    if (!user) return;
+
+    const userRole = await this.getUserRole(user.id);
+
+    if (userRole?.role === 'admin') {
+      this.isAdmin.set(true);
+
+      const saved = localStorage.getItem('adminMode');
+      if (saved === null) {
+        this.setAdminMode(true);
       } else {
-        this.isAdmin.set(false);
+        this._adminMode.set(saved === 'true');
       }
+
+    } else {
+      this.isAdmin.set(false);
+      this.setAdminMode(false);
     }
   }
 
   async getUserRole(userId: string): Promise<any> {
-    const userRole = await this.getByField<{ role: string }>('user_companies', 'user_id', userId);
-
-    return userRole;
+    return await this.getByField<{ role: string }>('user_companies', 'user_id', userId);
   }
 
   async logout() {
@@ -64,7 +73,18 @@ export class AuthService extends BaseSupabaseService {
     }
 
     this.router.navigate(['/auth'], {
-      queryParams: { empresa: this.companyName() },
+      queryParams: { empresa: this.companyService.companyName() },
     });
   }
+
+  setAdminMode(value: boolean) {
+    this._adminMode.set(value);
+    localStorage.setItem('adminMode', value.toString());
+  }
+
+  resetAdminMode() {
+    localStorage.removeItem('adminMode');
+    this._adminMode.set(this.isAdmin());
+  }
 }
+

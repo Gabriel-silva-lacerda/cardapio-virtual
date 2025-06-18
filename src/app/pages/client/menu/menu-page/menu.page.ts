@@ -1,4 +1,4 @@
-import { HeaderPageComponent } from 'src/app/core/pages/header-page/header-page.component';
+import { HeaderClientComponent } from '@core/layout/header-client/header-client.component';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
@@ -30,24 +30,26 @@ import { SubcategoryItemComponent } from '@shared/components/subcategory-item/su
 import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcategories/skeleton-subcategories.component';
 import { SubcategoryDialogComponent } from '../../categories/components/subcategory-dialog/subcategory-dialog.component';
 import { AddExtraDialogComponent } from '../components/add-extra-dialog/add-extra-dialog.component';
+import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 
 @Component({
   selector: 'app-food-page',
   imports: [
     FoodMenuComponent,
-    HeaderPageComponent,
+    HeaderClientComponent,
     KeyValuePipe,
     SkeletonFoodComponent,
     FormsModule,
     SubcategoriesComponent,
     SubcategoryItemComponent,
     SkeletonSubcategoriesComponent,
-  ],
-  templateUrl: './food.page.html',
-  styleUrl: './food.page.scss',
+    PageLayoutClientComponent
+],
+  templateUrl: './menu.page.html',
+  styleUrl: './menu.page.scss',
   animations: [fade, fadeScale],
 })
-export class FoodPage {
+export class MenuPage {
   private route = inject(ActivatedRoute);
   private foodService = inject(FoodService);
   private categoryService = inject(CategoryService);
