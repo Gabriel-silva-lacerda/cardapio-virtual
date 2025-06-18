@@ -1,12 +1,19 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { environment } from '@enviroment/environment.development';
 import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
+import { LocalStorageService } from '../localstorage/localstorage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompanyService extends BaseSupabaseService {
+  private localStorageService = inject(LocalStorageService);
+  public companyName = this.localStorageService.getSignal<string>(
+    'companyName',
+    ''
+  );
+
   async checkIfCompanyOrEmailExists(name: string, email: string, unique_url: string): Promise<{ exists: boolean; company?: any; email?: any; unique_url?: any }> {
     const { data: existingRecords, error } = await this.supabaseService.supabase
       .from('companies')

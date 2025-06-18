@@ -33,7 +33,7 @@ export class HeaderComponent {
     },
     {
       label: 'Produtos',
-      href: '/admin/produtos',
+      href: '/app/admin/cadastrar-produto',
       icon: 'fa fa-utensils'
     },
     {

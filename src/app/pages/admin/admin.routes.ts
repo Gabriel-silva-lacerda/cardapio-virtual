@@ -5,10 +5,22 @@ export const adminRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('../../pages/admin/home/home.page').then(
+      import('../admin/home/home-page/home.page').then(
         (m) => m.HomePage
       ),
     canActivate: [AdminGuard],
   },
+  {
+    path: 'cadastrar-produto',
+    loadComponent: () =>
+      import('../admin/register-product/register-product-page/register-product-page').then(
+        (m) => m.RegisterProductPage
+      ),
+    canActivate: [AdminGuard],
+  }
+
 ];
+// adminRoutes.push({
+
+// });
 

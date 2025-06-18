@@ -1,3 +1,5 @@
+import { CompanyService } from '@shared/services/company/company.service';
+import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { Component, inject, Input } from '@angular/core';
 import { iMenuItem } from './menu-list.interface';
 import { RouterLink } from '@angular/router';
@@ -12,6 +14,6 @@ import { SideMenuService } from '../../services/side-menu.service';
 })
 export class MenuListComponent {
   @Input() menuItems: iMenuItem[] = [];
-  @Input() public collapsed = false;
   public sideMenuService = inject(SideMenuService);
+  public companyService = inject(CompanyService);
 }
