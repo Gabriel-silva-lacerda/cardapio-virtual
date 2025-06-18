@@ -28,7 +28,6 @@ export class StripeService extends BaseService {
     )
       .pipe(finalize(() => this.loadingService.hideLoading()))
       .subscribe(async (response) => {
-        console.log(response);
 
         if (response.error) {
           this.toastr.error(response.message, 'Erro');

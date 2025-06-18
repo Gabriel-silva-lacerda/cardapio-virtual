@@ -17,11 +17,7 @@
 
   @if (authService.isAdmin() && !authService.adminMode()) {
     <div
-      class="fixed right-2 z-50 group transition-all duration-300 ease-in-out"
-      [ngClass]="{
-        'bottom-16': !isCartRoute,
-        'bottom-32': isCartRoute
-      }"
+      [class]="adminReturnButtonClass"
     >
     <button
       routerLink="/app/admin"

@@ -18,11 +18,11 @@ import { iExtra } from '@shared/interfaces/extra/extra.interface';
 @Component({
   selector: 'app-food-view',
   imports: [FoodDetailsComponent, FooterFoodComponent, FormsModule],
-  templateUrl: './food-view.page.html',
-  styleUrl: './food-view.page.scss',
+  templateUrl: './menu-item-detail-page.html',
+  styleUrl: './menu-item-detail-page.scss',
   animations: [fade],
 })
-export class FoodViewPage {
+export class MenuItemDetailPage {
   private route = inject(ActivatedRoute);
   private foodService = inject(FoodService);
   private extraService = inject(ExtraService);

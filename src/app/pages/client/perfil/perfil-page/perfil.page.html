@@ -1,4 +1,7 @@
-<div class="flex flex-col h-full" [@fade]>
+
+
+<app-page-layout-client [showHeader]="false">
+  <div class="flex flex-col h-full" [@fade]>
   <div>
     <div class="flex items-center gap-2 shadow-sm py-2 px-3">
       <div class="flex items-center  gap-2 w-[300px]">
@@ -13,11 +16,7 @@
     </div>
     <ul class="flex flex-col">
       <li class="py-4 px-3 border-b border-gray-100">Configurações da conta</li>
-      @if(!authService.isAdmin()) {
-        <li class="py-4 px-3 border-b border-gray-100">Histórico de pedidos</li>
-      } @else {
-        <li class="py-4 px-3 border-b border-gray-100">Dashboard</li>
-      }
+      <li class="py-4 px-3 border-b border-gray-100">Histórico de pedidos</li>
       <li class="py-4 px-3 border-b border-gray-100">Suporte</li>
       @if(authService.isAdmin()) {
         <li class="py-4 px-3 border-b border-gray-100 cursor-pointer" (click)="toggleStripe()">
@@ -44,3 +43,4 @@
     </ul>
   </div>
 </div>
+</app-page-layout-client>

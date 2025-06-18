@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { Company } from '@shared/interfaces/company/company';
 import { CompanyService } from '@shared/services/company/company.service';
@@ -13,7 +14,7 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-perfil',
-  imports: [LoadingComponent],
+  imports: [LoadingComponent, PageLayoutClientComponent],
   templateUrl: './perfil.page.html',
   styleUrl: './perfil.page.scss',
   animations: [fade, expandAnimation],
@@ -43,7 +44,7 @@ export class PerfilPage {
 
   async ngOnInit() {
     this.updateUserInitial();
-    await this.loadCompanyData();
+    this.loadCompanyData();
     if (!this.companyData()?.account_id) return;
     this.checkAccountStatus();
   }

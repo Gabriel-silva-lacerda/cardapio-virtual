@@ -24,7 +24,7 @@ export const ClienteRoutes: Routes = [
           ),
       },
       {
-        path: 'comida/:id',
+        path: 'cardapio/:id',
         loadComponent: () =>
           import('./menu/menu-page/menu.page').then(
             (m) => m.MenuPage
@@ -33,7 +33,7 @@ export const ClienteRoutes: Routes = [
     ],
   },
   {
-    path: 'comidas',
+    path: 'cardapio',
     children: [
       {
         path: '',
@@ -45,15 +45,15 @@ export const ClienteRoutes: Routes = [
       {
         path: 'comida/:id',
         loadComponent: () =>
-          import('../client/food-view/food-view-page/food-view.page.').then(
-            (m) => m.FoodViewPage
+          import('./menu-item-detail/menu-item-detail-page/menu-item-detail-page').then(
+            (m) => m.MenuItemDetailPage
           ),
       },
       {
         path: 'comida/:id/:itemId',
         loadComponent: () =>
-          import('../../pages/client/food-view/food-view-page/food-view.page.').then(
-            (m) => m.FoodViewPage
+          import('./menu-item-detail/menu-item-detail-page/menu-item-detail-page').then(
+            (m) => m.MenuItemDetailPage
           ),
       },
     ],

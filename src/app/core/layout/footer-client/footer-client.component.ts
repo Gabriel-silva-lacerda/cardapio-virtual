@@ -23,51 +23,54 @@ export class FooterClientComponent implements OnInit, OnDestroy {
 
   public authService = inject(AuthService);
   public showItemService = inject(ShowItemService);
-  public links = this.getLinks();
-  public activeLinks: { [key: string]: boolean } = {};
   public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
   public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
+  public links = this.buildLinks();
+  public activeLinks: Record<string, boolean> = {};
 
-  async ngOnInit() {
+  ngOnInit() {
     this.updateActiveLinks();
 
     this.router.events
       .pipe(
-        filter((event) => event instanceof NavigationEnd),
+        filter(event => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
       .subscribe(() => this.updateActiveLinks());
-  }
-
-  private getLinks(): { path: string; label: string }[] {
-    const baseLinks = [
-      { path: '/app', label: 'Home' },
-    ];
-
-    if (this.authService.isLogged()) {
-      baseLinks.push(
-        { path: 'perfil', label: 'Perfil' },
-        { path: 'pedidos', label: 'Pedidos' }
-      );
-    } else {
-      baseLinks.push({ path: '/auth', label: 'Fazer login' });
-    }
-
-    return baseLinks;
-  }
-
-  private updateActiveLinks(): void {
-    const cleanUrl = this.router.url.split('?')[0];
-    this.activeLinks = {};
-
-    this.links.forEach((link) => {
-      const fullPath = link.path.startsWith('/app') ? link.path : `/app/${link.path}`;
-      this.activeLinks[link.path] = cleanUrl === fullPath;
-    });
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  private buildLinks(): { path: string; label: string }[] {
+    const links = [{ path: '/app', label: 'Home' }];
+
+    if (this.authService.isLogged()) {
+      links.push(
+        { path: '/app/perfil', label: 'Perfil' },
+        { path: '/app/pedidos', label: 'Pedidos' }
+      );
+    } else {
+      links.push({ path: '/auth', label: 'Fazer login' });
+    }
+
+    return links;
+  }
+
+  private updateActiveLinks(): void {
+    const cleanUrl = this.router.url.split('?')[0];
+    this.activeLinks = {};
+
+    for (const link of this.links) {
+      const fullPath = link.path.startsWith('/app') ? link.path : `/app/${link.path}`;
+
+      this.activeLinks[link.path] =
+        link.path === '/app'
+          ? cleanUrl === '/app' || cleanUrl.startsWith('/app/cardapio') || cleanUrl.startsWith('/app/categorias')
+          : cleanUrl === fullPath;
+    }
+  }
 }
+

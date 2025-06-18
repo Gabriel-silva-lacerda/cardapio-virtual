@@ -101,7 +101,6 @@ export class AddEditItemDialogComponent implements OnInit {
       padding: '10px',
         onChange: (data: unknown, form: FormGroup) => {
           const categoryId = String(data);
-          console.log(categoryId);
           this.loadSubcategoriesByCategory(categoryId);
         },
     },
@@ -241,7 +240,6 @@ export class AddEditItemDialogComponent implements OnInit {
         'extras'
       ) as any;
       this.extras.set(extras);
-      console.log(extras);
       this.foodFields.find((f) => f.name === 'extras')!.options =
         this.extras().map((e) => ({ label: e.name, value: e.id }));
     } finally {
@@ -288,7 +286,6 @@ export class AddEditItemDialogComponent implements OnInit {
   }
 
   private openDialogEditSubcategories(value: any) {
-    console.log(value)
     const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
       width: '400px',
       data: this.categories,

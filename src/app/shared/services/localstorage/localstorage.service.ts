@@ -54,7 +54,6 @@ export class LocalStorageService {
 
       if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
         localStorage.removeItem(key);
-        console.log(`Token removido: ${key}`);
       }
     }
   }

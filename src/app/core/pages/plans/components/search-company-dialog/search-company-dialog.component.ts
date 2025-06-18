@@ -58,7 +58,6 @@ export class SearchCompanyDialogComponent {
 
       if (reset) {
         this.filteredCompanies.set(newCompanies);
-        console.log('reset', newCompanies);
       } else {
         this.filteredCompanies.set([...this.filteredCompanies(), ...newCompanies]);
       }

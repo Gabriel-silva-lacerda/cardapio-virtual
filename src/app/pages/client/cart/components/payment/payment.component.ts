@@ -163,7 +163,6 @@ export class PaymentComponent {
     const productName = carts.map((item) => item.food.name).join(' + ');
     const amountInCents = this.total * 100;
 
-    console.log(this.changeFor());
     await this.stripeService.createOrderCheckoutSession(
       productName,
       amountInCents,
