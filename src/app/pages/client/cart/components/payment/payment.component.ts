@@ -101,7 +101,6 @@ export class PaymentComponent {
 
   async ngOnInit() {
     const company = await this.companyService.getById<Company>(
-      'companies',
       this.companyId()
     );
 

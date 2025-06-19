@@ -50,7 +50,7 @@ export class PerfilPage {
   }
 
   async loadCompanyData() {
-    this.companyData.set(await this.companyService.getByField<Company>('companies','id',this.companyId()));
+    this.companyData.set(await this.companyService.getByField<Company>('id',this.companyId()));
   }
 
   async logout() {

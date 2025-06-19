@@ -31,6 +31,7 @@ import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcatego
 import { SubcategoryDialogComponent } from '../../categories/components/subcategory-dialog/subcategory-dialog.component';
 import { AddExtraDialogComponent } from '../components/add-extra-dialog/add-extra-dialog.component';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
+import { SubcategoryService } from '../../home/services/subcategory.service';
 
 @Component({
   selector: 'app-food-page',
@@ -59,6 +60,7 @@ export class MenuPage {
   private authService = inject(AuthService);
   private localStorageService = inject(LocalStorageService);
   private companyService = inject(CompanyService);
+  private subcategoryService = inject(SubcategoryService);
 
   public foods = signal<iFood[]>([]);
   public title = signal<string>('');
@@ -109,7 +111,6 @@ export class MenuPage {
 
   private async getCompanyId(): Promise<void> {
     const company = await this.companyService.getById<Company>(
-      'companies',
       this.companyId()
     );
     if (company) {
@@ -135,8 +136,7 @@ export class MenuPage {
 
   async getSubcategoriesByCategoryId(categoryId: string): Promise<void> {
     const subcategories =
-      await this.categoryService.getAllByField<iSubcategory>(
-        'subcategories',
+      await this.subcategoryService.getAllByField<iSubcategory>(
         'category_id',
         categoryId
       );
@@ -178,7 +178,7 @@ export class MenuPage {
               );
 
               const deleted = await this.imageService.deleteImage(imageUrl);
-              const error = await this.foodService.delete('foods', food.id);
+              const error = await this.foodService.delete(food.id);
 
               if (!error && deleted) {
                 this.toastr.success('Item deletado com sucesso!');

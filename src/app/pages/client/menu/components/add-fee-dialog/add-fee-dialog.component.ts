@@ -73,7 +73,7 @@ export class AddFeeDialogComponent {
     try {
       this.loading.set(true);
 
-      await this.companyService.update('companies', this.company.id as string, {
+      await this.companyService.update(this.company.id as string, {
         delivery_fee_per_km: newFee,
       });
     } finally {

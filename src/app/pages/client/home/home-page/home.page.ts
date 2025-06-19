@@ -16,17 +16,16 @@ import { CategoryService } from '../services/category.service';
 import { iCategory } from '../interfaces/category.interface';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
-import { HeaderClientComponent } from '@core/layout/header-client/header-client.component';
 import { SkeletonFoodComponent } from '../../menu/components/skeleton-food/skeleton-food.component';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
+import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 
 @Component({
   selector: 'app-home-page',
   imports: [
     CategoriesComponent,
     FoodMenuComponent,
-    HeaderClientComponent,
     RouterLink,
     SkeletonCategoriesComponent,
     SkeletonFoodComponent,
@@ -41,6 +40,7 @@ import { PageLayoutClientComponent } from '@shared/components/page-layout-client
 })
 export class HomePage implements OnInit {
   private localStorageService = inject(LocalStorageService);
+  private companyCategoryViewService = inject(CompanyCategoryViewService);
 
   public authService = inject(AuthService);
   public foodService = inject(FoodService);
@@ -73,8 +73,7 @@ export class HomePage implements OnInit {
 
       const [foods, categories] = await Promise.all([
         await this.foodService.getAllFoodsGroupedByCategory(this.companyId()),
-        this.categoryService.getAllByField<iCategory>(
-          'company_categories_view',
+        this.companyCategoryViewService.getAllByField<iCategory>(
           'company_id',
           this.companyId()
         ),

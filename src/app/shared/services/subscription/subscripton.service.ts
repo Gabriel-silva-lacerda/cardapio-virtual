@@ -7,6 +7,7 @@ import { Company } from '@shared/interfaces/company/company';
   providedIn: 'root',
 })
 export class SubscriptonService extends BaseSupabaseService {
+  protected override table = 'subscriptions';
   // private emailService = inject(EmailService);
   // validateEmail(email: string): boolean {
   //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

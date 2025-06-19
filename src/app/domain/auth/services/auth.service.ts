@@ -5,14 +5,16 @@ import { Router } from '@angular/router';
 import { Company } from '@shared/interfaces/company/company';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { CompanyService } from '@shared/services/company/company.service';
+import { UserCompanyService } from './user-company.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService extends BaseSupabaseService {
+  protected override table = 'users';
   private router = inject(Router);
   private companyService = inject(CompanyService);
-  private localStorageService = inject(LocalStorageService);
+  private userCompanyService = inject(UserCompanyService)
 
   public currentUser = signal<iUser | null>(null);
   public isLogged = signal<boolean>(false);
@@ -33,7 +35,7 @@ export class AuthService extends BaseSupabaseService {
   }
 
   public async getUser(userId: string) {
-    const user = await this.getById<iUser>('users', userId);
+    const user = await this.getById<iUser>(userId);
     this.currentUser.set(user);
   }
 
@@ -62,7 +64,7 @@ export class AuthService extends BaseSupabaseService {
   }
 
   async getUserRole(userId: string): Promise<any> {
-    return await this.getByField<{ role: string }>('user_companies', 'user_id', userId);
+    return await this.userCompanyService.getByField<{ role: string }>('user_id', userId);
   }
 
   async logout() {

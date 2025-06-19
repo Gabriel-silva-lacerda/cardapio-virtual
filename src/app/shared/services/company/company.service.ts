@@ -8,6 +8,7 @@ import { LocalStorageService } from '../localstorage/localstorage.service';
   providedIn: 'root'
 })
 export class CompanyService extends BaseSupabaseService {
+  protected override table = 'companies';
   private localStorageService = inject(LocalStorageService);
   public companyName = this.localStorageService.getSignal<string>(
     'companyName',

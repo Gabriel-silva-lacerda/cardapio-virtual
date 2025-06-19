@@ -31,6 +31,8 @@ import { ExtraService } from '@shared/services/extra/extra.service';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { SubcategoryDialogComponent } from '../../../categories/components/subcategory-dialog/subcategory-dialog.component';
+import { SubcategoryService } from '../../../home/services/subcategory.service';
+import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -52,6 +54,8 @@ export class AddEditItemDialogComponent implements OnInit {
   private imageService = inject(ImageService);
   private toastr = inject(ToastrService);
   private dialog = inject(MatDialog);
+  private subcategoryService = inject(SubcategoryService);
+  private companyCategoryViewService = inject(CompanyCategoryViewService)
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
   public data = inject(MAT_DIALOG_DATA) as { foodId: number };
@@ -176,8 +180,7 @@ export class AddEditItemDialogComponent implements OnInit {
       this.loading.update((l) => ({ ...l, categories: true }));
 
       this.categories.set(
-        await this.categoryService.getAllByField<iCategory>(
-          'company_categories_view',
+        await this.companyCategoryViewService.getAllByField<iCategory>(
           'company_id',
           this.companyId()
         )
@@ -199,7 +202,6 @@ export class AddEditItemDialogComponent implements OnInit {
       this.loadingService.showLoading();
 
       const foodData = await this.foodService.getById<iFood>(
-        'foods',
         foodId.toString()
       );
       this.imageUrl = foodData?.image_url || null;
@@ -236,9 +238,7 @@ export class AddEditItemDialogComponent implements OnInit {
     try {
       this.loading.update((l) => ({ ...l, extras: true }));
 
-      const extras = await this.extraService.getAll(
-        'extras'
-      ) as any;
+      const extras = await this.extraService.getAll() as any;
       this.extras.set(extras);
       this.foodFields.find((f) => f.name === 'extras')!.options =
         this.extras().map((e) => ({ label: e.name, value: e.id }));
@@ -251,10 +251,10 @@ export class AddEditItemDialogComponent implements OnInit {
     try {
       this.loading.update((l) => ({ ...l, subcategories: true }));
 
-      const subcategories = await this.categoryService.getAllByField<{
+      const subcategories = await this.subcategoryService.getAllByField<{
         id: string;
         name: string;
-      }>('subcategories', 'category_id', categoryId);
+      }>('category_id', categoryId);
 
       const subcategoryField = this.foodFields.find(
         (f) => f.name === 'subcategory_id'

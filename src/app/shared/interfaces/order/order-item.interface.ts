@@ -1,5 +1,5 @@
 export interface iOrderItem {
-  id: number;
+  id?: number;
   order_id: number,
   food_id: number,
   quantity: number,

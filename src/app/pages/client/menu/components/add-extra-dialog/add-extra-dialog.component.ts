@@ -45,7 +45,7 @@ export class AddExtraDialogComponent {
   }
 
   private async loadExistingExtras() {
-    this.existingExtras = await this.extraService.getAll<iExtra>('extras');
+    this.existingExtras = await this.extraService.getAll<iExtra>();
   }
 
   private setSelectExtraFields() {
@@ -119,7 +119,7 @@ export class AddExtraDialogComponent {
 
     const { name, price } = this.dynamicForm.form.value;
 
-    const extraData = await this.extraService.insert<iExtra>('extras', { name, price });
+    const extraData = await this.extraService.insert<iExtra>({ name, price });
 
     if (extraData) {
       this.toastr.success('Extra adicionado com sucesso!');

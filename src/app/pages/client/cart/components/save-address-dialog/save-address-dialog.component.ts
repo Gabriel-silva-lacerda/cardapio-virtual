@@ -31,7 +31,6 @@ export class SaveAddressDialogComponent {
 
   async ngOnInit() {
     const defaultAddress = await this.orderService.getByField<DeliveryAddress>(
-      'delivery_addresses',
       'is_default',
       true
     );
@@ -57,7 +56,6 @@ export class SaveAddressDialogComponent {
 
       const allAddresses =
         await this.orderService.getAllByField<DeliveryAddress>(
-          'delivery_addresses',
           'user_id',
           address.user_id
         );
@@ -66,7 +64,6 @@ export class SaveAddressDialogComponent {
         .filter((a) => a.id !== address.id && a.is_default)
         .map((a) =>
           this.orderService.update<DeliveryAddress>(
-            'delivery_addresses',
             a.id,
             {
               is_default: false,
@@ -77,7 +74,6 @@ export class SaveAddressDialogComponent {
       await Promise.all(updatePromises);
 
       await this.orderService.update<DeliveryAddress>(
-        'delivery_addresses',
         address.id,
         { is_default: true }
       );

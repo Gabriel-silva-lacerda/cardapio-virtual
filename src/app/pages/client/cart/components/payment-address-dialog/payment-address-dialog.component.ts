@@ -35,6 +35,7 @@ import { DeliveryAddress } from '../../interfaces/address';
 import { SkeletonCardComponent } from '../skeleton-card/skeleton-card.component';
 import { SkeletonButtonComponent } from '../skeleton-button/skeleton-button.component';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
+import { DeliveryAddressService } from '@shared/services/order/delivery-address.service';
 
 @Component({
   selector: 'app-payment-address-dialog',
@@ -63,6 +64,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   private dialog = inject(MatDialog);
   private dialogRef = inject(MatDialogRef<PaymentAddressDialogComponent>);
   private viaCepService = inject(ViacepService);
+  private deliveryAddressService = inject(DeliveryAddressService)
 
   public data = inject<iCartItem[]>(MAT_DIALOG_DATA);
   public selectedDelivery = signal(true);
@@ -162,8 +164,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   private async loadSelectedAddressFromDatabase(): Promise<void> {
     this.loading.update((l) => ({ ...l, selectedAddressFromDatabase: true }));
     try {
-      const selected = await this.orderService.getByField<DeliveryAddress>(
-        'delivery_addresses',
+      const selected = await this.deliveryAddressService.getByField<DeliveryAddress>(
         'is_default',
         true
       );
@@ -180,8 +181,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   }
 
   async getDeliveryAddressSaved() {
-    const deliveryAddressSaved = await this.orderService.getAllByField(
-      'delivery_addresses',
+    const deliveryAddressSaved = await this.deliveryAddressService.getAllByField(
       'user_id',
       this.authService.currentUser()?.id as string
     );
@@ -303,8 +303,8 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
           this.loading.update((l) => ({ ...l, insertDelivery: true }));
 
           this.selectedAddress.set(
-            await this.orderService.insert(
-              'delivery_addresses',
+            await this.deliveryAddressService.insert(
+
               deliveryAddresses
             )
           );

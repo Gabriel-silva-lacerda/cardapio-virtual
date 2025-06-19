@@ -12,6 +12,7 @@ import { ErrorHandlerService } from '@shared/services/error-handler/error-handle
 import { fade, fadeIn } from '@shared/utils/animations.utils';
 import { AuthService } from '../../services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { UserCompanyService } from '../../services/user-company.service';
 
 @Component({
   selector: 'app-login',
@@ -31,6 +32,7 @@ export class LoginPage {
   private toastrService = inject(ToastrService);
   private errorHandler = inject(ErrorHandlerService);
   private authService = inject(AuthService);
+  private userCompanyService = inject(UserCompanyService)
 
   public isEmailConfirmed = signal(true);
   public loading = signal(false);
@@ -75,7 +77,6 @@ export class LoginPage {
     }
 
     const company = await this.companyService.getByField<any>(
-      'companies',
       'unique_url',
       companyName
     );
@@ -123,8 +124,7 @@ export class LoginPage {
 
     const userId = userData.user.id;
 
-    const userCompany = await this.companyService.getByField<any>(
-      'user_companies',
+    const userCompany = await this.userCompanyService.getByField<any>(
       'user_id',
       userId
     );

@@ -1,15 +1,20 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
 import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
+import { FoodExtrasService } from './food-extras.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FoodService extends BaseSupabaseService {
+  protected override table = 'foods';
+
+  private foodExtrasService = inject(FoodExtrasService)
+
   public selectedAdditions = signal<{ [key: string]: iExtra }>({});
   public observations = signal<string>('');
   public productCount = signal<number>(1);
@@ -110,7 +115,7 @@ export class FoodService extends BaseSupabaseService {
   }
 
   async getFoodById(id: string): Promise<iFood | null> {
-    const food = await this.getById<iFood>('foods', id);
+    const food = await this.getById<iFood>(id);
 
     if (!food) return null;
 
@@ -124,7 +129,7 @@ export class FoodService extends BaseSupabaseService {
     foodData: iFood,
     extraIds: number[]
   ): Promise<iFood> {
-    const food = await this.insert<iFood>('foods', foodData);
+    const food = await this.insert<iFood>(foodData);
 
     if (extraIds.length > 0) {
       const foodExtras = extraIds.map((extraId) => ({
@@ -132,7 +137,7 @@ export class FoodService extends BaseSupabaseService {
         extra_id: extraId,
       }));
 
-      await this.insert('food_extras', foodExtras, { wrapInArray: false });
+      await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
     }
 
     return food;
@@ -143,9 +148,9 @@ export class FoodService extends BaseSupabaseService {
     foodData: iFood,
     extraIds: number[]
   ): Promise<void> {
-    await this.update<iFood>('foods', foodId, foodData);
+    await this.update<iFood>(foodId, foodData);
 
-    await this.deleteByFilter('food_extras', { food_id: foodId });
+    await this.foodExtrasService.deleteByFilter({ food_id: foodId });
 
     if (extraIds.length > 0) {
       const foodExtras = extraIds.map((extraId) => ({
@@ -153,7 +158,7 @@ export class FoodService extends BaseSupabaseService {
         extra_id: extraId,
       }));
 
-      await this.insert('food_extras', foodExtras, { wrapInArray: false });
+      await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
     }
   }
 

@@ -1,3 +1,4 @@
+import { Company } from '@shared/interfaces/company/company';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import {
   Component,
@@ -18,6 +19,8 @@ import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-d
 import { MatDialog } from '@angular/material/dialog';
 import { FoodService } from '@shared/services/food/food.service';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
+import { CompanyCategoryService } from '@shared/services/company/company-category.service';
+import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 
 @Component({
   selector: 'app-categories',
@@ -36,6 +39,9 @@ export class CategoriesComponent {
   private authService = inject(AuthService);
   private toastr = inject(ToastrService);
   private dialog = inject(MatDialog);
+  private companyCategoryService = inject(CompanyCategoryService);
+  private companyCategoryViewService = inject(CompanyCategoryViewService);
+
   public loading = signal({
     getCategories: false,
     setCategories: false,
@@ -63,7 +69,7 @@ export class CategoriesComponent {
         category_id: categoryId,
       };
 
-      await this.categoryService.insert('company_categories', data);
+      await this.companyCategoryService.insert(data);
 
       this.isCategoryAssociatedMap[categoryId] = true;
 
@@ -99,7 +105,7 @@ export class CategoriesComponent {
               return;
             }
 
-            await this.categoryService.deleteByFilter('company_categories', {
+            await this.companyCategoryService.deleteByFilter({
               company_id: this.companyId(),
               category_id: categoryId,
             });
@@ -120,8 +126,7 @@ export class CategoriesComponent {
     this.loading.update((l) => ({ ...l, getCategories: true }));
 
     try {
-      const categories = await this.categoryService.getAllByField<iCategory>(
-        'company_categories_view',
+      const categories = await this.companyCategoryViewService.getAllByField<iCategory>(
         'company_id',
         this.companyId()
       );

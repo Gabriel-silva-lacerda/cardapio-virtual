@@ -38,9 +38,7 @@ export class CategoriesPage implements OnInit {
     this.loading.set(true);
 
     try {
-      const categories = await this.categoryService.getAll<iCategory>(
-        'categories'
-      );
+      const categories = await this.categoryService.getAll<iCategory>();
       this.categories.set(categories);
     } finally {
       this.loading.set(false);

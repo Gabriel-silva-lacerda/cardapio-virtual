@@ -1,5 +1,5 @@
 export interface iOrderItemExtra {
-  id: number
+  id?: number
   item_id: number,
   extra_id: number,
   extra_quantity: number,

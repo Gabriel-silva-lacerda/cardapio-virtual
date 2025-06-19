@@ -31,7 +31,7 @@ export class PlansPage implements OnInit {
   }
 
   async ngOnInit() {
-    const plans = await this.plansService.getAll<Plans>('plans');
+    const plans = await this.plansService.getAll<Plans>();
     this.plans.set(plans);
   }
 

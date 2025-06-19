@@ -6,6 +6,7 @@ import { OrderService } from '@shared/services/order/order.service';
 import { PaymentToken } from '@shared/interfaces/order/payment-token';
 import { ePurpose } from '@shared/enums/purpose.enum';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { PaymentTokenService } from '@shared/services/order/payment-token.service';
 
 @Component({
   selector: 'app-successful-payment',
@@ -18,6 +19,7 @@ export class SuccessfulPaymentPage implements OnInit {
   private localStorageService = inject(LocalStorageService);
   private authService = inject(AuthService);
   private orderService = inject(OrderService);
+  private paymentTokenService = inject(PaymentTokenService)
 
   ngOnInit() {
     const userId = this.authService.currentUser()?.id;
@@ -32,8 +34,7 @@ export class SuccessfulPaymentPage implements OnInit {
 
   private async checkPaymentToken(userId: string) {
     try {
-      const tokens = await this.orderService.getAllByField<PaymentToken>(
-        'payment_tokens',
+      const tokens = await this.paymentTokenService.getAllByField<PaymentToken>(
         'user_id',
         userId
       );
@@ -52,8 +53,7 @@ export class SuccessfulPaymentPage implements OnInit {
         return;
       }
 
-      await this.orderService.update<PaymentToken>(
-        'payment_tokens',
+      await this.paymentTokenService.update<PaymentToken>(
         validToken.id,
         {
           used: true,

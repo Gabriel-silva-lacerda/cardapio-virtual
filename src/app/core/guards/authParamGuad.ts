@@ -30,7 +30,6 @@ export class AuthParamGuard implements CanActivate {
 
     try {
       const company = await this.companyService.getByField<Company>(
-        'companies',
         'unique_url',
         empresa,
         'id'

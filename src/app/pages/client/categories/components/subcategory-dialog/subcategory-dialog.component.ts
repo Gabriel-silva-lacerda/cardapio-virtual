@@ -5,9 +5,8 @@ import {
   OnInit,
   signal,
   ViewChild,
-  WritableSignal,
 } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
@@ -15,6 +14,7 @@ import { iCategory } from 'src/app/pages/client/home/interfaces/category.interfa
 import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { Validators } from '@angular/forms';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { SubcategoryService } from '../../../home/services/subcategory.service';
 
 @Component({
   selector: 'app-subcategory-dialog',
@@ -27,6 +27,7 @@ export class SubcategoryDialogComponent implements OnInit{
 
   private dialogRef = inject(MatDialogRef<SubcategoryDialogComponent>);
   private categoryService = inject(CategoryService);
+  private subcategoryService = inject(SubcategoryService);
   private localStorageService = inject(LocalStorageService);
   private toastr = inject(ToastrService);
 
@@ -56,7 +57,7 @@ export class SubcategoryDialogComponent implements OnInit{
   ];
 
   async ngOnInit() {
-    this.categories.set(await this.categoryService.getAll('categories'));
+    this.categories.set(await this.categoryService.getAll());
     const categoryField = this.subcategoryFields.find(f => f.name === 'category_id');
     if (categoryField) {
       categoryField.options = this.categories().map(c => ({
@@ -76,7 +77,7 @@ export class SubcategoryDialogComponent implements OnInit{
 
     try {
       this.loading.set(true);
-      const value = await this.categoryService.insert('subcategories', {
+      const value = await this.subcategoryService.insert({
         name,
         category_id,
         company_id: this.companyId(),

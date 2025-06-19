@@ -8,77 +8,72 @@ import { InsertOptions } from '@shared/interfaces/insert-options/insert-options'
   providedIn: 'root',
 })
 export abstract class BaseSupabaseService {
+  protected abstract table: string;
+
   public loadingService = inject(LoadingService);
   public toastr = inject(ToastrService);
   public supabaseService = inject(SupabaseService);
 
-  async getAll<T>(table: string, selectFields: string = '*'): Promise<T[]> {
+  async getAll<T>(selectFields: string = '*'): Promise<T[]> {
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .select(selectFields);
 
     if (error) {
-      this.throwHandledError(error, `Erro ao buscar registros da tabela ${table}.`);
+      this.throwHandledError(error, `Erro ao buscar registros da tabela ${this.table}.`);
     }
     return data as T[];
   }
 
-  async getById<T>(
-    table: string,
-    id: number | string | null,
-    selectFields: string = '*'
-  ): Promise<T | null> {
+  async getById<T>(id: number | string | null, selectFields: string = '*'): Promise<T | null> {
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .select(selectFields)
       .eq('id', id)
       .single();
 
     if (error) {
-      this.throwHandledError(error,`Erro ao buscar item na tabela ${table} com ID ${id}.`);
+      this.throwHandledError(error, `Erro ao buscar item na tabela ${this.table} com ID ${id}.`);
     }
     return data as T;
   }
 
   async getAllByField<T>(
-    table: string,
     field: string,
     value: string | number | number[],
     selectFields: string = '*'
   ): Promise<T[]> {
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .select(selectFields)
       .eq(field, value);
 
     if (error) {
-      this.throwHandledError(error, `Erro ao buscar registros na tabela ${table} com ${field} = ${value}.`);
+      this.throwHandledError(error, `Erro ao buscar registros na tabela ${this.table} com ${field} = ${value}.`);
     }
 
     return data as T[];
   }
 
   async getByField<T>(
-    table: string,
     field: string,
     value: string | number | boolean,
     selectFields: string = '*'
   ): Promise<T> {
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .select(selectFields)
       .eq(field, value)
       .single();
 
     if (error) {
-      this.throwHandledError(error, `Erro ao buscar registro na tabela ${table}.`);
+      this.throwHandledError(error, `Erro ao buscar registro na tabela ${this.table}.`);
     }
 
     return data as T;
   }
 
   async getAllByFieldIn<T>(
-    table: string,
     field: string,
     values: number[] | string[],
     selectFields: string = '*'
@@ -88,34 +83,31 @@ export abstract class BaseSupabaseService {
     }
 
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .select(selectFields)
       .in(field, values);
 
     if (error) {
-      this.throwHandledError(error, `Erro ao buscar registros na tabela ${table} onde ${field} está em [${values.join(
-          ', '
-        )}]:`);
+      this.throwHandledError(error, `Erro ao buscar registros na tabela ${this.table} onde ${field} está em [${values.join(', ')}].`);
     }
 
     return data as T[];
   }
 
   async insert<T>(
-    table: string,
     item: Partial<T>,
     options: InsertOptions = {}
   ): Promise<T> {
     const { wrapInArray = true } = options;
 
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .insert(wrapInArray ? [item] : item)
       .select()
       .single();
 
     if (error) {
-      this.handleError(error, `Erro ao inserir na tabela ${table}.`);
+      this.handleError(error, `Erro ao inserir na tabela ${this.table}.`);
       throw new Error(error.message);
     }
 
@@ -123,49 +115,47 @@ export abstract class BaseSupabaseService {
   }
 
   async update<T>(
-    table: string,
     id: number | string,
     updates: Partial<T>
   ): Promise<T> {
     const { data, error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .update(updates)
       .eq('id', id)
       .single();
     if (error) {
-      this.handleError(error, `Erro ao atualizar o item ${id} na tabela ${table}.`);
+      this.handleError(error, `Erro ao atualizar o item ${id} na tabela ${this.table}.`);
       throw new Error(error.message);
     }
     return data as T;
   }
 
-  async delete(table: string, id: number | string): Promise<null> {
+  async delete(id: number | string): Promise<null> {
     const { error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .delete()
       .eq('id', id);
 
     if (error) {
-      this.handleError(error, `Erro ao excluir o item ${id} na tabela ${table}.`);
+      this.handleError(error, `Erro ao excluir o item ${id} na tabela ${this.table}.`);
       throw new Error(error.message);
     }
 
     return error;
   }
 
-  async deleteByFilter(
-    table: string,
-    filter: Record<string, any>
-  ): Promise<void> {
+  async deleteByFilter(filter: Record<string, any>): Promise<void> {
     const { error } = await this.supabaseService.supabase
-      .from(table)
+      .from(this.table)
       .delete()
       .match(filter);
 
     if (error) {
-      this.throwHandledError(error, `Erro ao excluir o item na tabela ${table}.`);
+      this.throwHandledError(error, `Erro ao excluir o item na tabela ${this.table}.`);
     }
   }
+
+  // ==== Tratamento de Erros ====
 
   private throwHandledError(error: any, defaultMessage: string): never {
     this.handleError(error, defaultMessage);

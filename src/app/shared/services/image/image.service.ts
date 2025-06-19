@@ -6,6 +6,8 @@ import { BaseSupabaseService } from '@shared/services/base/base-supabase.service
   providedIn: 'root'
 })
 export class ImageService extends BaseSupabaseService {
+  protected override table = 'images';
+
   async uploadImage(file: File, path: string): Promise<string | null> {
     const { data, error } = await this.supabaseService.supabase.storage.from('images').upload(path, file, { upsert: true });
     if (error) {
