@@ -25,7 +25,7 @@ import { UserCompanyService } from '../../services/user-company.service';
 export class LoginPage {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
 
-  private companyService = inject(CompanyService);
+  public companyService = inject(CompanyService);
   private localStorageService = inject(LocalStorageService);
   private supabase = injectSupabase();
   private router = inject(Router);
@@ -36,11 +36,6 @@ export class LoginPage {
 
   public isEmailConfirmed = signal(true);
   public loading = signal(false);
-
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
   public loginFields: iDynamicField[] = [
     {
       name: 'email',
@@ -67,7 +62,7 @@ export class LoginPage {
     }
 
     const { email, password } = this.dynamicForm.form.value;
-    const companyName = this.companyName();
+    const companyName = this.companyService.companyName();
 
     if (!companyName) {
       this.toastrService.error('Empresa não informada.', 'Erro');
@@ -151,7 +146,7 @@ export class LoginPage {
     if (firstLogin) {
       this.router.navigate(['/auth/reset-password']);
     } else {
-      this.router.navigate(['/app'], { queryParams: { empresa: companyName } });
+      this.router.navigate(['/app', companyName]);
     }
   }
 
@@ -183,8 +178,6 @@ export class LoginPage {
 
   public viewMenu() {
     this.authService.isAdmin.set(false);
-    this.router.navigate(['/app'], {
-      queryParams: { empresa: this.companyName() },
-    });
+    this.router.navigate(['/app', this.companyService.companyName()]);
   }
 }

@@ -8,6 +8,7 @@ import { ShowItemService } from '@shared/services/show-item/show-item.service';
 import { fadeInOut } from '@shared/utils/animations.utils';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../../domain/auth/services/auth.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-footer-client',
@@ -20,10 +21,11 @@ export class FooterClientComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private localStorageService = inject(LocalStorageService);
   private destroy$ = new Subject<void>();
+  private companyService = inject(CompanyService);
 
   public authService = inject(AuthService);
   public showItemService = inject(ShowItemService);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+
   public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
   public links = this.buildLinks();
   public activeLinks: Record<string, boolean> = {};
@@ -45,12 +47,12 @@ export class FooterClientComponent implements OnInit, OnDestroy {
   }
 
   private buildLinks(): { path: string; label: string }[] {
-    const links = [{ path: '/app', label: 'Home' }];
+    const links = [{ path: `/app/${this.companyService.companyName()}`, label: 'Home' }];
 
     if (this.authService.isLogged()) {
       links.push(
-        { path: '/app/perfil', label: 'Perfil' },
-        { path: '/app/pedidos', label: 'Pedidos' }
+        { path: `/app/${this.companyService.companyName()}/perfil`, label: 'Perfil' },
+        { path: `/app/${this.companyService.companyName()}/pedidos`, label: 'Pedidos' }
       );
     } else {
       links.push({ path: '/auth', label: 'Fazer login' });
@@ -60,17 +62,32 @@ export class FooterClientComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveLinks(): void {
-    const cleanUrl = this.router.url.split('?')[0];
+    const currentUrl = this.router.url.split('?')[0];
+    const normalizedCurrentUrl = this.normalizeUrl(currentUrl);
     this.activeLinks = {};
 
     for (const link of this.links) {
-      const fullPath = link.path.startsWith('/app') ? link.path : `/app/${link.path}`;
+      const normalizedLink = this.normalizeUrl(link.path);
 
-      this.activeLinks[link.path] =
-        link.path === '/app'
-          ? cleanUrl === '/app' || cleanUrl.startsWith('/app/cardapio') || cleanUrl.startsWith('/app/categorias')
-          : cleanUrl === fullPath;
+      this.activeLinks[link.path] = normalizedCurrentUrl === normalizedLink;
+
+      if (normalizedLink === '/app') {
+        this.activeLinks[link.path] ||= [
+          '/app/cardapio',
+          '/app/categorias'
+        ].some(prefix => normalizedCurrentUrl.startsWith(prefix));
+      }
     }
+
+    console.log(this.activeLinks);
+  }
+
+  private normalizeUrl(url: string): string {
+    const segments = url.split('/').filter(Boolean)
+    if (segments[0] === 'app') {
+      segments.splice(1, 1);
+    }
+    return '/' + segments.join('/');
   }
 }
 

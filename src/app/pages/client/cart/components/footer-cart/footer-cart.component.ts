@@ -45,9 +45,7 @@ export class FooterCartComponent implements OnInit {
         }
       });
     } else {
-      this.router.navigate(['/auth'], {
-        queryParams: { empresa: this.companyName() },
-      });
+      this.router.navigate(['/auth', this.companyName()]);
     }
   }
 }

@@ -14,6 +14,8 @@ export class CompanyService extends BaseSupabaseService {
     'companyName',
     ''
   );
+  public companyId = this.localStorageService.getSignal('companyId', '0');
+
 
   async checkIfCompanyOrEmailExists(name: string, email: string, unique_url: string): Promise<{ exists: boolean; company?: any; email?: any; unique_url?: any }> {
     const { data: existingRecords, error } = await this.supabaseService.supabase

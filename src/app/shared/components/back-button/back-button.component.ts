@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 
 @Component({
@@ -16,12 +17,10 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 })
 export class BackButtonComponent {
   @Input() customClass = '';
-  
+
   private router = inject(Router);
   private location = inject(Location);
-  private localStorageService = inject(LocalStorageService);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
-
+  private companyService = inject(CompanyService);
 
   goBack() {
     const currentUrl = this.router.url;
@@ -29,7 +28,7 @@ export class BackButtonComponent {
 
     setTimeout(() => {
       if (this.router.url === currentUrl) {
-        this.router.navigate(['/app'], { queryParams: { empresa: this.companyName() } });
+        this.router.navigate(['/app', this.companyService.companyName()]);
       }
     }, 100);
   }

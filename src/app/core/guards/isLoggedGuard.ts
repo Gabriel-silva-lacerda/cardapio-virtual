@@ -10,7 +10,7 @@ export const IsLoggedGuard: CanActivateFn = () => {
   const companyName = localStorageService.getSignal<string>('companyName', '[]');
 
   if (authService.isLogged()) {
-    router.navigate(['/app'], { queryParams: { empresa: companyName() } });
+    router.navigate(['/app', companyName()]);
     return false;
   }
 

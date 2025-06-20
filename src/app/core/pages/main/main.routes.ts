@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export const mainRoutes: Routes = [
   {
-    path: '',
+    path: ':companyName',
     loadChildren: () =>
       import('../../../pages/client/client.routes').then((m) => m.ClienteRoutes),
     canActivate: [],

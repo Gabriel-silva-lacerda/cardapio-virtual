@@ -14,7 +14,7 @@ export const routes: Routes = [
       import('./core/pages/plans/plans.routes').then((m) => m.plansRoutes),
   },
   {
-    path: 'auth',
+    path: 'auth/:companyName',
     loadComponent: () =>
       import('./core/layout/auth/auth.component').then((m) => m.AuthComponent),
     canActivate: [AuthParamGuard],
@@ -37,7 +37,7 @@ export const routes: Routes = [
     path: 'app',
     loadComponent: () =>
       import('./core/pages/main/main.component').then((m) => m.MainComponent),
-    canActivate: [AuthParamGuard],
+    canActivate: [],
     children: [
       {
         path: '',

@@ -2,8 +2,7 @@
   @for (item of menuItems; track $index) {
     @if(!item.isButton) {
       <a
-        [routerLink]="item.href"
-        [queryParams]="{ empresa: companyService.companyName() }"
+        [routerLink]="[item.href]"
         class="flex items-center gap-3 px-4 py-2 w-full text-base font-medium transition
           hover:bg-primary/10 hover:text-primary group text-gray-700"
           [ngClass]="{ 'text-primary': item.active, 'text-gray-400': !item.active }"

@@ -7,6 +7,7 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { ToastrService } from 'ngx-toastr';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -20,7 +21,7 @@ export class ForgotPasswordComponent {
 
   private supabase = injectSupabase();
   private toastr = inject(ToastrService);
-  private localStorageService = inject(LocalStorageService);
+  public companyService = inject(CompanyService);
 
   public loading = signal(false);
   public forgotFields: iDynamicField[] = [
@@ -32,10 +33,6 @@ export class ForgotPasswordComponent {
     },
   ];
 
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
 
   public async submit() {
     this.loading.set(true);

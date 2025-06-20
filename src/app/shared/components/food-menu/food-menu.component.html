@@ -4,10 +4,9 @@
     [ngClass]="{ ' h-[8.4rem]': cartItem?.id, 'mb-3': !showItem || !isAdmin() }"
     [routerLink]="
       cartItem?.id
-        ? ['/app/cardapio/comida', foodDetails?.id, cartItem?.id]
-        : ['/app/cardapio/comida', foodDetails?.id]
+        ? ['/app', companyName(), 'cardapio', 'comida', foodDetails?.id, cartItem?.id]
+        : ['/app', companyName(), 'cardapio', 'comida', foodDetails?.id]
     "
-    [queryParams]="{ empresa: companyName() }"
   >
     <img
       class="w-24 h-full object-cover border border-l rounded-md"

@@ -51,6 +51,6 @@ export class ResetPasswordComponent {
 
     this.dynamicForm.form.reset();
     this.toastr.success('Senha atualizada com sucesso!', 'Sucesso!');
-    this.router.navigate(['/auth'], { queryParams: { empresa: this.companyName() } });
+    this.router.navigate(['/auth', this.companyName()]);
   }
 }

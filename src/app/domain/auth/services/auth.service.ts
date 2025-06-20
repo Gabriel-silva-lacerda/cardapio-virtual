@@ -74,9 +74,7 @@ export class AuthService extends BaseSupabaseService {
       this.isLogged.set(false);
     }
 
-    this.router.navigate(['/auth'], {
-      queryParams: { empresa: this.companyService.companyName() },
-    });
+    this.router.navigate(['/auth', this.companyService.companyName()]);
   }
 
   setAdminMode(value: boolean) {

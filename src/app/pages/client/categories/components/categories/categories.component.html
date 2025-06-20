@@ -1,7 +1,6 @@
 <li class="list-none">
   <div
-    [routerLink]="['/app/categorias/cardapio', category.id]"
-    [queryParams]="{ empresa: companyName() }"
+    [routerLink]="['/app', companyName(), 'categorias', 'cardapio', category.id]"
     class=" {{
       customClass
     }}  border cursor-pointer rounded-md bg-white-light shadow-sm flex flex-col items-center gap-2 hover:shadow-md hover:border-red-300 transition-all"

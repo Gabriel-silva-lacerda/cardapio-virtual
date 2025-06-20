@@ -127,8 +127,10 @@ export class FooterFoodComponent implements OnInit, OnChanges {
       positionClass: 'toast-top-left',
     });
 
-    this.router.navigate([this.newItem ? '/app' : '/app/cart'], {
-      queryParams: { empresa: this.companyName() },
-    });
+    const targetRoute = this.newItem
+      ? ['/app', this.companyName()]
+      : ['/app', this.companyName(), 'cart'];
+
+    this.router.navigate(targetRoute);
   }
 }

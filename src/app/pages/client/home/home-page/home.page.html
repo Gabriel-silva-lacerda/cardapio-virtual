@@ -5,7 +5,7 @@
     } @else {
     <div class="flex justify-between items-center mb-2">
       <span class="text-gray-500 text-xl block">Categorias</span>
-      <a class="text-gray-500 py-2 text-text4" routerLink="categorias" [queryParams]="{ empresa: companyName() }">Ver
+      <a class="text-gray-500 py-2 text-text4" routerLink="categorias">Ver
         mais +</a>
     </div>
     <ul class="flex gap-4 overflow-auto">
@@ -23,7 +23,7 @@
 
     <div class="flex justify-between items-center mt-2 px-3">
       <span class="text-gray-500 text-xl block my-2">Cardápio</span>
-      <a class="text-gray-500 py-2 text-text4" routerLink="cardapio" [queryParams]="{ empresa: companyName() }">Ver mais
+      <a class="text-gray-500 py-2 text-text4" routerLink="cardapio">Ver mais
         +</a>
     </div>
     @if(subcategories.length > 0) {

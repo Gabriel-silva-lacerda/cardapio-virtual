@@ -27,10 +27,6 @@ export class PerfilPage {
   private companyService = inject(CompanyService);
   private toastr = inject(ToastrService);
   private companyData = signal<Company>({} as Company);
-  private companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
   private destroy$ = new Subject<void>();
   private companyId = this.localStorageService.getSignal('companyId', 0);
 
@@ -60,9 +56,7 @@ export class PerfilPage {
       this.authService.isLogged.set(false);
     }
 
-    this.router.navigate(['/auth'], {
-      queryParams: { empresa: this.companyName() },
-    });
+    this.router.navigate(['/auth']);
   }
 
   toggleStripe() {

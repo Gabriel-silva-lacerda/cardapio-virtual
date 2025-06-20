@@ -31,16 +31,14 @@ export class ShowItemService {
     this.showFooterSignal.set(this.shouldShowFooter(cleanUrl));
   }
 
+
   private getCleanUrl(url: string): string {
     const urlWithoutParams = url.split('?')[0].split('#')[0];
     const segments = urlWithoutParams.split('/').filter((segment) => segment);
-    const lastSegment = segments[segments.length - 1];
 
-    if (lastSegment && !isNaN(Number(lastSegment))) {
-      segments.pop();
-    }
+    if (segments[0] === 'app') segments.splice(1, 1);
 
-    return `/${segments.join('/')}`;
+    return '/' + segments.join('/');
   }
 
   private shouldShowCart(url: string): boolean {

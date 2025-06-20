@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { SideMenuComponent } from '@shared/components/side-menu/side-menu.component';
 import { AuthService } from '../../../domain/auth/services/auth.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-header-admin',
@@ -9,36 +10,37 @@ import { AuthService } from '../../../domain/auth/services/auth.service';
   styleUrl: './header-admin.component.scss'
 })
 export class HeaderAdminComponent {
+  private companyService = inject(CompanyService);
   public authService = inject(AuthService);
   public menuItems = [
     {
       label: 'Home',
-      href: '/app/admin',
+      href: `/app/admin/${this.companyService.companyName()}`,
       icon: 'fa fa-home'
     },
     {
       label: 'Perfil',
-      href: '/admin/perfil',
+      href: `/admin/${this.companyService.companyName()}/perfil`,
       icon: 'fa fa-user'
     },
     {
       label: 'Dashboard',
-      href: '/admin/dashboard',
+      href: `/admin/${this.companyService.companyName()}/dashboard`,
       icon: 'fa fa-chart-bar'
     },
     {
       label: 'Pedidos',
-      href: '/admin/pedidos',
+      href: `/admin/${this.companyService.companyName()}/pedidos`,
       icon: 'fa fa-shopping-cart'
     },
     {
       label: 'Produtos',
-      href: '/app/admin/cadastrar-produto',
+      href: `/app/admin/${this.companyService.companyName()}/cadastrar-produto`,
       icon: 'fa fa-utensils'
     },
     {
       label: 'Subcategorias',
-      href: '/admin/subcategorias',
+      href: `/admin/${this.companyService.companyName()}/subcategorias`,
       icon: 'fa fa-th-large'
     },
     {

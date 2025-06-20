@@ -77,8 +77,8 @@ export class SearchCompanyDialogComponent {
     }
   }
 
-  goToCompany(uniqueUrl: string | undefined) {
-    this.router.navigate(['/auth'], { queryParams: { empresa: uniqueUrl } });
+  goToCompany(companyName: string | undefined) {
+    this.router.navigate(['/auth', companyName]);
     this.dialogRef.close();
   }
 

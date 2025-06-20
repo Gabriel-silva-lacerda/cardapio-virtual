@@ -19,9 +19,11 @@ export class AuthComponent  {
   public companyName: string = '';
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const paramCompanyName = params['empresa'];
-      this.companyName = paramCompanyName?.charAt(0).toUpperCase() + paramCompanyName?.slice(1).toLowerCase();
-    });
+   this.route.paramMap.subscribe((params) => {
+      const slug = params.get('companyName');
+      this.companyName = slug
+        ? slug.charAt(0).toUpperCase() + slug.slice(1).toLowerCase()
+        : '';
+  });
   }
 }

@@ -43,10 +43,9 @@ export class MainComponent implements OnInit {
   private redirectIfRootAppRoute(): void {
     if (!this.isCurrentUrlRootAppRoute()) return;
 
-    const queryParams = { empresa: this.companyService.companyName() };
     const targetRoute = this.getInitialRedirectRoute();
 
-    this.router.navigate(targetRoute, { queryParams });
+    this.router.navigate(targetRoute);
   }
 
   private isCurrentUrlRootAppRoute(): boolean {
@@ -54,9 +53,12 @@ export class MainComponent implements OnInit {
   }
 
   private getInitialRedirectRoute(): string[] {
-    return this.authService.isAdmin() && this.authService.adminMode()
-      ? ['/app/admin']
-      : ['/'];
+    const companyName = this.companyService.companyName();
+    if (this.authService.isAdmin() && this.authService.adminMode()) {
+      return ['/app/admin', companyName];
+    } else {
+      return ['/', companyName];
+    }
   }
 }
 

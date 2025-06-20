@@ -20,6 +20,7 @@ import { SkeletonFoodComponent } from '../../menu/components/skeleton-food/skele
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-home-page',
@@ -49,13 +50,8 @@ export class HomePage implements OnInit {
   public groupedSubFoods = signal<Record<string, iFood[]>>({});
   public subcategories = signal<any>([]);
   public loading = signal(false);
-
   public categories = signal<iCategory[]>([]);
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    ''
-  );
-  public companyId = this.localStorageService.getSignal('companyId', '0');
+  public companyService = inject(CompanyService);
 
   ngOnInit() {
     this.getAllFoodAndCategories();
@@ -72,10 +68,10 @@ export class HomePage implements OnInit {
       this.loading.set(true);
 
       const [foods, categories] = await Promise.all([
-        await this.foodService.getAllFoodsGroupedByCategory(this.companyId()),
+        await this.foodService.getAllFoodsGroupedByCategory(this.companyService.companyId()),
         this.companyCategoryViewService.getAllByField<iCategory>(
           'company_id',
-          this.companyId()
+          this.companyService.companyId()
         ),
       ]);
 

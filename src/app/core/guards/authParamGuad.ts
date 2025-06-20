@@ -21,7 +21,7 @@ export class AuthParamGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
-    const empresa = route.queryParams['empresa'];
+    const empresa = route.paramMap.get('companyName');
 
     if (!empresa) {
       this.router.navigate(['/']);
@@ -34,10 +34,10 @@ export class AuthParamGuard implements CanActivate {
         empresa,
         'id'
       );
+
       if (company) {
         this.localStorageService.setItem('companyName', empresa);
         this.localStorageService.setItem('companyId', company.id);
-
         return true;
       } else {
         this.router.navigate(['/']);

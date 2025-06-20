@@ -2,8 +2,7 @@
   <footer class="flex justify-between p-4 border fixed bottom-0 w-full bg-white-light" @fadeInOut>
     @for (link of links ; track $index) {
       <a
-        [routerLink]="link.path"
-        [queryParams]="{empresa: companyName() }"
+        [routerLink]="[link.path]"
         class="relative"
         [ngClass]="{ 'text-primary': activeLinks[link.path] }"
       >
