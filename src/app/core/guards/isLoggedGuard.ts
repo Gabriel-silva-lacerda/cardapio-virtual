@@ -1,18 +1,20 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { inject, Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { CompanyService } from '@shared/services/company/company.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
-export const IsLoggedGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const localStorageService = inject(LocalStorageService);
-  const companyName = localStorageService.getSignal<string>('companyName', '[]');
+@Injectable({ providedIn: 'root' })
+export class IsLoggedGuard implements CanActivate {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private companyService = inject(CompanyService);
 
-  if (authService.isLogged()) {
-    router.navigate(['/app', companyName()]);
-    return false;
+  canActivate(): boolean {
+    if (this.authService.isLogged()) {
+      this.router.navigate(['/app', this.companyService.companyName()]);
+      return false;
+    }
+
+    return true;
   }
-
-  return true;
-};
+}

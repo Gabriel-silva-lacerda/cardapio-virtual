@@ -7,7 +7,6 @@ import { FoodService } from '@shared/services/food/food.service';
 import { iFood } from '@shared/interfaces/food/food.interface';
 
 import { firstValueFrom } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';

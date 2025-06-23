@@ -116,7 +116,6 @@ export class FoodService extends BaseSupabaseService {
 
   async getFoodById(id: string): Promise<iFood | null> {
     const food = await this.getById<iFood>(id);
-
     if (!food) return null;
 
     return {

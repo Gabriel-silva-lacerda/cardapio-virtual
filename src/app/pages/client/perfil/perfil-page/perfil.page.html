@@ -11,7 +11,7 @@
         <span class="text-black-light">{{ currentUser()?.full_name }}</span>
       </div>
 
-      <button class="flex  justify-end w-full" (click)="logout()">{{ isLogged() ? 'Sair' : 'Fazer login'}}</button>
+      <button class="flex  justify-end w-full" (click)="authService.logout()">{{ isLogged() ? 'Sair' : 'Fazer login'}}</button>
 
     </div>
     <ul class="flex flex-col">

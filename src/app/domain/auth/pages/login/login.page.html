@@ -36,8 +36,7 @@
       </a>
       <a
         class="link mt-0 block"
-        routerLink="/auth/forgot-password"
-
+        [routerLink]="['/auth', companyService.companyName(), 'forgot-password']"
       >
         Esqueceu sua senha?
       </a>

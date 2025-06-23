@@ -3,7 +3,7 @@ import { AdminGuard } from 'src/app/core/guards/adminGuard';
 
 export const adminRoutes: Routes = [
   {
-    path: ':companyName',  // <-- aqui você define o slug como parâmetro
+    path: ':companyName',
     loadComponent: () =>
       import('../admin/home/home-page/home.page').then(
         (m) => m.HomePage
@@ -11,7 +11,7 @@ export const adminRoutes: Routes = [
     canActivate: [AdminGuard],
   },
   {
-    path: ':companyName/cadastrar-produto', // também com slug
+    path: ':companyName/cadastrar-produto',
     loadComponent: () =>
       import('../admin/register-product/register-product-page/register-product-page').then(
         (m) => m.RegisterProductPage
@@ -19,8 +19,4 @@ export const adminRoutes: Routes = [
     canActivate: [AdminGuard],
   }
 ];
-
-// adminRoutes.push({
-
-// });
 

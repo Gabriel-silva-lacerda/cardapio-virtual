@@ -17,20 +17,19 @@ export class AuthService extends BaseSupabaseService {
   private userCompanyService = inject(UserCompanyService)
 
   public currentUser = signal<iUser | null>(null);
-  public isLogged = signal<boolean>(false);
-  public isAdmin = signal<boolean>(false);
+  public isLogged = signal(false);
+  public isAdmin = signal(false);
 
-  private _adminMode = signal<boolean>(false);
+  private _adminMode = signal(false);
   public adminMode = this._adminMode.asReadonly();
 
+  // Inicializa o usuário e seu papel
   public async load() {
     const { data, error } = await this.supabaseService.supabase.auth.getSession();
-    if (!data.session || error) {
-      return;
-    }
+    if (!data.session || error) return;
 
     await this.getUser(data.session.user.id);
-    await this.checkUserRole();
+    await this.resolveUserRole(data.session.user.id);
     this.isLogged.set(true);
   }
 
@@ -39,52 +38,53 @@ export class AuthService extends BaseSupabaseService {
     this.currentUser.set(user);
   }
 
-  async checkUserRole(): Promise<void> {
-    const { data: userData } = await this.supabaseService.supabase.auth.getUser();
-    const user = userData?.user;
+  private async resolveUserRole(userId: string) {
+    const userRole = await this.getUserRole(userId);
+    const isAdmin = userRole?.role === 'admin';
+    this.isAdmin.set(isAdmin);
 
-    if (!user) return;
+    const sessionAlreadyStarted = sessionStorage.getItem('sessionStarted') === 'true';
+    const savedAdminMode = localStorage.getItem('adminMode');
 
-    const userRole = await this.getUserRole(user.id);
-
-    if (userRole?.role === 'admin') {
-      this.isAdmin.set(true);
-
-      const saved = localStorage.getItem('adminMode');
-      if (saved === null) {
-        this.setAdminMode(true);
-      } else {
-        this._adminMode.set(saved === 'true');
-      }
-
+    if (isAdmin) {
+      const shouldForceAdmin = !sessionAlreadyStarted || savedAdminMode === null;
+      this.setAdminMode(shouldForceAdmin ? true : savedAdminMode === 'true');
     } else {
-      this.isAdmin.set(false);
       this.setAdminMode(false);
     }
+
+    sessionStorage.setItem('sessionStarted', 'true');
   }
 
-  async getUserRole(userId: string): Promise<any> {
-    return await this.userCompanyService.getByField<{ role: string }>('user_id', userId);
+  public async getUserRole(userId: string): Promise<{ role: string } | null> {
+    return this.userCompanyService.getByField<{ role: string }>('user_id', userId);
   }
 
-  async logout() {
+  public async logout() {
     if (this.isLogged()) {
       const { error } = await this.supabaseService.supabase.auth.signOut();
-      if (error) return;
-      this.isLogged.set(false);
+      if (!error) {
+        this.clearSession();
+      }
     }
 
     this.router.navigate(['/auth', this.companyService.companyName()]);
   }
 
-  setAdminMode(value: boolean) {
+  public setAdminMode(value: boolean) {
     this._adminMode.set(value);
     localStorage.setItem('adminMode', value.toString());
   }
 
-  resetAdminMode() {
+  public resetAdminMode() {
     localStorage.removeItem('adminMode');
     this._adminMode.set(this.isAdmin());
   }
-}
 
+  private clearSession() {
+    this.isLogged.set(false);
+    this.isAdmin.set(false);
+    this.resetAdminMode();
+    this.currentUser.set(null);
+  }
+}

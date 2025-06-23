@@ -36,6 +36,7 @@ export class LoginPage {
 
   public isEmailConfirmed = signal(true);
   public loading = signal(false);
+
   public loginFields: iDynamicField[] = [
     {
       name: 'email',
@@ -54,130 +55,79 @@ export class LoginPage {
   ];
 
   public async login() {
-    this.loading.set(true);
-
-    if (!this.dynamicForm.form.valid) {
-      this.loading.set(false);
-      return;
-    }
+    this.setLoading(true);
+    if (!this.dynamicForm.form.valid) return this.setLoading(false);
 
     const { email, password } = this.dynamicForm.form.value;
     const companyName = this.companyService.companyName();
+    if (!companyName) return this.fail('Empresa não informada.');
 
-    if (!companyName) {
-      this.toastrService.error('Empresa não informada.', 'Erro');
-      this.localStorageService.clearSupabaseAuthToken();
-      this.loading.set(false);
-      return;
-    }
+    const company = await this.companyService.getByField<any>('unique_url', companyName);
+    if (!company) return this.fail('Empresa não encontrada.');
 
-    const company = await this.companyService.getByField<any>(
-      'unique_url',
-      companyName
-    );
+    const { data: authData, error: authError } = await this.supabase.auth.signInWithPassword({ email, password });
+    if (authError) return this.handleAuthError(authError);
 
-    if (!company) {
-      this.toastrService.error('Empresa não encontrada.', 'Erro');
-      this.localStorageService.clearSupabaseAuthToken();
-      this.loading.set(false);
-      return;
-    }
-
-    const companyId = company.id;
-
-    const { data, error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      if (error.message.includes('Email not confirmed')) {
-        this.toastrService.error(
-          'Por favor, confirme seu e-mail antes de continuar.',
-          'Erro'
-        );
-        this.loading.set(false);
-        this.isEmailConfirmed.set(false);
-        return;
-      }
-
-      this.errorHandler.handleError(error.message);
-      this.loading.set(false);
-      return;
-    }
-
-    const { data: userData, error: userError } =
-      await this.supabase.auth.getUser();
-
-    if (userError || !userData?.user) {
-      this.toastrService.error('Erro ao obter dados do usuário.', 'Erro');
-      this.localStorageService.clearSupabaseAuthToken();
-
-      this.loading.set(false);
-      return;
-    }
+    const { data: userData, error: userError } = await this.supabase.auth.getUser();
+    if (userError || !userData?.user) return this.fail('Erro ao obter dados do usuário.');
 
     const userId = userData.user.id;
+    const userCompany = await this.userCompanyService.getByField<any>('user_id', userId);
 
-    const userCompany = await this.userCompanyService.getByField<any>(
-      'user_id',
-      userId
-    );
-
-    if (!userCompany || userCompany.company_id !== companyId) {
-      this.toastrService.error(
-        'Usuário não tem acesso a esta empresa.',
-        'Erro'
-      );
-      this.localStorageService.clearSupabaseAuthToken();
-
-      this.loading.set(false);
-      return;
+    if (!userCompany || userCompany.company_id !== company.id) {
+      return this.fail('Usuário não tem acesso a esta empresa.');
     }
 
-    const isAdmin = userCompany.role === 'admin';
-    this.authService.isAdmin.set(isAdmin);
+    this.authService.isAdmin.set(userCompany.role === 'admin');
+    this.authService.setAdminMode(userCompany.role === 'admin');
+    this.authService.isLogged.set(true);
+    this.authService.getUser(userId);
+    this.setLoading(false);
 
     const firstLogin = userData.user.user_metadata?.['first_login'];
-    this.authService.getUser(userId);
-    this.authService.isLogged.set(true);
-    this.loading.set(false);
-
-    if (firstLogin) {
-      this.router.navigate(['/auth/reset-password']);
-    } else {
-      this.router.navigate(['/app', companyName]);
-    }
+    const nextRoute = firstLogin ? ['/auth/reset-password'] : ['/app', companyName];
+    this.router.navigate(nextRoute);
   }
 
   public async resendConfirmation() {
-    this.loading.set(true);
+    this.setLoading(true);
 
     const { email } = this.dynamicForm.form.value;
-
-    const { error } = await this.supabase.auth.resend({
-      type: 'signup',
-      email,
-    });
+    const { error } = await this.supabase.auth.resend({ type: 'signup', email });
 
     if (error) {
-      this.toastrService.error(
-        'Erro ao reenviar o código de confirmação.',
-        'Erro'
-      );
+      this.toastrService.error('Erro ao reenviar o código de confirmação.', 'Erro');
     } else {
-      this.toastrService.success(
-        'Código de confirmação reenviado com sucesso!',
-        'Sucesso'
-      );
+      this.toastrService.success('Código de confirmação reenviado com sucesso!', 'Sucesso');
       this.isEmailConfirmed.set(true);
     }
 
-    this.loading.set(false);
+    this.setLoading(false);
   }
 
   public viewMenu() {
     this.authService.isAdmin.set(false);
     this.router.navigate(['/app', this.companyService.companyName()]);
+  }
+
+  private setLoading(value: boolean) {
+    this.loading.set(value);
+  }
+
+  private fail(message: string) {
+    this.toastrService.error(message, 'Erro');
+    this.localStorageService.clearSupabaseAuthToken();
+    this.setLoading(false);
+  }
+
+  private handleAuthError(error: any) {
+    if (error.message.includes('Email not confirmed')) {
+      this.toastrService.error('Por favor, confirme seu e-mail antes de continuar.', 'Erro');
+      this.isEmailConfirmed.set(false);
+    } else {
+      this.errorHandler.handleError(error.message);
+    }
+
+    this.setLoading(false);
   }
 }

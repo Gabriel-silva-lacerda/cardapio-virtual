@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { IsAuthenticatedGuard } from '@core/guards/isAuthenticatedGuard';
+import { IsLoggedGuard } from '@core/guards/isLoggedGuard';
 
 export const ClienteRoutes: Routes = [
   {
@@ -12,6 +14,7 @@ export const ClienteRoutes: Routes = [
       import('../../pages/client/perfil/perfil-page/perfil.page').then(
         (m) => m.PerfilPage
       ),
+    canActivate: [IsAuthenticatedGuard]
   },
   {
     path: 'categorias',

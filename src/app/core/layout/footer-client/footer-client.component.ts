@@ -55,7 +55,7 @@ export class FooterClientComponent implements OnInit, OnDestroy {
         { path: `/app/${this.companyService.companyName()}/pedidos`, label: 'Pedidos' }
       );
     } else {
-      links.push({ path: '/auth', label: 'Fazer login' });
+      links.push({ path: `/auth/${this.companyService.companyName()}`, label: 'Fazer login' });
     }
 
     return links;
@@ -78,8 +78,6 @@ export class FooterClientComponent implements OnInit, OnDestroy {
         ].some(prefix => normalizedCurrentUrl.startsWith(prefix));
       }
     }
-
-    console.log(this.activeLinks);
   }
 
   private normalizeUrl(url: string): string {

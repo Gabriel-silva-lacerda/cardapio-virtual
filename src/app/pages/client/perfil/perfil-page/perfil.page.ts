@@ -20,8 +20,6 @@ import { AuthService } from 'src/app/domain/auth/services/auth.service';
   animations: [fade, expandAnimation],
 })
 export class PerfilPage {
-  private supabase = injectSupabase();
-  private router = inject(Router);
   private stripeService = inject(StripeService);
   private localStorageService = inject(LocalStorageService);
   private companyService = inject(CompanyService);
@@ -47,16 +45,6 @@ export class PerfilPage {
 
   async loadCompanyData() {
     this.companyData.set(await this.companyService.getByField<Company>('id',this.companyId()));
-  }
-
-  async logout() {
-    if (this.isLogged()) {
-      const { error } = await this.supabase.auth.signOut();
-      if (error) return;
-      this.authService.isLogged.set(false);
-    }
-
-    this.router.navigate(['/auth']);
   }
 
   toggleStripe() {
