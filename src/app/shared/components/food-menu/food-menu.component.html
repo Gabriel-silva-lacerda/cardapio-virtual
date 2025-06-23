@@ -4,8 +4,8 @@
     [ngClass]="{ ' h-[8.4rem]': cartItem?.id, 'mb-3': !showItem || !isAdmin() }"
     [routerLink]="
       cartItem?.id
-        ? ['/app', companyName(), 'cardapio', 'comida', foodDetails?.id, cartItem?.id]
-        : ['/app', companyName(), 'cardapio', 'comida', foodDetails?.id]
+        ? ['/app', companyService.companyName(), 'cardapio', 'comida', foodDetails?.id, cartItem?.id]
+        : ['/app', companyService.companyName(), 'cardapio', 'comida', foodDetails?.id]
     "
   >
     <img

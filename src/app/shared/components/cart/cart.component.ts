@@ -1,6 +1,4 @@
-import { ShowItemService } from '@shared/services/show-item/show-item.service';
 import { Component, effect, inject, signal } from '@angular/core';
-
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
@@ -16,15 +14,9 @@ import { fadeInOut } from '@shared/utils/animations.utils';
 })
 export class CartComponent {
   private localStorageService = inject(LocalStorageService);
+
   public authService = inject(AuthService);
-
-  public showItemService = inject(ShowItemService);
-
   public cart = signal<iCartItem[]>([]);
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
 
   constructor() {
     effect(() => {

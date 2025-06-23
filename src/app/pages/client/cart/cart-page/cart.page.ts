@@ -3,14 +3,13 @@ import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.compon
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { fade } from '@shared/utils/animations.utils';
-import { HeaderClientComponent } from '@core/layout/header-client/header-client.component';
 import { FooterCartComponent } from '../components/footer-cart/footer-cart.component';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 
 @Component({
   selector: 'app-cart-list',
-  imports: [HeaderClientComponent, FoodMenuComponent, FooterCartComponent, PageLayoutClientComponent],
+  imports: [FoodMenuComponent, FooterCartComponent, PageLayoutClientComponent],
   templateUrl: './cart.page.html',
   styleUrl: './cart.page.scss',
   animations: [fade],

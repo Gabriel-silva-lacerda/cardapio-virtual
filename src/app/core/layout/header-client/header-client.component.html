@@ -1,5 +1,7 @@
 <div class="fixed w-full top-0 z-50 bg-primary" [@fade]>
-  <app-cart />
+  @if(showCart && (!authService.isAdmin() || !authService.adminMode())) {
+    <app-cart />
+  }
 
   @if(isHome) {
     <div class="text-white px-3 py-10">

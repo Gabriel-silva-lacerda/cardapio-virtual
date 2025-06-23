@@ -28,6 +28,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-food-menu',
@@ -55,14 +56,10 @@ export class FoodMenuComponent implements OnInit, OnChanges {
 
   private foodService = inject(FoodService);
   private cachedFoodDetails: iFoodDetails | null = null;
-  private localStorageService = inject(LocalStorageService);
   private authService = inject(AuthService);
 
   public tooltipMessage: string = '';
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
+  public companyService = inject(CompanyService);
   public isAdmin = this.authService.isAdmin;
 
   ngOnInit(): void {

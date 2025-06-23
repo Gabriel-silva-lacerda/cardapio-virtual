@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { RouterLink } from '@angular/router';
 import { fade } from '@shared/utils/animations.utils';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-home-page',
@@ -12,12 +12,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
   animations: [fade]
 })
 export class HomePage {
-  public localStorageService = inject(LocalStorageService);
-
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    ''
-  );
+  public companyService = inject(CompanyService);
   public authService = inject(AuthService);
 
   ngOnInit() {

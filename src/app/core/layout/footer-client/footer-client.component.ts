@@ -1,10 +1,9 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { ShowItemService } from '@shared/services/show-item/show-item.service';
 import { fadeInOut } from '@shared/utils/animations.utils';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../../domain/auth/services/auth.service';
@@ -24,7 +23,6 @@ export class FooterClientComponent implements OnInit, OnDestroy {
   private companyService = inject(CompanyService);
 
   public authService = inject(AuthService);
-  public showItemService = inject(ShowItemService);
 
   public cart = this.localStorageService.getSignal<iCartItem[]>('cart', []);
   public links = this.buildLinks();

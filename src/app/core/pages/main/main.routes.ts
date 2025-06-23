@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminGuard } from '@core/guards/adminGuard';
-import { AdminRedirectGuard } from '@core/guards/paymentRedirectGuard';
+import { AdminRedirectGuard } from '@core/guards/adminRedirectGuard';
 
 export const mainRoutes: Routes = [
   {

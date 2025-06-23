@@ -17,11 +17,11 @@
       <i class="fas fa-arrow-down text-2xl text-primary mb-2 animate-bounce"></i>
       <a
         (click)="authService.setAdminMode(false)"
-        [routerLink]="['/app', companyName()]"
+        [routerLink]="['/app', companyService.companyName()]"
         rel="noopener"
         class="underline text-primary text-base hover:text-primary-dark transition"
       >
-        http://localhost:4200/app/{{ companyName() }}
+        http://localhost:4200/app/{{ companyService.companyName() }}
       </a>
     </div>
   </div>

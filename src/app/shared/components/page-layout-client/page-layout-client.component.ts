@@ -15,6 +15,6 @@ export class PageLayoutClientComponent {
   @Input() title = '';
   @Input() showFooter = true;
   @Input() showHeader = true;
+  @Input() showCart = false;
   @Input() isHome = false;
-
 }

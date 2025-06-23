@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PaymentAddressDialogComponent } from '../payment-address-dialog/payment-address-dialog.component';
 import { Router } from '@angular/router';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-footer-cart',
@@ -15,15 +16,10 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 })
 export class FooterCartComponent implements OnInit {
   @Input() carts!: iCartItem[];
-  private localStorageService = inject(LocalStorageService);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
   private router = inject(Router);
-
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
+  public companyService = inject(CompanyService);
   public loading = signal(false);
   public total!: number;
 
@@ -45,7 +41,7 @@ export class FooterCartComponent implements OnInit {
         }
       });
     } else {
-      this.router.navigate(['/auth', this.companyName()]);
+      this.router.navigate(['/auth', this.companyService.companyName()]);
     }
   }
 }

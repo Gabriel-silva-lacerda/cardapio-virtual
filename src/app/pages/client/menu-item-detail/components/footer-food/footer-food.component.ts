@@ -22,6 +22,7 @@ import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltip } from '@angular/material/tooltip';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-footer-food',
@@ -39,13 +40,8 @@ export class FooterFoodComponent implements OnInit, OnChanges {
   private router = inject(Router);
   private toastr = inject(ToastrService);
   private cartService = inject(CartService);
-  private localStorageService = inject(LocalStorageService);
   public authService = inject(AuthService);
-
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
+  public companyService = inject(CompanyService);
   public selectedAdditions = this.foodService.selectedAdditions;
   public observations = this.foodService.observations;
   public productCount = this.foodService.productCount;
@@ -128,8 +124,8 @@ export class FooterFoodComponent implements OnInit, OnChanges {
     });
 
     const targetRoute = this.newItem
-      ? ['/app', this.companyName()]
-      : ['/app', this.companyName(), 'cart'];
+      ? ['/app', this.companyService.companyName()]
+      : ['/app', this.companyService.companyName(), 'cart'];
 
     this.router.navigate(targetRoute);
   }

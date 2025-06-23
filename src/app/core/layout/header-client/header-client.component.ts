@@ -9,7 +9,7 @@ import { AuthService } from '../../../domain/auth/services/auth.service';
 
 @Component({
   selector: 'app-header-client',
-  imports: [BackButtonComponent, SideMenuComponent, CartComponent],
+  imports: [BackButtonComponent, CartComponent],
   templateUrl: './header-client.component.html',
   styleUrl: './header-client.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +20,7 @@ export class HeaderClientComponent {
   @Input() title!: string;
   @Input() isHome: boolean = false;
   @Input() showInput: boolean = true;
+  @Input() showCart: boolean = false;
   @Input() link: string = '/'
   @Input() isAdmin: boolean = false;
 

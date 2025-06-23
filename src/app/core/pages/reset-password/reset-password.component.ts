@@ -6,6 +6,7 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { ToastrService } from 'ngx-toastr';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -20,8 +21,8 @@ export class ResetPasswordComponent {
   private supabase = injectSupabase();
   private router = inject(Router);
   private toastr = inject(ToastrService);
-  private localStorageService = inject(LocalStorageService);
-  public companyName = this.localStorageService.getSignal<string>('companyName', '[]');
+  public companyService = inject(CompanyService);
+
 
   public resetFields: iDynamicField[] = [
     {
@@ -51,6 +52,6 @@ export class ResetPasswordComponent {
 
     this.dynamicForm.form.reset();
     this.toastr.success('Senha atualizada com sucesso!', 'Sucesso!');
-    this.router.navigate(['/auth', this.companyName()]);
+    this.router.navigate(['/auth', this.companyService.companyName()]);
   }
 }
