@@ -1,16 +1,23 @@
 import { CurrencyPipe, NgIf } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BaseSearchPaginatedComponent } from '@shared/components/base-search-paginated/base-search-paginated.component';
 import { IconButtonComponent } from '@shared/components/icon-button/icon-button.component';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { PageLayoutAdminComponent } from '@shared/components/page-layout-admin/page-layout-admin.component';
 import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
+import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { iFoodWithCategorySubcategory } from '@shared/interfaces/group/group-food.interface';
 import { CompanyService } from '@shared/services/company/company.service';
 import { FoodCategoriesViewService } from '@shared/services/food/food-categories-view.service';
 import { FoodService } from '@shared/services/food/food.service';
+import { ImageService } from '@shared/services/image/image.service';
+import { LoadingService } from '@shared/services/loading/loading.service';
+import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
+import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, debounceTime } from 'rxjs';
+import { AddEditItemDialogComponent } from 'src/app/pages/client/menu/components/add-edit-item-dialog/add-edit-item-dialog.component';
 
 @Component({
   selector: 'app-register-product-page',
@@ -20,8 +27,11 @@ import { BehaviorSubject, debounceTime } from 'rxjs';
 })
 export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithCategorySubcategory> {
   private foodService = inject(FoodService);
-  private companyService = inject(CompanyService);
+  private dialog = inject(MatDialog);
   private foodsCategoriesView = inject(FoodCategoriesViewService);
+  private loadingService = inject(LoadingService);
+  private imageService = inject(ImageService);
+  private toastrService = inject(ToastrService);
 
   public foods = signal<iFoodWithCategorySubcategory[]>([]);
   public loading = signal(false);
@@ -31,36 +41,96 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
     super();
   }
 
-  ngOnInit() {
-    this.getAllFoods();
-    this.init();
+  protected async fetchData(query: string, page: number, pageSize: number): Promise<iFoodWithCategorySubcategory[]> {
+    const result = await this.foodsCategoriesView.searchPaginated<iFoodWithCategorySubcategory>(
+      query,
+      ['name', 'description', 'category_name'],
+      page,
+      pageSize
+    );
+
+    return this.addImageUrls(result);
   }
 
-  async getAllFoods() {
-    const foods = await this.foodsCategoriesView.getAllByField<iFoodWithCategorySubcategory>('company_id', this.companyService.companyId());
-    this.foods.set(foods);
+  private async addImageUrls(foods: iFoodWithCategorySubcategory[]): Promise<iFoodWithCategorySubcategory[]> {
+    return Promise.all(foods.map(this.formatFood));
   }
 
-  protected fetchData(query: string, page: number, pageSize: number): Promise<iFoodWithCategorySubcategory[]> {
-    return this.foodService.searchPaginated(query, ['name', 'description'], page, pageSize);
+  private formatFood(food: iFoodWithCategorySubcategory): iFoodWithCategorySubcategory {
+    return {
+      ...food,
+      image_url: getImageUrl(food.image_url || ''),
+    };
   }
 
-  onScrollEnd() {
-    this.loadMore();
+  public openDialogFood(food?: iFoodWithCategorySubcategory): void {
+    const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
+      width: '400px',
+      height: '739px',
+      data: { foodId: food?.id },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.updateItemList(result);
+    });
   }
 
-  onAdd() {
-    // abrir modal ou navegar para página de criação
+  private updateItemList(newFood: iFoodWithCategorySubcategory): void {
+    this.items.update((currentItems) => {
+      const updated = this.formatFood(newFood);
+      const index = currentItems.findIndex(item => item.id === newFood.id);
+
+      const newList = index !== -1
+        ? currentItems.map(item => (item.id === newFood.id ? updated : item))
+        : [updated, ...currentItems];
+
+      this.hasMoreData.set(newList.length >= this.pageSize);
+
+      return newList;
+    });
   }
 
-  editFood(food: iFood) {
-    // abrir modal ou navegar para edição
+
+  public openDialogRemoveFood(food: iFoodWithCategorySubcategory): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        title: 'Excluir Item',
+        message: 'Tem certeza que deseja excluir este item?',
+        confirmText: 'Excluir',
+        cancelText: 'Cancelar',
+        onConfirm: () => this.removeFood(food, dialogRef),
+      },
+    });
   }
 
-  async deleteFood(food: iFood) {
-    if (confirm(`Tem certeza que deseja excluir "${food.name}"?`)) {
-      if(food.id) await this.foodService.delete(food.id);
-      this.getAllFoods();
+  private async removeFood(food: iFoodWithCategorySubcategory, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
+    try {
+      this.loadingService.showLoading();
+
+      const imagePath = food.image_url?.replace(/^.*\/food-images\//, 'food-images/');
+      const deletedImage = imagePath ? await this.imageService.deleteImage(imagePath) : true;
+      if(food.id !== undefined) {
+        const error = await this.foodService.delete(food.id);
+
+        if (!error && deletedImage) {
+          this.toastrService.success('Item deletado com sucesso!');
+          this.deleteItemFromList(food.id);
+          dialogRef.close(true);
+        }
+      }
+    } finally {
+      this.loadingService.hideLoading();
     }
   }
+
+  private deleteItemFromList(id: string): void {
+    this.items.update(currentItems => {
+      const updated = currentItems.filter(item => item.id !== id);
+      this.hasMoreData.set(updated.length >= this.pageSize);
+      return updated;
+    });
+  }
+
 }
+

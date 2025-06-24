@@ -33,6 +33,7 @@ import { LoadingScreenComponent } from '@shared/components/loading-screen/loadin
 import { SubcategoryDialogComponent } from '../../../categories/components/subcategory-dialog/subcategory-dialog.component';
 import { SubcategoryService } from '../../../home/services/subcategory.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
+import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -48,7 +49,6 @@ import { CompanyCategoryViewService } from '@shared/services/company/company-cat
 export class AddEditItemDialogComponent implements OnInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private localStorageService = inject(LocalStorageService);
-  private categoryService = inject(CategoryService);
   private extraService = inject(ExtraService);
   private foodService = inject(FoodService);
   private imageService = inject(ImageService);
@@ -56,6 +56,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private dialog = inject(MatDialog);
   private subcategoryService = inject(SubcategoryService);
   private companyCategoryViewService = inject(CompanyCategoryViewService)
+  private categoryExtraService = inject(CategoryExtraService);
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
   public data = inject(MAT_DIALOG_DATA) as { foodId: number };
@@ -78,7 +79,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'name',
       label: 'Nome do Item',
       type: 'text',
-      validators: [Validators.required],
+      // validators: [Validators.required],
       padding: '10px',
     },
     {
@@ -92,7 +93,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'price',
       label: 'Preço',
       type: 'text',
-      validators: [Validators.required],
+      // validators: [Validators.required],
       padding: '10px',
       directive: 'onlyNumbers',
     },
@@ -100,19 +101,17 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'category_id',
       label: 'Categoria',
       type: 'select',
-      options: this.categories().map((c) => ({ label: c.name, value: c.id })),
-      validators: [Validators.required],
+      // validators: [Validators.required],
       padding: '10px',
         onChange: (data: unknown, form: FormGroup) => {
           const categoryId = String(data);
-          this.loadSubcategoriesByCategory(categoryId);
+          this.getSubcategoriesByCategory(categoryId);
         },
     },
         {
       name: 'extras',
       label: 'Adicionais',
       type: 'multiselect',
-      options: this.extras().map((e) => ({ label: e.name, value: e.id })),
       validators: [],
       padding: '10px',
       tooltip: 'Selecione uma categoria primeiro!',
@@ -121,21 +120,9 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'subcategory_id',
       label: 'Subcategoria',
       type: 'select',
-      options: this.subcategories().map((s) => ({
-        label: s.name,
-        value: s.id,
-      })),
-      validators: [Validators.required],
+      // validators: [Validators.required],
       padding: '10px',
-      onChange: (data: unknown, form: FormGroup) => {
-        const subcategoryId = String(data);
-        // this.loadExtrasBySubCategory(subcategoryId);
-      },
-      onClick: () => this.openDialogSubcategories(),
-      onEdit: (form: FormGroup) => this.openDialogEditSubcategories(form.value),
     },
-
-
     // {
     //   name: 'has_day_of_week',
     //   label: 'Esse item pode ter todos os dias da semana?',
@@ -155,78 +142,89 @@ export class AddEditItemDialogComponent implements OnInit {
     //   },
     // },
     {
-      name: 'image_file',
+      name: 'image_url',
       label: 'Imagem',
       type: 'file',
       padding: '10px',
-      onFileUpload: async (file, form) => {
-        form.patchValue({ image_file: file });
-      },
+      onFileUpload: async (file, form) => form.patchValue({ image_url: file })
     },
   ];
 
   async ngOnInit() {
-    if (this.data.foodId) {
-      this.loadFoodDataById(this.data.foodId);
-      return;
-    }
-    this.getCategories();
-    this.getExtra();
-
+    this.data.foodId ? this.getFoodDataById(this.data.foodId) : this.getAllCategoriesAndExtras();
   }
 
-  public async getCategories() {
+  private async getAllCategoriesAndExtras() {
+    await Promise.all([this.getAllCategories()]);
+  }
+
+  private async getAllCategories() {
+    this.setLoading('categories', true);
     try {
-      this.loading.update((l) => ({ ...l, categories: true }));
-
-      this.categories.set(
-        await this.companyCategoryViewService.getAllByField<iCategory>(
-          'company_id',
-          this.companyId()
-        )
-      );
-      this.foodFields.find((f) => f.name === 'category_id')!.options =
-        this.categories().map((c) => ({ label: c.name, value: c.id }));
-
-      this.subcategories.set([]);
-
-      // this.dynamicForm.isDisabled['extras'] = true;
+      const result = await this.companyCategoryViewService.getAllByField<iCategory>('company_id', this.companyId());
+      this.categories.set(result);
+      this.setFoodFieldOptions('category_id', result);
+      this.dynamicForm.isDisabled['extras'] = true;
       this.dynamicForm.isDisabled['subcategory_id'] = true;
     } finally {
-      this.loading.update((l) => ({ ...l, categories: false }));
+      this.setLoading('categories', false);
     }
   }
 
-  async loadFoodDataById(foodId: number): Promise<void> {
+  private async getAllExtras(categoryId: any) {
+    this.setLoading('extras', true);
     try {
-      this.loadingService.showLoading();
+      const extras = await this.categoryExtraService.getExtrasByCategoryId(categoryId);
+      this.extras.set(extras);
+      this.setFoodFieldOptions('extras', extras);
+    } finally {
+      this.setLoading('extras', false);
+    }
+  }
 
-      const foodData = await this.foodService.getById<iFood>(
-        foodId.toString()
-      );
+  private setFoodFieldOptions(fieldName: string, items: { id: string; name: string }[]) {
+    const field = this.foodFields.find(f => f.name === fieldName);
+    if (field) {
+      field.options = items.map(item => ({ label: item.name, value: item.id }));
+    }
+  }
+
+  private async getSubcategoriesByCategory(categoryId: string) {
+    this.setLoading('subcategories', true);
+    try {
+      const result = await this.subcategoryService.getAllByField<{ id: string; name: string }>('category_id', categoryId);
+      this.setFoodFieldOptions('subcategory_id', result);
+      this.getAllExtras(categoryId);
+      this.dynamicForm.isDisabled['extras'] = false;
+      this.dynamicForm.isDisabled['subcategory_id'] = false;
+    } finally {
+      this.setLoading('subcategories', false);
+    }
+  }
+
+  private async getFoodDataById(foodId: number) {
+    this.loadingService.showLoading();
+    try {
+      const foodData = await this.foodService.getById<iFood>(foodId.toString());
       this.imageUrl = foodData?.image_url || null;
 
+      this.getAllCategories();
+
       if (foodData) {
-        const extras = await this.extraService.getExtrasByFoodId(
-          foodId.toString()
-        );
+        const extras = await this.extraService.getExtrasByFoodId(foodId.toString());
 
         if (foodData.image_url) {
           this.dynamicForm.selectedFileName = foodData.image_url;
-          this.dynamicForm.imagePreviewUrl =
-            await this.imageService.getImageUrl(foodData.image_url);
+          this.dynamicForm.imagePreviewUrl = await this.imageService.getImageUrl(foodData.image_url);
         }
 
         this.dynamicForm.form.patchValue({
-          name: foodData.name,
-          description: foodData.description,
-          price: foodData.price,
-          category_id: foodData.category_id,
-          extras: extras.map((extra) => extra.id),
+          ...foodData,
+            category_id: foodData.category_id,
+
+          extras: extras.map(extra => extra.id),
           has_day_of_week: foodData.day_of_week !== null,
           day_of_week: foodData.day_of_week || null,
-          image_file: foodData.image_url,
-          subcategory_id: foodData.subcategory_id || null,
         });
       }
     } finally {
@@ -234,127 +232,40 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  public async getExtra() {
-    try {
-      this.loading.update((l) => ({ ...l, extras: true }));
-
-      const extras = await this.extraService.getAll() as any;
-      this.extras.set(extras);
-      this.foodFields.find((f) => f.name === 'extras')!.options =
-        this.extras().map((e) => ({ label: e.name, value: e.id }));
-    } finally {
-      this.loading.update((l) => ({ ...l, extras: false }));
-    }
-  }
-
-  private async loadSubcategoriesByCategory(categoryId: string) {
-    try {
-      this.loading.update((l) => ({ ...l, subcategories: true }));
-
-      const subcategories = await this.subcategoryService.getAllByField<{
-        id: string;
-        name: string;
-      }>('category_id', categoryId);
-
-      const subcategoryField = this.foodFields.find(
-        (f) => f.name === 'subcategory_id'
-      );
-      if (subcategoryField) {
-        subcategoryField.options = subcategories.map((s) => ({
-          label: s.name,
-          value: s.id,
-        }));
-      }
-
-      this.dynamicForm.isDisabled['subcategory_id'] = false;
-    } finally {
-      this.loading.update((l) => ({ ...l, subcategories: false }));
-    }
-  }
-
-  private openDialogSubcategories() {
-    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
-      width: '400px',
-      data: this.categories,
-    });
-
-    dialogRef.afterClosed().subscribe(async (categoryId) => {
-      if (categoryId) {
-        this.loadSubcategoriesByCategory(categoryId);
-      }
-    });
-  }
-
-  private openDialogEditSubcategories(value: any) {
-    const dialogRef = this.dialog.open(SubcategoryDialogComponent, {
-      width: '400px',
-      data: this.categories,
-    });
-
-    dialogRef.afterClosed().subscribe(async (categoryId) => {
-      if (categoryId) {
-        this.loadSubcategoriesByCategory(categoryId);
-      }
-    });
-  }
-
   public onCancel(): void {
     this.dialogRef.close();
   }
 
-  public async onSave(): Promise<void> {
-    this.loadingService.showLoading();
-    if (this.dynamicForm.form.invalid) {
-      return;
-    }
+  public onClose(): void {
+    this.dialogRef.close();
+  }
 
+  public async onSave(): Promise<void> {
+    if (this.dynamicForm.form.invalid) return;
+
+    this.loadingService.showLoading();
     try {
       const formData = this.dynamicForm.form.value;
-      let imageUrl = formData.image_file;
+      const imageUrl = await this.handleImageUpload(formData);
 
-      if (formData.image_file && formData.image_file instanceof File) {
-        if (this.data.foodId && this.dynamicForm.selectedFileName) {
-          await this.imageService.deleteImage(this.imageUrl as string);
-        }
-
-        const sanitizedFileName = this.sanitizeFileName(
-          formData.image_file.name
-        );
-        const path = `food-images/${sanitizedFileName}`;
-
-        imageUrl = await this.imageService.uploadImage(
-          formData.image_file,
-          path
-        );
-
-        if (!imageUrl) return;
-      }
-
-      const foodData = {
-        name: formData.name,
-        description: formData.description,
-        price: formData.price,
-        category_id: formData.category_id,
+      const { extras = [], ...foodData } = {
+        ...formData,
+        image_url: imageUrl || 'food-images/default-food.png',
         company_id: this.companyId(),
-        image_url: imageUrl ? imageUrl : 'food-images/default-food.png',
         day_of_week: formData.day_of_week || null,
-        subcategory_id: formData.subcategory_id || null,
       };
 
-      const extraIds = formData.extras || [];
-
+      const extraIds = extras;
+      let foods;
       if (this.data.foodId) {
-        await this.foodService.updateFoodWithExtras(
-          this.data.foodId,
-          foodData,
-          extraIds
-        );
+        foods = await this.foodService.updateFoodWithExtras(this.data.foodId, foodData, extraIds);
         this.toastr.success('Item atualizado com sucesso!');
       } else {
-        await this.foodService.createFoodWithExtras(foodData, extraIds);
+        foods = await this.foodService.createFoodWithExtras(foodData, extraIds);
         this.toastr.success('Item criado com sucesso!');
       }
-      this.dialogRef.close(true);
+
+      this.dialogRef.close(foods);
     } catch {
       this.dialogRef.close(false);
     } finally {
@@ -362,7 +273,19 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  sanitizeFileName(fileName: string): string {
+  private async handleImageUpload(formData: any): Promise<string | null> {
+    const file = formData.image_url;
+    if (!(file instanceof File)) return formData.image_url;
+
+    if (this.data.foodId && this.imageUrl) {
+      await this.imageService.deleteImage(this.imageUrl);
+    }
+
+    const sanitized = this.sanitizeFileName(file.name);
+    return this.imageService.uploadImage(file, `food-images/${sanitized}`);
+  }
+
+  private sanitizeFileName(fileName: string): string {
     return fileName
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
@@ -371,15 +294,25 @@ export class AddEditItemDialogComponent implements OnInit {
       .toLowerCase();
   }
 
+  private setLoading(key: string, value: boolean): void {
+    this.loading.set({ ...this.loading(), [key]: value });
+  }
+
+
+
+  private openSubcategoryDialog(): MatDialogRef<SubcategoryDialogComponent> {
+    return this.dialog.open(SubcategoryDialogComponent, {
+      width: '400px',
+      data: this.categories,
+    });
+  }
+
   private addDayOfWeekField(form: FormGroup): void {
     if (!form.contains('day_of_week') && form.get('has_day_of_week')?.value) {
       form.addControl('day_of_week', new FormControl('', Validators.required));
 
-      const hasDayOfWeekIndex = this.foodFields.findIndex(
-        (field) => field.name === 'has_day_of_week'
-      );
-
-      this.foodFields.splice(hasDayOfWeekIndex + 1, 0, {
+      const insertIndex = this.foodFields.findIndex(f => f.name === 'has_day_of_week') + 1;
+      this.foodFields.splice(insertIndex, 0, {
         name: 'day_of_week',
         label: 'Dia da Semana',
         type: 'select',
@@ -390,16 +323,10 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  private removeDayOfWeekField(form: FormGroup): void {
+   private removeDayOfWeekField(form: FormGroup): void {
     if (form.contains('day_of_week')) {
       form.removeControl('day_of_week');
-      this.foodFields = this.foodFields.filter(
-        (field) => field.name !== 'day_of_week'
-      );
+      this.foodFields = this.foodFields.filter(f => f.name !== 'day_of_week');
     }
-  }
-
-  onClose() {
-    this.dialogRef.close();
   }
 }

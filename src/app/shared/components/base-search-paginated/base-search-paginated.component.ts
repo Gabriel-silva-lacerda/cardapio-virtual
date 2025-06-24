@@ -53,11 +53,12 @@ export abstract class BaseSearchPaginatedComponent<T> {
     }
   }
 
-  public loadMore() {
-    if (this.isLoading() || !this.hasMoreData()) return;
-    this.currentPage.set(this.currentPage() + 1);
-    this.search(this.searchQuery$.getValue(), false);
-  }
+public loadMore() {
+  if (this.isLoading() || !this.hasMoreData()) return;
+  this.currentPage.set(this.currentPage() + 1);
+  this.search(this.searchQuery$.getValue(), false);
+}
+
 
   public destroy() {
     this.searchSubscription?.unsubscribe();

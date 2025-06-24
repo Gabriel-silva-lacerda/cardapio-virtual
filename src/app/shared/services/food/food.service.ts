@@ -143,24 +143,27 @@ export class FoodService extends BaseSupabaseService {
     return food;
   }
 
-  async updateFoodWithExtras(
-    foodId: number,
-    foodData: iFood,
-    extraIds: number[]
-  ): Promise<void> {
-    await this.update<iFood>(foodId, foodData);
+async updateFoodWithExtras(
+  foodId: number,
+  foodData: iFood,
+  extraIds: number[]
+): Promise<iFood> {
+  const updatedFood = await this.update<iFood>(foodId, foodData);
 
-    await this.foodExtrasService.deleteByFilter({ food_id: foodId });
+  await this.foodExtrasService.deleteByFilter({ food_id: foodId });
 
-    if (extraIds.length > 0) {
-      const foodExtras = extraIds.map((extraId) => ({
-        food_id: foodId,
-        extra_id: extraId,
-      }));
+  if (extraIds.length > 0) {
+    const foodExtras = extraIds.map((extraId) => ({
+      food_id: foodId,
+      extra_id: extraId,
+    }));
 
-      await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
-    }
+    await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
   }
+
+  return updatedFood;
+}
+
 
   public resetFoodValues() {
     this.selectedAdditions.set({});

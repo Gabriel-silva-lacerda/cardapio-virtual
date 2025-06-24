@@ -122,6 +122,7 @@ export abstract class BaseSupabaseService {
       .from(this.table)
       .update(updates)
       .eq('id', id)
+      .select()
       .single();
     if (error) {
       this.handleError(error, `Erro ao atualizar o item ${id} na tabela ${this.table}.`);
