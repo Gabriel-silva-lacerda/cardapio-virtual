@@ -49,15 +49,4 @@
       </div>
     </div>
   </div>
-
-  @if(showItem && isAdmin()) {
-  <div class="flex gap-2 items-center mb-3">
-    <app-icon-button
-      icon="fa-solid fa-pen-to-square"
-      (click)="edit(foodDetails?.id)"
-    />
-
-    <app-icon-button icon="fa-solid fa-trash" (click)="remove(foodDetails)" />
-  </div>
-  }
 </li>

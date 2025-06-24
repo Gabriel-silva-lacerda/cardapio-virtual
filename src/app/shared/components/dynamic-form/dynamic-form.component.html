@@ -98,7 +98,7 @@
             {{ option.label }}
           </option>
         </select>
-        <app-icon-button
+        <!-- <app-icon-button
           *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
           icon="fas fa-plus"
           class="absolute right-7"
@@ -109,7 +109,7 @@
           icon="fa-solid fa-pen-to-square"
           class="absolute right-7"
           (click)="field?.onEdit(form)"
-        />
+        /> -->
       </div>
 
       <div
@@ -128,7 +128,7 @@
           [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
         ></p-multiSelect>
 
-        <app-icon-button
+        <!-- <app-icon-button
           *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
           icon="fas fa-plus"
           class="absolute right-7"
@@ -140,7 +140,7 @@
           icon="fa-solid fa-pen-to-square"
           class="absolute right-7"
           (click)="field?.onEdit(form)"
-        />
+        /> -->
       </div>
     </div>
 

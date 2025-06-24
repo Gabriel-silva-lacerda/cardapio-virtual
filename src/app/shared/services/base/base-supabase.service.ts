@@ -155,6 +155,31 @@ export abstract class BaseSupabaseService {
     }
   }
 
+  async searchPaginated<T>(
+    query: string,
+    fields: string[],
+    page: number = 1,
+    pageSize: number = 10,
+    selectFields: string = '*'
+  ): Promise<T[]> {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const filter = fields.map(field => `${field}.ilike.%${query}%`).join(',');
+
+    const { data, error } = await this.supabaseService.supabase
+      .from(this.table)
+      .select(selectFields)
+      .or(filter)
+      .range(from, to);
+
+    if (error) {
+      this.throwHandledError(error, `Erro ao buscar registros paginados com filtro na tabela ${this.table}.`);
+    }
+
+    return data as T[];
+  }
+
   // ==== Tratamento de Erros ====
 
   private throwHandledError(error: any, defaultMessage: string): never {

@@ -67,8 +67,4 @@ export class FoodDetailsComponent {
 
     this.foodService.totalAddition.set(totalAdditions);
   }
-
-  get selectedAdditionsMap(): { [key: string]: iExtra } {
-    return this.selectedAdditions();
-  }
 }

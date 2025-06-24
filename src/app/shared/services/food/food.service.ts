@@ -72,6 +72,7 @@ export class FoodService extends BaseSupabaseService {
     return grouped;
   }
 
+
   async getFoodsGroupedByCategoryId(
     categoryId: string
   ): Promise<iCategoryGroup | null> {

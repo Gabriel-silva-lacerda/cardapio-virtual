@@ -4,6 +4,6 @@ import { BaseSupabaseService } from '../base/base-supabase.service';
 @Injectable({
   providedIn: 'root'
 })
-export class FoodExtrasService extends BaseSupabaseService {
-  protected override table = 'food_extras';
+export class FoodCategoriesViewService extends BaseSupabaseService {
+  protected override table = 'foods_categories_view';
 }
