@@ -43,22 +43,6 @@
       >
         {{ subcategory.name }}
       </span>
-      <div class="flex gap-1 ml-1">
-        <app-icon-button
-          icon="fa-solid fa-pen-to-square"
-          customClass="!mt-0 !text-sm"
-          (click)="edit.emit(subcategory)"
-
-        />
-        <app-icon-button
-          icon="fa-solid fa-trash"
-          customClass="!mt-0 !text-sm"
-          (click)="remove(subcategory)"
-
-        />
-      </div>
     </div>
   }
-
-
 </div>

@@ -20,59 +20,6 @@ export class FoodService extends BaseSupabaseService {
   public productCount = signal<number>(1);
   public totalAddition = signal<number>(0);
 
-  async getAllFoodsGroupedByCategory(
-    companyId: string
-  ): Promise<Record<string, iCategoryGroup>> {
-    const { data, error } = await this.supabaseService.supabase
-      .from('foods_categories_view')
-      .select('*')
-      .eq('company_id', companyId)
-      .order('subcategory_name', { ascending: true, nullsFirst: false });
-
-    if (error) throw error;
-
-    const grouped: Record<string, iCategoryGroup> = {};
-
-    for (const food of data) {
-      const categoryId = food.category_id || '0';
-      const categoryName = food.category_name || 'Outros';
-      const subcategoryId = food.subcategory_id || '0';
-      const subcategoryName = food.subcategory_name || 'Sem Subcategoria';
-
-      if (!grouped[categoryId]) {
-        grouped[categoryId] = {
-          id: categoryId,
-          name: categoryName,
-          subcategories: [],
-        };
-      }
-
-      let subcategoryGroup = grouped[categoryId].subcategories.find(
-        (sub) => sub.id === subcategoryId
-      );
-
-      if (!subcategoryGroup) {
-        subcategoryGroup = {
-          id: subcategoryId,
-          name: subcategoryName,
-          foods: [],
-        };
-        grouped[categoryId].subcategories.push(subcategoryGroup);
-      }
-
-      subcategoryGroup.foods.push({
-        ...food,
-        image_url: getImageUrl(food.image_url),
-      });
-    }
-    for (const cat of Object.values(grouped)) {
-      cat.subcategories.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return grouped;
-  }
-
-
   async getFoodsGroupedByCategoryId(
     categoryId: string
   ): Promise<iCategoryGroup | null> {

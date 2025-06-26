@@ -9,17 +9,4 @@ import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interfa
 export class CategoryService extends BaseSupabaseService {
   protected override table = 'categories';
 
-  async getSubcategories(): Promise<iSubcategory[] | undefined> {
-    const { data, error } = await this.supabaseService.supabase
-      .from('subcategories')
-      .select('*')
-      .order('name', { ascending: true });
-
-    if (error) {
-      this.toastr.error('Erro ao buscar subcategorias:', error.message);
-      return;
-    }
-
-    return data as iSubcategory[];
-  }
 }

@@ -9,7 +9,7 @@
         mais +</a>
     </div>
     <ul class="flex gap-4 overflow-auto">
-      @for (category of categories(); track $index) {
+      @for (category of fullMenu(); track $index) {
       <app-categories [category]="category" customClass="py-3 px-4" />
       }
     </ul>
@@ -26,25 +26,29 @@
       <a class="text-gray-500 py-2 text-text4" routerLink="cardapio">Ver mais
         +</a>
     </div>
-    @if(subcategories.length > 0) {
+    @if(subcategories().length > 0) {
     <app-subcategories [subcategories]="subcategories"></app-subcategories>
     }
 
     <div class="px-3">
-      @for (category of groupedFoods() | keyvalue; track category.key) {
-      <span class="text-primary font-medium text-xl block my-2" id="cat-{{ category.value.id }}">
-        {{ category.value.name }}
-      </span>
+      @for (category of fullMenu(); track category.category_id) {
+        <span class="text-primary font-medium text-xl block my-2">
+          {{ category.category_name }}
+        </span>
 
-      @for (subcategory of category.value.subcategories; track $index) {
-      <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
+        @for (subcategory of category.subcategories; track subcategory.id) {
+          <app-subcategory-item [subcategory]="subcategory"></app-subcategory-item>
 
-      <ul class="flex flex-col gap-3">
-        @for (food of subcategory.foods; track food.id) {
-        <app-food-menu [food]="food" />
+          <ul class="flex flex-col gap-3">
+            @for (food of subcategory.foods; track food.id) {
+              <app-food-menu [food]="food" />
+            }
+          </ul>
+        } @empty {
+          <span>Sem itens para mostrar</span>
         }
-      </ul>
-      } } @empty { <span>Sem itens para mostrar</span> }
+      }
+
     </div>
     }
   </div>

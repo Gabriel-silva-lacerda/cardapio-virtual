@@ -1,121 +1,40 @@
-<app-page-layout-client
-  [title]="title()"
-  [showFooter]="true"
->
-  @if (isAdmin() && !id && !loading()) {
-    <div class="relative flex justify-end gap-2 shadow-sm py-4 border rounded-md px-2 mb-3">
-      <button
-        class="bg-primary px-4 py-2 rounded-md text-white flex items-center gap-2"
-        (click)="isOpen.set(!isOpen())"
-      >
-        <i class="fa-solid fa-gear"></i>
-        Gerenciar Itens
-      </button>
-
-      @if (isOpen()) {
-        <div
-          @fadeScale
-          class="absolute right-10 top-[50px] mt-2 w-56 bg-white border rounded shadow-md z-50"
-        >
-          <button
-            class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-            (click)="openDialogFood(); isOpen.set(false)"
-          >
-            <i class="fa-solid fa-plus"></i>
-            Adicionar comida
-          </button>
-          <button
-            class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-            (click)="openDialogSubcategories(); isOpen.set(false)"
-          >
-            <i class="fa-solid fa-layer-group"></i>
-            Subcategorias
-          </button>
-          <div class="relative group">
-          <button
-            class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-          >
-            <i class="fa-solid fa-puzzle-piece"></i>
-            Adicionais
-            <i class="fa-solid fa-chevron-right ml-auto"></i>
-          </button>
-
-          <div
-            class="absolute left-10 top-8 ml-1 mt-0 w-48 bg-white border rounded shadow-md hidden group-hover:block z-50"
-          >
-            <button
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-              (click)="openDialogExtra(); isOpen.set(false)"
-            >
-              <i class="fa-solid fa-plus"></i> Adicionar
-            </button>
-            <button
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-              (click)="openDialogManageExtra(); isOpen.set(false)"
-            >
-            <i class="fa-solid fa-gear"></i>
-              Gerenciar
-            </button>
-          </div>
-        </div>
-
-          <button
-            class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-            (click)="openDialogFee(); isOpen.set(false)"
-          >
-            <i class="fa-solid fa-truck"></i>
-            Taxa de entrega
-          </button>
-        </div>
-      }
-    </div>
-  }
-
+<app-page-layout-client [title]="title()" [showFooter]="true">
   @if (loading()) {
     <app-skeleton-subcategories />
-  } @else {
-    <app-subcategories [subcategories]="subcategories" />
-  }
-
-  @if (loading()) {
     <app-skeleton-food [showTitle]="false" />
   } @else {
+    <app-subcategories [subcategories]="subcategories" />
 
-    @if (!id) {
+    @if (!id && fullMenu().length > 0) {
       <div class="px-3">
-        @for (category of foodsGroupedCategory() | keyvalue; track category.key) {
+        @for (category of fullMenu(); track category.category_id) {
           <span class="text-primary font-medium text-xl block mt-6 mb-2">
-            {{ category.value.name }}
+            {{ category.category_name }}
           </span>
 
-          @for (subcategory of category.value.subcategories; track subcategory.id) {
+          @for (subcategory of category.subcategories; track subcategory.id) {
             <app-subcategory-item [subcategory]="subcategory" />
-
             <ul class="flex flex-col gap-3">
-              @for (food of subcategory.foods; track food.id) {
-                <app-food-menu
-                  [food]="food"
-                  [showItem]="true"
-                  (editItem)="openDialogFood($event)"
-                  (deleteItem)="openDialogRemoveFood($event)"
-                />
+              @for (food of subcategory.foods ?? []; track food.id) {
+                <app-food-menu [food]="food" [showItem]="true" />
               }
             </ul>
           }
         }
       </div>
-    } @else {
-      @for (subcategory of foodsGroupedCategoryId().subcategories; track subcategory.id) {
-        <div class="px-3">
+    } @else if (selectedCategory()) {
+      <div class="px-3">
+        @for (subcategory of selectedCategory()?.subcategories; track subcategory.id) {
           <app-subcategory-item [subcategory]="subcategory" />
-
           <ul class="flex flex-col gap-3">
-            @for (food of subcategory.foods; track food.id) {
+            @for (food of subcategory.foods ?? []; track food.id) {
               <app-food-menu [food]="food" />
             }
           </ul>
-        </div>
-      }
+        }
+      </div>
+    } @else {
+      <span class="text-center block text-gray-500">Nenhuma categoria encontrada</span>
     }
   }
 </app-page-layout-client>

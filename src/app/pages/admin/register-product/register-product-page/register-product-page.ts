@@ -11,7 +11,7 @@ import { iFood } from '@shared/interfaces/food/food.interface';
 import { iFoodWithCategorySubcategory } from '@shared/interfaces/group/group-food.interface';
 import { CompanyService } from '@shared/services/company/company.service';
 import { FoodCategoriesViewService } from '@shared/services/food/food-categories-view.service';
-import { FoodEditViewService } from '@shared/services/food/food-edit-view.service';
+import { FullMenuViewService } from '@shared/services/company/full-menu-view.service';
 import { FoodService } from '@shared/services/food/food.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
@@ -33,7 +33,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
   private loadingService = inject(LoadingService);
   private imageService = inject(ImageService);
   private toastrService = inject(ToastrService);
-  private foodEdit = inject(FoodEditViewService);
+  private fullMenuViewService = inject(FullMenuViewService);
 
   public foods = signal<iFoodWithCategorySubcategory[]>([]);
   public loading = signal(false);
@@ -44,7 +44,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
   }
 
   protected async fetchData(query: string, page: number, pageSize: number): Promise<iFoodWithCategorySubcategory[]> {
-    const result = await this.foodEdit.searchPaginated<iFoodWithCategorySubcategory>(
+    const result = await this.fullMenuViewService.searchPaginated<iFoodWithCategorySubcategory>(
       query,
       ['name', 'description', 'category_name'],
       page,

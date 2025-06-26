@@ -35,7 +35,7 @@ import { SubcategoryDialogComponent } from '../../../categories/components/subca
 import { SubcategoryService } from '../../../home/services/subcategory.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
-import { FoodEditViewService } from '@shared/services/food/food-edit-view.service';
+import { FullMenuViewService } from '@shared/services/company/full-menu-view.service';
 
 interface IFoodEditView {
   category_extras: Array<{
@@ -95,7 +95,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private categoryExtraService = inject(CategoryExtraService);
   private currentExtras: string[] = [];
   private currentSubcategoryId: string = '';
-  private foodEdit = inject(FoodEditViewService);
+  private fullMenuViewService = inject(FullMenuViewService);
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
   public data = inject(MAT_DIALOG_DATA) as { foodId: number };
@@ -264,7 +264,7 @@ export class AddEditItemDialogComponent implements OnInit {
   this.setLoading('default', true);
   try {
     // Supondo que seu foodService tenha método para consultar views
-    const foodData = await this.foodEdit.getByField<IFoodEditView>('id', foodId.toString());
+    const foodData = await this.fullMenuViewService.getByField<IFoodEditView>('id', foodId.toString());
     console.log('Food Data:', foodData);
     if (!foodData) return;
 
