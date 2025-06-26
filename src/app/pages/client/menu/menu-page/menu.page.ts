@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
 import { fade, fadeScale } from '@shared/utils/animations.utils';
-import { iCategoryWithSubcategories } from '@shared/interfaces/food/food.interface';
+import { iFullMenu } from '@shared/interfaces/food/food.interface';
 import { firstValueFrom } from 'rxjs';
 import { SkeletonFoodComponent } from '../components/skeleton-food/skeleton-food.component';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { iSubcategoryWithFoods } from '@shared/interfaces/subcategory/subcategor
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
 import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcategories/skeleton-subcategories.component';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
-import { FullMenuViewService } from '@shared/services/company/full-menu-view.service';
+import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.service';
 
 @Component({
   selector: 'app-food-page',
@@ -38,8 +38,8 @@ export class MenuPage {
   public id!: string | null;
   public subcategories = signal<iSubcategoryWithFoods[]>([]);
   public loading = signal(false);
-  public fullMenu = signal<iCategoryWithSubcategories[]>([]);
-  public selectedCategory = signal<iCategoryWithSubcategories | null>(null);
+  public fullMenu = signal<iFullMenu[]>([]);
+  public selectedCategory = signal<iFullMenu | null>(null);
 
   ngOnInit(): void {
     this.getFullMenu();
@@ -65,12 +65,12 @@ export class MenuPage {
     }
   }
 
-  private updateSelectedCategory(fullMenu: iCategoryWithSubcategories[]): void {
+  private updateSelectedCategory(fullMenu: iFullMenu[]): void {
     const selected = fullMenu.find(c => c.category_id === this.id) ?? null;
     this.selectedCategory.set(selected);
   }
 
-  private updateSubcategories(fullMenu: iCategoryWithSubcategories[]): void {
+  private updateSubcategories(fullMenu: iFullMenu[]): void {
     const subcategories = this.id
       ? fullMenu.find(c => c.category_id === this.id)?.subcategories ?? []
       : fullMenu.flatMap(c => c.subcategories);

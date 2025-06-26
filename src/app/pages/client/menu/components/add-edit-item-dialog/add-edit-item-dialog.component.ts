@@ -35,7 +35,8 @@ import { SubcategoryDialogComponent } from '../../../categories/components/subca
 import { SubcategoryService } from '../../../home/services/subcategory.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
-import { FullMenuViewService } from '@shared/services/company/full-menu-view.service';
+import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.service';
+import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
 
 interface IFoodEditView {
   category_extras: Array<{
@@ -89,13 +90,12 @@ export class AddEditItemDialogComponent implements OnInit {
   private foodService = inject(FoodService);
   private imageService = inject(ImageService);
   private toastr = inject(ToastrService);
-  private dialog = inject(MatDialog);
   private subcategoryService = inject(SubcategoryService);
   private companyCategoryViewService = inject(CompanyCategoryViewService)
   private categoryExtraService = inject(CategoryExtraService);
   private currentExtras: string[] = [];
   private currentSubcategoryId: string = '';
-  private fullMenuViewService = inject(FullMenuViewService);
+  private foodAdminViewService = inject(FoodAdminViewService);
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
   public data = inject(MAT_DIALOG_DATA) as { foodId: number };
@@ -264,7 +264,7 @@ export class AddEditItemDialogComponent implements OnInit {
   this.setLoading('default', true);
   try {
     // Supondo que seu foodService tenha método para consultar views
-    const foodData = await this.fullMenuViewService.getByField<IFoodEditView>('id', foodId.toString());
+    const foodData = await this.foodAdminViewService.getByField<IFoodEditView>('id', foodId.toString());
     console.log('Food Data:', foodData);
     if (!foodData) return;
 
@@ -304,10 +304,11 @@ export class AddEditItemDialogComponent implements OnInit {
   }
 
   private populateForm(foodData: iFood, extras: { id: string }[]): void {
+
     this.dynamicForm.form.patchValue({
       ...foodData,
       category_id: foodData.category_id,
-      extras: extras.map(extra => extra.id),
+      extras: extras.map(extra => extra?.id),
       has_day_of_week: foodData.day_of_week !== null,
       day_of_week: foodData.day_of_week || null,
     });

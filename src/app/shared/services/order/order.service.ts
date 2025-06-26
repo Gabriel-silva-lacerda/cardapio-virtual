@@ -18,7 +18,7 @@ export class OrderService extends BaseSupabaseService {
 
   public showPayment = signal(false);
 
- async createOrder(order: iInsertOrder, orderAddress: any) {
+  async createOrder(order: iInsertOrder, orderAddress: any) {
     const orderData = await this.insert<iOrder>({
       user_id: order.user_id,
       status: 'pending',

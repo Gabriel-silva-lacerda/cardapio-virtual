@@ -21,7 +21,7 @@ import { FoodService } from '@shared/services/food/food.service';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { CompanyCategoryService } from '@shared/services/company/company-category.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
-import { iCategoryWithSubcategories } from '@shared/interfaces/food/food.interface';
+import { iFullMenu } from '@shared/interfaces/food/food.interface';
 
 @Component({
   selector: 'app-categories',
@@ -30,7 +30,7 @@ import { iCategoryWithSubcategories } from '@shared/interfaces/food/food.interfa
   styleUrl: './categories.component.scss',
 })
 export class CategoriesComponent {
-  @Input() category!: iCategoryWithSubcategories;
+  @Input() fullMenuItem!: iFullMenu;
   @Input() customClass!: string;
   @Input() showItem = false;
 

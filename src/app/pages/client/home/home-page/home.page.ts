@@ -6,7 +6,7 @@ import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
 import { FoodService } from '@shared/services/food/food.service';
-import { iCategoryWithSubcategories, iFood } from '@shared/interfaces/food/food.interface';
+import { iFullMenu } from '@shared/interfaces/food/food.interface';
 import { iCategory } from '../interfaces/category.interface';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
@@ -14,8 +14,9 @@ import { SkeletonFoodComponent } from '../../menu/components/skeleton-food/skele
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 import { CompanyService } from '@shared/services/company/company.service';
-import { FullMenuViewService } from '@shared/services/company/full-menu-view.service';
+import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.service';
 import { iSubcategoryWithFoods } from '@shared/interfaces/subcategory/subcategory.interface';
+import { TesteService } from '@shared/services/full-menu/teste.service';
 
 @Component({
   selector: 'app-home-page',
@@ -35,16 +36,16 @@ import { iSubcategoryWithFoods } from '@shared/interfaces/subcategory/subcategor
 })
 export class HomePage implements OnInit {
   private fullMenuViewService = inject(FullMenuViewService);
-
+  private testeService = inject(TesteService)
   public authService = inject(AuthService);
   public foodService = inject(FoodService);
   public subcategories = signal<iSubcategoryWithFoods[]>([]);
   public loading = signal(false);
   public categories = signal<iCategory[]>([]);
   public companyService = inject(CompanyService);
-  public fullMenu = signal<iCategoryWithSubcategories[]>([]);
+  public fullMenu = signal<iFullMenu[]>([]);
 
-  ngOnInit() {
+  async ngOnInit() {
     sessionStorage.removeItem('paymentRedirect');
     this.getFullMenu();
   }
@@ -64,7 +65,7 @@ export class HomePage implements OnInit {
     }
   }
 
-  private setSubcategoriesFrom(menu: iCategoryWithSubcategories[]): void {
+  private setSubcategoriesFrom(menu: iFullMenu[]): void {
     const allSubcategories = menu.flatMap(c => c.subcategories).filter(Boolean);
     this.subcategories.set(allSubcategories);
   }

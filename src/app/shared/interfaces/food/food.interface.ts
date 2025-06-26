@@ -14,7 +14,7 @@ export interface iFood {
   subcategory_id?: string;
 }
 
-export interface iCategoryWithSubcategories {
+export interface iFullMenu {
   category_id: string;
   category_name: string;
   category_icon: string;

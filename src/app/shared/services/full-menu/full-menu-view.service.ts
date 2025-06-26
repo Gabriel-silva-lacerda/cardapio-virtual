@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseSupabaseService } from '@shared/services/base/base-supabase.service';
-import { iCategoryWithSubcategories } from '@shared/interfaces/food/food.interface';
+import { iFullMenu } from '@shared/interfaces/food/food.interface';
 import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
 
 @Injectable({
@@ -9,8 +9,8 @@ import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
 export class FullMenuViewService extends BaseSupabaseService {
   protected override table = 'full_menu_view';
 
-  async fullMenu(companyId: string): Promise<iCategoryWithSubcategories[]> {
-    const data = await this.getAllByField<iCategoryWithSubcategories>('company_id', companyId);
+  async fullMenu(companyId: string): Promise<iFullMenu[]> {
+    const data = await this.getAllByField<iFullMenu>('company_id', companyId);
 
     // Se o retorno for nulo ou vazio, retorne array vazio
     if (!data || data.length === 0) {

@@ -1,5 +1,4 @@
-import { CurrencyPipe, NgIf } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BaseSearchPaginatedComponent } from '@shared/components/base-search-paginated/base-search-paginated.component';
 import { IconButtonComponent } from '@shared/components/icon-button/icon-button.component';
@@ -7,17 +6,13 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { PageLayoutAdminComponent } from '@shared/components/page-layout-admin/page-layout-admin.component';
 import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
-import { iFood } from '@shared/interfaces/food/food.interface';
 import { iFoodWithCategorySubcategory } from '@shared/interfaces/group/group-food.interface';
-import { CompanyService } from '@shared/services/company/company.service';
-import { FoodCategoriesViewService } from '@shared/services/food/food-categories-view.service';
-import { FullMenuViewService } from '@shared/services/company/full-menu-view.service';
+import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
 import { FoodService } from '@shared/services/food/food.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
 import { ToastrService } from 'ngx-toastr';
-import { BehaviorSubject, debounceTime } from 'rxjs';
 import { AddEditItemDialogComponent } from 'src/app/pages/client/menu/components/add-edit-item-dialog/add-edit-item-dialog.component';
 
 @Component({
@@ -29,29 +24,25 @@ import { AddEditItemDialogComponent } from 'src/app/pages/client/menu/components
 export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithCategorySubcategory> {
   private foodService = inject(FoodService);
   private dialog = inject(MatDialog);
-  private foodsCategoriesView = inject(FoodCategoriesViewService);
+  private foodAdminViewService = inject(FoodAdminViewService);
   private loadingService = inject(LoadingService);
   private imageService = inject(ImageService);
   private toastrService = inject(ToastrService);
-  private fullMenuViewService = inject(FullMenuViewService);
 
-  public foods = signal<iFoodWithCategorySubcategory[]>([]);
   public loading = signal(false);
-  public filteredFoods = signal<iFoodWithCategorySubcategory[]>([]);
 
   constructor() {
     super();
   }
 
   protected async fetchData(query: string, page: number, pageSize: number): Promise<iFoodWithCategorySubcategory[]> {
-    const result = await this.fullMenuViewService.searchPaginated<iFoodWithCategorySubcategory>(
+    const result = await this.foodAdminViewService.searchPaginated<iFoodWithCategorySubcategory>(
       query,
       ['name', 'description', 'category_name'],
       page,
       pageSize
     );
 
-    console.log('Fetched foods:', result);
     return this.addImageUrls(result);
   }
 
