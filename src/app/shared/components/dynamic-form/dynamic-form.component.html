@@ -98,18 +98,6 @@
             {{ option.label }}
           </option>
         </select>
-        <!-- <app-icon-button
-          *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
-          icon="fas fa-plus"
-          class="absolute right-7"
-          (click)="field?.onClick()"
-        />
-        <app-icon-button
-          *ngIf="isEdit && field.onEdit && form.get(field.name)?.value"
-          icon="fa-solid fa-pen-to-square"
-          class="absolute right-7"
-          (click)="field?.onEdit(form)"
-        /> -->
       </div>
 
       <div
@@ -127,20 +115,6 @@
           class="input-primary py-1 px-0 outline-none focus:border border-gray-50 teste w-full"
           [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
         ></p-multiSelect>
-
-        <!-- <app-icon-button
-          *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
-          icon="fas fa-plus"
-          class="absolute right-7"
-          (click)="field?.onClick()"
-        />
-
-        <app-icon-button
-          *ngIf="isEdit && field.onEdit && form.get(field.name)?.value !== ''"
-          icon="fa-solid fa-pen-to-square"
-          class="absolute right-7"
-          (click)="field?.onEdit(form)"
-        /> -->
       </div>
     </div>
 

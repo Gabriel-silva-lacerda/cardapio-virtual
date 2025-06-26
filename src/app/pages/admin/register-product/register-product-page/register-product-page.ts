@@ -11,6 +11,7 @@ import { iFood } from '@shared/interfaces/food/food.interface';
 import { iFoodWithCategorySubcategory } from '@shared/interfaces/group/group-food.interface';
 import { CompanyService } from '@shared/services/company/company.service';
 import { FoodCategoriesViewService } from '@shared/services/food/food-categories-view.service';
+import { FoodEditViewService } from '@shared/services/food/food-edit-view.service';
 import { FoodService } from '@shared/services/food/food.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
@@ -32,6 +33,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
   private loadingService = inject(LoadingService);
   private imageService = inject(ImageService);
   private toastrService = inject(ToastrService);
+  private foodEdit = inject(FoodEditViewService);
 
   public foods = signal<iFoodWithCategorySubcategory[]>([]);
   public loading = signal(false);
@@ -42,18 +44,19 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
   }
 
   protected async fetchData(query: string, page: number, pageSize: number): Promise<iFoodWithCategorySubcategory[]> {
-    const result = await this.foodsCategoriesView.searchPaginated<iFoodWithCategorySubcategory>(
+    const result = await this.foodEdit.searchPaginated<iFoodWithCategorySubcategory>(
       query,
       ['name', 'description', 'category_name'],
       page,
       pageSize
     );
 
+    console.log('Fetched foods:', result);
     return this.addImageUrls(result);
   }
 
   private async addImageUrls(foods: iFoodWithCategorySubcategory[]): Promise<iFoodWithCategorySubcategory[]> {
-    return Promise.all(foods.map(this.formatFood));
+    return foods.map(this.formatFood);
   }
 
   private formatFood(food: iFoodWithCategorySubcategory): iFoodWithCategorySubcategory {
@@ -89,7 +92,6 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
       return newList;
     });
   }
-
 
   public openDialogRemoveFood(food: iFoodWithCategorySubcategory): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

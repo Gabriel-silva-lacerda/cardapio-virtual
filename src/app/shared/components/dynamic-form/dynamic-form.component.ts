@@ -104,17 +104,28 @@ export class DynamicFormComponent implements OnInit {
     });
   }
 
-  disableFields(fieldNames: string[]) {
-    fieldNames.forEach((fieldName) => {
-      this.form.get(fieldName)?.disable();
-    });
-  }
+disableFields(fieldNames: string[]) {
+  fieldNames.forEach(fieldName => {
+    const control = this.form.get(fieldName);
+    if (control && !control.disabled) {
+      control.disable();
+    }
+  });
+  // Atualize isDisabled para refletir isso no template
+  fieldNames.forEach(fieldName => this.isDisabled[fieldName] = true);
+}
 
-  enableFields(fieldNames: string[]) {
-    fieldNames.forEach((fieldName) => {
-      this.form.get(fieldName)?.enable();
-    });
-  }
+enableFields(fieldNames: string[]) {
+  fieldNames.forEach(fieldName => {
+    const control = this.form.get(fieldName);
+    if (control && control.disabled) {
+      control.enable();
+    }
+  });
+  // Atualize isDisabled para refletir isso no template
+  fieldNames.forEach(fieldName => this.isDisabled[fieldName] = false);
+}
+
 
   clearFields(fieldNames: string[]) {
     const clearValues = fieldNames.reduce((acc, fieldName) => {

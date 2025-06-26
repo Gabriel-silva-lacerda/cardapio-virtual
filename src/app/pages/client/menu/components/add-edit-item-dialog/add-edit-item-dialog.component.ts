@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   inject,
   Inject,
@@ -34,6 +35,42 @@ import { SubcategoryDialogComponent } from '../../../categories/components/subca
 import { SubcategoryService } from '../../../home/services/subcategory.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
+import { FoodEditViewService } from '@shared/services/food/food-edit-view.service';
+
+interface IFoodEditView {
+  category_extras: Array<{
+    id: string;
+    name: string;
+    price: number;
+    company_id?: string | null;
+    // adicione outros campos que existirem em extras, se necessário
+  }>;
+  category_id: string;
+  category_name: string;
+  company_categories: Array<{
+    id: string;
+    name: string;
+    icon: string;
+    type_category: string | null;
+  }>;
+  company_id: string;
+  created_at: string; // ou Date, se você for converter
+  day_of_week: string | null;
+  description: string | null;
+  food_extra_ids: any[];
+  id: string;
+  image_url: string | null;
+  name: string;
+  price: number;
+  subcategories: Array<{
+    id: string;
+    name: string;
+    category_id: string;
+    created_at: string; // ou Date
+    company_id: string;
+  }>;
+  subcategory_id: string | null;
+}
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -49,7 +86,6 @@ import { CategoryExtraService } from '@shared/services/extra/category-extra.serv
 export class AddEditItemDialogComponent implements OnInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private localStorageService = inject(LocalStorageService);
-  private extraService = inject(ExtraService);
   private foodService = inject(FoodService);
   private imageService = inject(ImageService);
   private toastr = inject(ToastrService);
@@ -57,21 +93,22 @@ export class AddEditItemDialogComponent implements OnInit {
   private subcategoryService = inject(SubcategoryService);
   private companyCategoryViewService = inject(CompanyCategoryViewService)
   private categoryExtraService = inject(CategoryExtraService);
+  private currentExtras: string[] = [];
+  private currentSubcategoryId: string = '';
+  private foodEdit = inject(FoodEditViewService);
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
   public data = inject(MAT_DIALOG_DATA) as { foodId: number };
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
-  public categories = signal<{ id: string; name: string }[]>([]);
-  public extras = signal<{ id: string; name: string }[]>([]);
   public imageUrl: string | null = null;
   public companyId = this.localStorageService.getSignal('companyId', '0');
-  public subcategories = signal<{ id: string; name: string }[]>([]);
 
   public loading = signal({
     categories: false,
     subcategories: false,
     extras: false,
+    default: false,
   });
 
   public foodFields: iDynamicField[] = [
@@ -103,12 +140,31 @@ export class AddEditItemDialogComponent implements OnInit {
       type: 'select',
       // validators: [Validators.required],
       padding: '10px',
-        onChange: (data: unknown, form: FormGroup) => {
-          const categoryId = String(data);
-          this.getSubcategoriesByCategory(categoryId);
-        },
+      onChange: async (data: unknown, form: FormGroup) => {
+        const categoryId = String(data);
+
+        if(!categoryId) return;
+
+        this.setLoading('default', true);
+        this.resetDependentFields(form);
+        this.dynamicForm.disableFields(['extras', 'subcategory_id']);
+
+        try {
+          const [extras, subcategories] = await Promise.all([
+            this.categoryExtraService.getExtrasByCategoryId(categoryId),
+            this.subcategoryService.getAllByField<{ id: string; name: string }>('category_id', categoryId)
+          ]);
+
+          this.setFoodFieldOptions('extras', extras);
+          this.setFoodFieldOptions('subcategory_id', subcategories);
+          this.dynamicForm.enableFields(['extras', 'subcategory_id']);
+          this.restorePreviousValuesIfSameCategory(form, categoryId);
+        } finally {
+          this.setLoading('default', false);
+        }
+      }
     },
-        {
+    {
       name: 'extras',
       label: 'Adicionais',
       type: 'multiselect',
@@ -150,35 +206,19 @@ export class AddEditItemDialogComponent implements OnInit {
     },
   ];
 
-  async ngOnInit() {
-    this.data.foodId ? this.getFoodDataById(this.data.foodId) : this.getAllCategoriesAndExtras();
-  }
 
-  private async getAllCategoriesAndExtras() {
-    await Promise.all([this.getAllCategories()]);
+  async ngOnInit() {
+    this.data.foodId ? this.getFoodDataById(this.data.foodId) : this.getAllCategories();
   }
 
   private async getAllCategories() {
     this.setLoading('categories', true);
     try {
-      const result = await this.companyCategoryViewService.getAllByField<iCategory>('company_id', this.companyId());
-      this.categories.set(result);
-      this.setFoodFieldOptions('category_id', result);
-      this.dynamicForm.isDisabled['extras'] = true;
-      this.dynamicForm.isDisabled['subcategory_id'] = true;
+      const categories = await this.companyCategoryViewService.getAllByField<iCategory>('company_id', this.companyId());
+      this.setFoodFieldOptions('category_id', categories);
+      this.dynamicForm.disableFields(['extras', 'subcategory_id']);
     } finally {
       this.setLoading('categories', false);
-    }
-  }
-
-  private async getAllExtras(categoryId: any) {
-    this.setLoading('extras', true);
-    try {
-      const extras = await this.categoryExtraService.getExtrasByCategoryId(categoryId);
-      this.extras.set(extras);
-      this.setFoodFieldOptions('extras', extras);
-    } finally {
-      this.setLoading('extras', false);
     }
   }
 
@@ -189,47 +229,88 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  private async getSubcategoriesByCategory(categoryId: string) {
-    this.setLoading('subcategories', true);
-    try {
-      const result = await this.subcategoryService.getAllByField<{ id: string; name: string }>('category_id', categoryId);
-      this.setFoodFieldOptions('subcategory_id', result);
-      this.getAllExtras(categoryId);
-      this.dynamicForm.isDisabled['extras'] = false;
-      this.dynamicForm.isDisabled['subcategory_id'] = false;
-    } finally {
-      this.setLoading('subcategories', false);
+  private resetDependentFields(form: FormGroup) {
+    form.patchValue({
+      extras: [],
+      subcategory_id: ''
+    });
+
+    this.setFoodFieldOptions('extras', []);
+    this.setFoodFieldOptions('subcategory_id', []);
+  }
+
+  private restorePreviousValuesIfSameCategory(form: FormGroup, selectedCategoryId: string) {
+    const originalCategoryId = form.get('category_id')?.value;
+
+    if (selectedCategoryId !== originalCategoryId) return;
+    const extrasOptions = this.getOptionValues('extras');
+    const subcategoryOptions = this.getOptionValues('subcategory_id');
+    const hasValidExtras = this.currentExtras.every(id => extrasOptions.includes(id));
+    const hasValidSubcategory = !this.currentSubcategoryId || subcategoryOptions.includes(this.currentSubcategoryId);
+
+    if (hasValidExtras && hasValidSubcategory) {
+      form.patchValue({
+        extras: this.currentExtras,
+        subcategory_id: this.currentSubcategoryId
+      });
     }
   }
 
-  private async getFoodDataById(foodId: number) {
-    this.loadingService.showLoading();
-    try {
-      const foodData = await this.foodService.getById<iFood>(foodId.toString());
-      this.imageUrl = foodData?.image_url || null;
+  private getOptionValues(fieldName: string): string[] {
+    return (this.foodFields.find(f => f.name === fieldName)?.options ?? []).map(o => o.value as string);
+  }
 
-      this.getAllCategories();
+ private async getFoodDataById(foodId: number) {
+  this.setLoading('default', true);
+  try {
+    // Supondo que seu foodService tenha método para consultar views
+    const foodData = await this.foodEdit.getByField<IFoodEditView>('id', foodId.toString());
+    console.log('Food Data:', foodData);
+    if (!foodData) return;
 
-      if (foodData) {
-        const extras = await this.extraService.getExtrasByFoodId(foodId.toString());
+    this.imageUrl = foodData.image_url || null;
+    this.currentExtras = foodData.food_extra_ids ?? [];
+    this.currentSubcategoryId = foodData.subcategory_id || '';
 
-        if (foodData.image_url) {
-          this.dynamicForm.selectedFileName = foodData.image_url;
-          this.dynamicForm.imagePreviewUrl = await this.imageService.getImageUrl(foodData.image_url);
-        }
+    // Atualiza as categorias da empresa direto da view
+    // this.categories.set(foodData.company_categories ?? []);
+    this.setFoodFieldOptions('category_id', foodData.company_categories ?? []);
 
-        this.dynamicForm.form.patchValue({
-          ...foodData,
-            category_id: foodData.category_id,
+    // Atualiza extras da categoria direto da view
+    this.setFoodFieldOptions('extras', foodData.category_extras ?? []);
 
-          extras: extras.map(extra => extra.id),
-          has_day_of_week: foodData.day_of_week !== null,
-          day_of_week: foodData.day_of_week || null,
-        });
-      }
-    } finally {
-      this.loadingService.hideLoading();
+    // Atualiza subcategorias da categoria direto da view
+    // this.subcategories.set(foodData.subcategories ?? []);
+    this.setFoodFieldOptions('subcategory_id', foodData.subcategories ?? []);
+
+    this.dynamicForm.disableFields(['extras', 'subcategory_id']);
+
+    if (foodData.image_url) {
+      await this.updateImagePreview(foodData.image_url);
     }
+
+    this.populateForm(foodData as any, foodData.food_extra_ids ?? [] );
+  } finally {
+    this.setLoading('default', false);
+  }
+}
+
+
+  private async updateImagePreview(imageUrl: string | null): Promise<void> {
+    if (!imageUrl) return;
+
+    this.dynamicForm.selectedFileName = imageUrl;
+    this.dynamicForm.imagePreviewUrl = await this.imageService.getImageUrl(imageUrl);
+  }
+
+  private populateForm(foodData: iFood, extras: { id: string }[]): void {
+    this.dynamicForm.form.patchValue({
+      ...foodData,
+      category_id: foodData.category_id,
+      extras: extras.map(extra => extra.id),
+      has_day_of_week: foodData.day_of_week !== null,
+      day_of_week: foodData.day_of_week || null,
+    });
   }
 
   public onCancel(): void {
@@ -243,7 +324,7 @@ export class AddEditItemDialogComponent implements OnInit {
   public async onSave(): Promise<void> {
     if (this.dynamicForm.form.invalid) return;
 
-    this.loadingService.showLoading();
+    this.setLoading('default', true);
     try {
       const formData = this.dynamicForm.form.value;
       const imageUrl = await this.handleImageUpload(formData);
@@ -269,7 +350,7 @@ export class AddEditItemDialogComponent implements OnInit {
     } catch {
       this.dialogRef.close(false);
     } finally {
-      this.loadingService.hideLoading();
+      this.setLoading('default', true);
     }
   }
 
@@ -298,14 +379,12 @@ export class AddEditItemDialogComponent implements OnInit {
     this.loading.set({ ...this.loading(), [key]: value });
   }
 
-
-
-  private openSubcategoryDialog(): MatDialogRef<SubcategoryDialogComponent> {
-    return this.dialog.open(SubcategoryDialogComponent, {
-      width: '400px',
-      data: this.categories,
-    });
-  }
+  // private openSubcategoryDialog(): MatDialogRef<SubcategoryDialogComponent> {
+  //   return this.dialog.open(SubcategoryDialogComponent, {
+  //     width: '400px',
+  //     data: this.categories,
+  //   });
+  // }
 
   private addDayOfWeekField(form: FormGroup): void {
     if (!form.contains('day_of_week') && form.get('has_day_of_week')?.value) {

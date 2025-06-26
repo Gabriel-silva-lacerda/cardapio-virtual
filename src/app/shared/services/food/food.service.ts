@@ -143,27 +143,26 @@ export class FoodService extends BaseSupabaseService {
     return food;
   }
 
-async updateFoodWithExtras(
-  foodId: number,
-  foodData: iFood,
-  extraIds: number[]
-): Promise<iFood> {
-  const updatedFood = await this.update<iFood>(foodId, foodData);
+  async updateFoodWithExtras(
+    foodId: number,
+    foodData: iFood,
+    extraIds: number[]
+  ): Promise<iFood> {
+    const updatedFood = await this.update<iFood>(foodId, foodData);
 
-  await this.foodExtrasService.deleteByFilter({ food_id: foodId });
+    await this.foodExtrasService.deleteByFilter({ food_id: foodId });
 
-  if (extraIds.length > 0) {
-    const foodExtras = extraIds.map((extraId) => ({
-      food_id: foodId,
-      extra_id: extraId,
-    }));
+    if (extraIds.length > 0) {
+      const foodExtras = extraIds.map((extraId) => ({
+        food_id: foodId,
+        extra_id: extraId,
+      }));
 
-    await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
+      await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
+    }
+
+    return updatedFood;
   }
-
-  return updatedFood;
-}
-
 
   public resetFoodValues() {
     this.selectedAdditions.set({});
@@ -184,5 +183,19 @@ async updateFoodWithExtras(
       totalPrice: cartItem ? cartItem.totalPrice : undefined,
       day_of_week: food.day_of_week,
     };
+  }
+
+    async getByIdFromView(id: string): Promise<any | null> {
+    const { data, error } = await this.supabaseService.supabase
+      .from('food_edit_view')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   }
 }
