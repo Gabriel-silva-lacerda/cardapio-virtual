@@ -4,7 +4,7 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { fadeInOut } from '@shared/utils/animations.utils';
+import { fadeInOut } from '@shared/utils/animations.util';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../../domain/auth/services/auth.service';
 import { CompanyService } from '@shared/services/company/company.service';

@@ -3,7 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Plans } from '@shared/interfaces/plans/plans.interface';
 import { PlansService } from '@shared/services/plans/plans.service';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { firstValueFrom } from 'rxjs';
 
 @Component({

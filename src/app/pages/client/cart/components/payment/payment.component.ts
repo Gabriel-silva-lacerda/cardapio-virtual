@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';
 
-import { transformCartItemsToOrderItems } from '@shared/utils/oder.utils';
+import { transformCartItemsToOrderItems } from '@shared/utils/oder.util';
 import { StripeService } from '@shared/services/stripe/stripe.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';

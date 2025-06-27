@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 
 @Component({
   selector: 'app-not-found',

@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FooterClientComponent } from '@core/layout/footer-client/footer-client.component';
 import { HeaderClientComponent } from '@core/layout/header-client/header-client.component';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 
 @Component({
   selector: 'app-page-layout-client',

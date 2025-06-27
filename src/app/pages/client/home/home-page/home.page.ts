@@ -1,12 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
-import { fade, fadeInOut, fadeScale } from '@shared/utils/animations.utils';
+import { fade, fadeInOut, fadeScale } from '@shared/utils/animations.util';
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
 import { FoodService } from '@shared/services/food/food.service';
-import { iCategory } from '../interfaces/category.interface';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
 import { SkeletonFoodComponent } from '../../menu/components/skeleton-food/skeleton-food.component';
@@ -17,6 +16,7 @@ import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.s
 import { iSubcategoryWithFoods } from '@shared/interfaces/subcategory/subcategory.interface';
 import { TesteService } from '@shared/services/full-menu/teste.service';
 import { iFullMenu } from '@shared/interfaces/full-menu/full-menu.interface';
+import { iCategory } from '@shared/interfaces/category/category.interface';
 
 @Component({
   selector: 'app-home-page',

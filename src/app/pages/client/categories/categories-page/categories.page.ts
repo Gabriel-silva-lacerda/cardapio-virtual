@@ -1,13 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CategoryService } from '../../home/services/category.service';
-import { iCategory } from '../../home/interfaces/category.interface';
 import { CategoriesComponent } from '../components/categories/categories.component';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { SkeletonCategoriesComponent } from '../components/skeleton-categories/skeleton-categories.component';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CompanyService } from '@shared/services/company/company.service';
+import { iCategory } from '@shared/interfaces/category/category.interface';
 
 @Component({
   selector: 'app-categories-page',

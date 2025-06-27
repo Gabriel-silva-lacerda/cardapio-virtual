@@ -1,6 +1,6 @@
 import { FoodDetailsComponent } from '../components/food-details/food-details.component';
 import { Component, inject, signal } from '@angular/core';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { ActivatedRoute } from '@angular/router';
 import { FooterFoodComponent } from '../components/footer-food/footer-food.component';
 import { FoodService } from '@shared/services/food/food.service';

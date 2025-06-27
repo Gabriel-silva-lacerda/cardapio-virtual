@@ -3,7 +3,7 @@ import { iFood } from '@shared/interfaces/food/food.interface';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
-import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
+import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
 import { iCategoryGroup } from '@shared/interfaces/group/group-food.interface';
 import { FoodExtrasService } from './food-extras.service';
 
@@ -74,7 +74,7 @@ export class FoodService extends BaseSupabaseService {
 
   async createFoodWithExtras(
     foodData: iFood,
-    extraIds: number[]
+    extraIds: string[]
   ): Promise<iFood> {
     const food = await this.insert<iFood>(foodData);
 
@@ -93,7 +93,7 @@ export class FoodService extends BaseSupabaseService {
   async updateFoodWithExtras(
     foodId: number,
     foodData: iFood,
-    extraIds: number[]
+    extraIds: string[]
   ): Promise<iFood> {
     const updatedFood = await this.update<iFood>(foodId, foodData);
 

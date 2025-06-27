@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { RouterLink } from '@angular/router';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({

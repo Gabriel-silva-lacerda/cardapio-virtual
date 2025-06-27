@@ -7,7 +7,7 @@ import { Company } from '@shared/interfaces/company/company';
 import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { StripeService } from '@shared/services/stripe/stripe.service';
-import { expandAnimation, fade } from '@shared/utils/animations.utils';
+import { expandAnimation, fade } from '@shared/utils/animations.util';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';

@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
-import { fade, fadeScale } from '@shared/utils/animations.utils';
+import { fade, fadeScale } from '@shared/utils/animations.util';
 import { firstValueFrom } from 'rxjs';
 import { SkeletonFoodComponent } from '../components/skeleton-food/skeleton-food.component';
 import { FormsModule } from '@angular/forms';

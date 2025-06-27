@@ -20,7 +20,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
-import { fadeInOut } from '@shared/utils/animations.utils';
+import { fadeInOut } from '@shared/utils/animations.util';
 import { PaymentComponent } from '../payment/payment.component';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { OrderService } from '@shared/services/order/order.service';

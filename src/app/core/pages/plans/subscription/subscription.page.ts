@@ -13,7 +13,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { StripeService } from '@shared/services/stripe/stripe.service';
 import { Company } from '@shared/interfaces/company/company';
 import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({

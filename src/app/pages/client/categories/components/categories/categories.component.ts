@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { iCategory } from 'src/app/pages/client/home/interfaces/category.interface';
 import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
@@ -21,6 +20,7 @@ import { FoodService } from '@shared/services/food/food.service';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { CompanyCategoryService } from '@shared/services/company/company-category.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
+import { iCategory } from '@shared/interfaces/category/category.interface';
 
 @Component({
   selector: 'app-categories',

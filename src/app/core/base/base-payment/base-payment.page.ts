@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { OrderService } from '@shared/services/order/order.service';
-import { mapPaymentStatus } from '@shared/utils/mapPaymentStatus.utils';
+import { mapPaymentStatus } from '@shared/utils/mapPaymentStatus.util';
 import { interval, Subscription, takeWhile } from 'rxjs';
 
 @Component({

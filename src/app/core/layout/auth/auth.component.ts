@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { TitleService } from '@shared/services/title/title.service';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 
 @Component({
   selector: 'app-login',

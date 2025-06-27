@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { BaseSupabaseService } from '../base/base-supabase.service';
 import { environment } from '@enviroment/environment.development';
-import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
+import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
 import { LocalStorageService } from '../localstorage/localstorage.service';
 
 @Injectable({

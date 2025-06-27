@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { Plans } from '@shared/interfaces/plans/plans.interface';
 import { PlansService } from '@shared/services/plans/plans.service';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { SearchCompanyDialogComponent } from './components/search-company-dialog/search-company-dialog.component';
 
 @Component({

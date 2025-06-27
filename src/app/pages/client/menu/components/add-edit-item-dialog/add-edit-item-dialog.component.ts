@@ -1,8 +1,6 @@
 import {
-  ChangeDetectorRef,
   Component,
   inject,
-  Inject,
   OnInit,
   signal,
   ViewChild,
@@ -10,68 +8,27 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
-  MatDialog,
   MatDialogRef,
 } from '@angular/material/dialog';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
-import { CompanyService } from '@shared/services/company/company.service';
 import { FoodService } from '@shared/services/food/food.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ImageService } from '@shared/services/image/image.service';
-import { iCategory } from '../../../home/interfaces/category.interface';
-import { CategoryService } from '../../../home/services/category.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { Subject } from 'rxjs';
 import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { AddExtraDialogComponent } from '../add-extra-dialog/add-extra-dialog.component';
-import { iFood } from '@shared/interfaces/food/food.interface';
-import { ExtraService } from '@shared/services/extra/extra.service';
+import { iFood, IFoodAdmin } from '@shared/interfaces/food/food.interface';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
-import { SubcategoryDialogComponent } from '../../../categories/components/subcategory-dialog/subcategory-dialog.component';
 import { SubcategoryService } from '../../../home/services/subcategory.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
-import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.service';
 import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
-
-interface IFoodEditView {
-  category_extras: Array<{
-    id: string;
-    name: string;
-    price: number;
-    company_id?: string | null;
-    // adicione outros campos que existirem em extras, se necessário
-  }>;
-  category_id: string;
-  category_name: string;
-  company_categories: Array<{
-    id: string;
-    name: string;
-    icon: string;
-    type_category: string | null;
-  }>;
-  company_id: string;
-  created_at: string; // ou Date, se você for converter
-  day_of_week: string | null;
-  description: string | null;
-  food_extra_ids: any[];
-  id: string;
-  image_url: string | null;
-  name: string;
-  price: number;
-  subcategories: Array<{
-    id: string;
-    name: string;
-    category_id: string;
-    created_at: string; // ou Date
-    company_id: string;
-  }>;
-  subcategory_id: string | null;
-}
+import { sanitizeFileName } from '@shared/utils/file-name/file-name.util';
+import { iCategory } from '@shared/interfaces/category/category.interface';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -106,8 +63,6 @@ export class AddEditItemDialogComponent implements OnInit {
 
   public loading = signal({
     categories: false,
-    subcategories: false,
-    extras: false,
     default: false,
   });
 
@@ -140,29 +95,7 @@ export class AddEditItemDialogComponent implements OnInit {
       type: 'select',
       validators: [Validators.required],
       padding: '10px',
-      onChange: async (data: unknown, form: FormGroup) => {
-        const categoryId = String(data);
-
-        if(!categoryId) return;
-
-        this.setLoading('default', true);
-        this.resetDependentFields(form);
-        this.dynamicForm.disableFields(['extras', 'subcategory_id']);
-
-        try {
-          const [extras, subcategories] = await Promise.all([
-            this.categoryExtraService.getExtrasByCategoryId(categoryId),
-            this.subcategoryService.getAllByField<{ id: string; name: string }>('category_id', categoryId)
-          ]);
-
-          this.setFoodFieldOptions('extras', extras);
-          this.setFoodFieldOptions('subcategory_id', subcategories);
-          this.dynamicForm.enableFields(['extras', 'subcategory_id']);
-          this.restorePreviousValuesIfSameCategory(form, categoryId);
-        } finally {
-          this.setLoading('default', false);
-        }
-      }
+      onChange: async (data: unknown, form: FormGroup) => this.onCategoryChange(data, form)
     },
     {
       name: 'extras',
@@ -207,7 +140,15 @@ export class AddEditItemDialogComponent implements OnInit {
   ];
 
   async ngOnInit() {
-    this.data.foodId ? this.getFoodDataById(this.data.foodId) : this.getAllCategories();
+    this.initializeForm();
+  }
+
+  private async initializeForm() {
+    if (this.data.foodId) {
+      await this.getFoodDataById(this.data.foodId);
+    } else {
+      // await this.getAllCategories();
+    }
   }
 
   private async getAllCategories() {
@@ -259,41 +200,40 @@ export class AddEditItemDialogComponent implements OnInit {
     return (this.foodFields.find(f => f.name === fieldName)?.options ?? []).map(o => o.value as string);
   }
 
- private async getFoodDataById(foodId: number) {
-  this.setLoading('default', true);
-  try {
-    // Supondo que seu foodService tenha método para consultar views
-    const foodData = await this.foodAdminViewService.getByField<IFoodEditView>('id', foodId.toString());
-    console.log('Food Data:', foodData);
-    if (!foodData) return;
+  private async getFoodDataById(foodId: number) {
+    this.setLoading('default', true);
+    try {
+      // Supondo que seu foodService tenha método para consultar views
+      const foodData = await this.foodAdminViewService.getByField<IFoodAdmin>('id', foodId.toString());
+      console.log('Food Data:', foodData);
+      if (!foodData) return;
 
-    this.imageUrl = foodData.image_url || null;
-    this.currentExtras = foodData.food_extra_ids ?? [];
-    this.currentSubcategoryId = foodData.subcategory_id || '';
+      this.imageUrl = foodData.image_url || null;
+      this.currentExtras = foodData.food_extra_ids ?? [];
+      this.currentSubcategoryId = foodData.subcategory_id || '';
 
-    // Atualiza as categorias da empresa direto da view
-    // this.categories.set(foodData.company_categories ?? []);
-    this.setFoodFieldOptions('category_id', foodData.company_categories ?? []);
+      // Atualiza as categorias da empresa direto da view
+      // this.categories.set(foodData.company_categories ?? []);
+      this.setFoodFieldOptions('category_id', foodData.company_categories ?? []);
 
-    // Atualiza extras da categoria direto da view
-    this.setFoodFieldOptions('extras', foodData.category_extras ?? []);
+      // Atualiza extras da categoria direto da view
+      this.setFoodFieldOptions('extras', foodData.category_extras ?? []);
 
-    // Atualiza subcategorias da categoria direto da view
-    // this.subcategories.set(foodData.subcategories ?? []);
-    this.setFoodFieldOptions('subcategory_id', foodData.subcategories ?? []);
+      // Atualiza subcategorias da categoria direto da view
+      // this.subcategories.set(foodData.subcategories ?? []);
+      this.setFoodFieldOptions('subcategory_id', foodData.subcategories ?? []);
 
-    this.dynamicForm.disableFields(['extras', 'subcategory_id']);
+      this.dynamicForm.disableFields(['extras', 'subcategory_id']);
 
-    if (foodData.image_url) {
-      await this.updateImagePreview(foodData.image_url);
+      if (foodData.image_url) {
+        await this.updateImagePreview(foodData.image_url);
+      }
+
+      this.populateForm(foodData, foodData.food_extra_ids ?? [] );
+    } finally {
+      this.setLoading('default', false);
     }
-
-    this.populateForm(foodData as any, foodData.food_extra_ids ?? [] );
-  } finally {
-    this.setLoading('default', false);
   }
-}
-
 
   private async updateImagePreview(imageUrl: string | null): Promise<void> {
     if (!imageUrl) return;
@@ -302,12 +242,11 @@ export class AddEditItemDialogComponent implements OnInit {
     this.dynamicForm.imagePreviewUrl = await this.imageService.getImageUrl(imageUrl);
   }
 
-  private populateForm(foodData: iFood, extras: { id: string }[]): void {
-
+  private populateForm(foodData: IFoodAdmin, extrasId: string[]): void {
     this.dynamicForm.form.patchValue({
       ...foodData,
       category_id: foodData.category_id,
-      extras: extras.map(extra => extra?.id),
+      extras: extrasId,
       has_day_of_week: foodData.day_of_week !== null,
       day_of_week: foodData.day_of_week || null,
     });
@@ -328,21 +267,15 @@ export class AddEditItemDialogComponent implements OnInit {
     try {
       const formData = this.dynamicForm.form.value;
       const imageUrl = await this.handleImageUpload(formData);
-
-      const { extras = [], ...foodData } = {
-        ...formData,
-        image_url: imageUrl || 'food-images/default-food.png',
-        company_id: this.companyId(),
-        day_of_week: formData.day_of_week || null,
-      };
-
-      const extraIds = extras;
+      const data = this.buildFoodPayload(this.dynamicForm.form.value, imageUrl);
+      const extraIds = data.extras;
       let foods;
+
       if (this.data.foodId) {
-        foods = await this.foodService.updateFoodWithExtras(this.data.foodId, foodData, extraIds);
+        foods = await this.foodService.updateFoodWithExtras(this.data.foodId, data.foodData, extraIds);
         this.toastr.success('Item atualizado com sucesso!');
       } else {
-        foods = await this.foodService.createFoodWithExtras(foodData, extraIds);
+        foods = await this.foodService.createFoodWithExtras(data.foodData, extraIds);
         this.toastr.success('Item criado com sucesso!');
       }
 
@@ -354,6 +287,16 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
+  private buildFoodPayload(formData: any, imageUrl: string | null = null): { foodData: iFood; extras: string[] } {
+    const { extras = [], ...foodData } = {
+      ...formData,
+      image_url: imageUrl || 'food-images/default-food.png',
+      company_id: this.companyId(),
+      day_of_week: formData.day_of_week || null,
+    };
+    return { foodData, extras };
+  }
+
   private async handleImageUpload(formData: any): Promise<string | null> {
     const file = formData.image_url;
     if (!(file instanceof File)) return formData.image_url;
@@ -362,29 +305,36 @@ export class AddEditItemDialogComponent implements OnInit {
       await this.imageService.deleteImage(this.imageUrl);
     }
 
-    const sanitized = this.sanitizeFileName(file.name);
+    const sanitized = sanitizeFileName(file.name);
     return this.imageService.uploadImage(file, `food-images/${sanitized}`);
-  }
-
-  private sanitizeFileName(fileName: string): string {
-    return fileName
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/[^a-zA-Z0-9.-]/g, '')
-      .toLowerCase();
   }
 
   private setLoading(key: string, value: boolean): void {
     this.loading.set({ ...this.loading(), [key]: value });
   }
 
-  // private openSubcategoryDialog(): MatDialogRef<SubcategoryDialogComponent> {
-  //   return this.dialog.open(SubcategoryDialogComponent, {
-  //     width: '400px',
-  //     data: this.categories,
-  //   });
-  // }
+  private async onCategoryChange(data: unknown, form: FormGroup) {
+    const categoryId = String(data);
+
+    if(!categoryId) return;
+      this.setLoading('default', true);
+      this.resetDependentFields(form);
+      this.dynamicForm.disableFields(['extras', 'subcategory_id']);
+
+      try {
+        const [extras, subcategories] = await Promise.all([
+          this.categoryExtraService.getExtrasByCategoryId(categoryId),
+          this.subcategoryService.getAllByField<{ id: string; name: string }>('category_id', categoryId)
+        ]);
+
+        this.setFoodFieldOptions('extras', extras);
+        this.setFoodFieldOptions('subcategory_id', subcategories);
+        this.dynamicForm.enableFields(['extras', 'subcategory_id']);
+        this.restorePreviousValuesIfSameCategory(form, categoryId);
+      } finally {
+        this.setLoading('default', false);
+      }
+    }
 
   private addDayOfWeekField(form: FormGroup): void {
     if (!form.contains('day_of_week') && form.get('has_day_of_week')?.value) {
@@ -402,10 +352,20 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-   private removeDayOfWeekField(form: FormGroup): void {
+  private removeDayOfWeekField(form: FormGroup): void {
     if (form.contains('day_of_week')) {
       form.removeControl('day_of_week');
       this.foodFields = this.foodFields.filter(f => f.name !== 'day_of_week');
     }
   }
 }
+
+  // private openSubcategoryDialog(): MatDialogRef<SubcategoryDialogComponent> {
+  //   return this.dialog.open(SubcategoryDialogComponent, {
+  //     width: '400px',
+  //     data: this.categories,
+  //   });
+  // }
+
+
+

@@ -11,7 +11,7 @@ import { FoodAdminViewService } from '@shared/services/food/food-admin-view.serv
 import { FoodService } from '@shared/services/food/food.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
+import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
 import { ToastrService } from 'ngx-toastr';
 import { AddEditItemDialogComponent } from 'src/app/pages/client/menu/components/add-edit-item-dialog/add-edit-item-dialog.component';
 

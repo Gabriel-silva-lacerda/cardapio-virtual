@@ -21,7 +21,7 @@ import { DayOfWeekTranslatePipe } from 'src/app/widget/pipes/day-of-week-transla
 import {
   getCurrentDayOfWeek,
   getUnavailableItemMessage,
-} from '@shared/utils/day.utils';
+} from '@shared/utils/day.util';
 import { FoodService } from '@shared/services/food/food.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';

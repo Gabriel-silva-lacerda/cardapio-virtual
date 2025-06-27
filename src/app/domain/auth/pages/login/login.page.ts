@@ -9,7 +9,7 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { CompanyService } from '@shared/services/company/company.service';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from '@shared/services/error-handler/error-handler.service';
-import { fade, fadeIn } from '@shared/utils/animations.utils';
+import { fade, fadeIn } from '@shared/utils/animations.util';
 import { AuthService } from '../../services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { UserCompanyService } from '../../services/user-company.service';

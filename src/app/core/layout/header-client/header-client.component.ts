@@ -4,7 +4,7 @@ import { BackButtonComponent } from '@shared/components/back-button/back-button.
 import { CartComponent } from '@shared/components/cart/cart.component';
 import { SideMenuComponent } from '@shared/components/side-menu/side-menu.component';
 import { iMenuItem } from '@shared/components/side-menu/components/menu-list/menu-list.interface';
-import { fade } from '@shared/utils/animations.utils';
+import { fade } from '@shared/utils/animations.util';
 import { AuthService } from '../../../domain/auth/services/auth.service';
 
 @Component({

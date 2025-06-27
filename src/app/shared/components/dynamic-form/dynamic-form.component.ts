@@ -13,7 +13,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ERROR_MESSAGES, ErrorMessages } from './errors/form-errors';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { InputTextModule } from 'primeng/inputtext';
-import { fadeIn } from '@shared/utils/animations.utils';
+import { fadeIn } from '@shared/utils/animations.util';
 import { NgxMaskDirective } from 'ngx-mask';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MatTooltipModule } from '@angular/material/tooltip';

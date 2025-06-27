@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { iFullMenu } from '@shared/interfaces/full-menu/full-menu.interface';
 import { BaseSupabaseService } from '@shared/services/base/base-supabase.service';
-import { getImageUrl } from '@shared/utils/getImage/get-image.utits';
+import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
 
 @Injectable({
   providedIn: 'root'
