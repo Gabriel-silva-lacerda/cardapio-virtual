@@ -6,6 +6,8 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { SkeletonCategoriesComponent } from '../components/skeleton-categories/skeleton-categories.component';
 import { fade } from '@shared/utils/animations.utils';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
+import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
+import { CompanyService } from '@shared/services/company/company.service';
 
 @Component({
   selector: 'app-categories-page',
@@ -19,16 +21,10 @@ import { PageLayoutClientComponent } from '@shared/components/page-layout-client
   animations: [fade],
 })
 export class CategoriesPage implements OnInit {
-  private categoryService = inject(CategoryService);
-  private localStorageService = inject(LocalStorageService);
-
+  private companyCategoryViewService = inject(CompanyCategoryViewService);
+  private companyService = inject(CompanyService);
   public loading = signal(false);
   public categories = signal<iCategory[]>([]);
-  public companyId = this.localStorageService.getSignal('companyId', 0);
-  public companyName = this.localStorageService.getSignal<string>(
-    'companyName',
-    '[]'
-  );
 
   ngOnInit(): void {
     this.getCategories();
@@ -38,7 +34,10 @@ export class CategoriesPage implements OnInit {
     this.loading.set(true);
 
     try {
-      const categories = await this.categoryService.getAll<iCategory>();
+      const categories = await this.companyCategoryViewService.getAllByField<iCategory>(
+        'company_id',
+        this.companyService.companyId()
+      );
       this.categories.set(categories);
     } finally {
       this.loading.set(false);

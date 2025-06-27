@@ -9,8 +9,8 @@
         mais +</a>
     </div>
     <ul class="flex gap-4 overflow-auto">
-      @for (fullMenuItem of fullMenu(); track $index) {
-      <app-categories [fullMenuItem]="fullMenuItem" customClass="py-3 px-4" />
+      @for (category of categories(); track $index) {
+      <app-categories [category]="category" customClass="py-3 px-4" />
       }
     </ul>
     }

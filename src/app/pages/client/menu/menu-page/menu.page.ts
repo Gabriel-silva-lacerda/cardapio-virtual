@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodMenuComponent } from '@shared/components/food-menu/food-menu.component';
 import { fade, fadeScale } from '@shared/utils/animations.utils';
-import { iFullMenu } from '@shared/interfaces/food/food.interface';
 import { firstValueFrom } from 'rxjs';
 import { SkeletonFoodComponent } from '../components/skeleton-food/skeleton-food.component';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +12,7 @@ import { SubcategoryItemComponent } from '@shared/components/subcategory-item/su
 import { SkeletonSubcategoriesComponent } from '../components/skeleton-subcategories/skeleton-subcategories.component';
 import { PageLayoutClientComponent } from '@shared/components/page-layout-client/page-layout-client.component';
 import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.service';
+import { iFullMenu } from '@shared/interfaces/full-menu/full-menu.interface';
 
 @Component({
   selector: 'app-food-page',

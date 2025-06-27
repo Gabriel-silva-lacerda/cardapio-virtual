@@ -16,7 +16,7 @@ export class AdminRedirectGuard implements CanActivate {
     const adminMode = this.authService.adminMode();
     const companyName = this.companyService.companyName();
     if (isAdmin && adminMode) {
-      return this.router.createUrlTree(['/app/admin', companyName]);
+  return this.router.createUrlTree(['/app', companyName, 'admin']);
     }
 
     return true;

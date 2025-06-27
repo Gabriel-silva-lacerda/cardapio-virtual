@@ -43,6 +43,8 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
       pageSize
     );
 
+    console.log('Fetched foods:', result);
+
     return this.addImageUrls(result);
   }
 

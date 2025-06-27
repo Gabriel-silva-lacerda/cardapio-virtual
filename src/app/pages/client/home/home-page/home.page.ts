@@ -6,7 +6,6 @@ import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
 import { FoodService } from '@shared/services/food/food.service';
-import { iFullMenu } from '@shared/interfaces/food/food.interface';
 import { iCategory } from '../interfaces/category.interface';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
@@ -17,6 +16,7 @@ import { CompanyService } from '@shared/services/company/company.service';
 import { FullMenuViewService } from '@shared/services/full-menu/full-menu-view.service';
 import { iSubcategoryWithFoods } from '@shared/interfaces/subcategory/subcategory.interface';
 import { TesteService } from '@shared/services/full-menu/teste.service';
+import { iFullMenu } from '@shared/interfaces/full-menu/full-menu.interface';
 
 @Component({
   selector: 'app-home-page',
@@ -36,7 +36,6 @@ import { TesteService } from '@shared/services/full-menu/teste.service';
 })
 export class HomePage implements OnInit {
   private fullMenuViewService = inject(FullMenuViewService);
-  private testeService = inject(TesteService)
   public authService = inject(AuthService);
   public foodService = inject(FoodService);
   public subcategories = signal<iSubcategoryWithFoods[]>([]);
@@ -60,6 +59,7 @@ export class HomePage implements OnInit {
       const fullMenu = await this.fullMenuViewService.fullMenu(this.companyService.companyId());
       this.fullMenu.set(fullMenu);
       this.setSubcategoriesFrom(fullMenu);
+      this.categoriesOnly(fullMenu);
     } finally {
       this.loading.set(false);
     }
@@ -69,4 +69,13 @@ export class HomePage implements OnInit {
     const allSubcategories = menu.flatMap(c => c.subcategories).filter(Boolean);
     this.subcategories.set(allSubcategories);
   }
+
+  private categoriesOnly(fullMenu: iFullMenu[]): void {
+    this.categories.set(fullMenu.map(c => ({
+      id: c.category_id,
+      name: c.category_name,
+      icon: c.category_icon,
+    })));
+  }
+
 }

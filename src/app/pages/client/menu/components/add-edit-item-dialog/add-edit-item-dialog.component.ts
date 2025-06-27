@@ -116,7 +116,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'name',
       label: 'Nome do Item',
       type: 'text',
-      // validators: [Validators.required],
+      validators: [Validators.required],
       padding: '10px',
     },
     {
@@ -130,7 +130,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'price',
       label: 'Preço',
       type: 'text',
-      // validators: [Validators.required],
+      validators: [Validators.required],
       padding: '10px',
       directive: 'onlyNumbers',
     },
@@ -138,7 +138,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'category_id',
       label: 'Categoria',
       type: 'select',
-      // validators: [Validators.required],
+      validators: [Validators.required],
       padding: '10px',
       onChange: async (data: unknown, form: FormGroup) => {
         const categoryId = String(data);
@@ -176,7 +176,7 @@ export class AddEditItemDialogComponent implements OnInit {
       name: 'subcategory_id',
       label: 'Subcategoria',
       type: 'select',
-      // validators: [Validators.required],
+      validators: [Validators.required],
       padding: '10px',
     },
     // {
@@ -205,7 +205,6 @@ export class AddEditItemDialogComponent implements OnInit {
       onFileUpload: async (file, form) => form.patchValue({ image_url: file })
     },
   ];
-
 
   async ngOnInit() {
     this.data.foodId ? this.getFoodDataById(this.data.foodId) : this.getAllCategories();

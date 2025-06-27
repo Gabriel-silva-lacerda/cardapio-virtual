@@ -20,7 +20,7 @@
       [class]="adminReturnButtonClass"
     >
     <button
-      [routerLink]="['/app/admin', companyService.companyName()]"
+      [routerLink]="['/app/', companyService.companyName(), 'admin']"
       (click)="authService.setAdminMode(false)"
       class="bg-primary text-white w-[50px] h-[50px] flex items-center justify-center rounded-full shadow-lg hover:bg-primary-dark transition relative"
     >

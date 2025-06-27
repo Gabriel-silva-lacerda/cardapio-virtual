@@ -7,12 +7,11 @@
     } @else {
     <div class="grid grid-cols-2 gap-2 px-3">
       @for (category of this.categories(); track $index) {
-      <!-- <app-categories
+      <app-categories
         customClass="py-6"
         [category]="category"
         [showItem]="true"
-      /> -->
-
+      />
       }
     </div>
   }

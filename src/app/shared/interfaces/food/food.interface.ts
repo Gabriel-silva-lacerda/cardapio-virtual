@@ -1,5 +1,4 @@
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
-import { iSubcategoryWithFoods } from '../subcategory/subcategory.interface';
 
 export interface iFood {
   id?: string;
@@ -14,10 +13,3 @@ export interface iFood {
   subcategory_id?: string;
 }
 
-export interface iFullMenu {
-  category_id: string;
-  category_name: string;
-  category_icon: string;
-  company_id: string;
-  subcategories: iSubcategoryWithFoods[];
-}
