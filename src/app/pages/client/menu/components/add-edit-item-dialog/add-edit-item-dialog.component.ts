@@ -15,7 +15,6 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { FoodService } from '@shared/services/food/food.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ImageService } from '@shared/services/image/image.service';
-import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { Subject } from 'rxjs';
 import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
@@ -29,6 +28,7 @@ import { CategoryExtraService } from '@shared/services/extra/category-extra.serv
 import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
 import { sanitizeFileName } from '@shared/utils/file-name/file-name.util';
 import { iCategory } from '@shared/interfaces/category/category.interface';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -46,7 +46,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private localStorageService = inject(LocalStorageService);
   private foodService = inject(FoodService);
   private imageService = inject(ImageService);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   private subcategoryService = inject(SubcategoryService);
   private companyCategoryViewService = inject(CompanyCategoryViewService)
   private categoryExtraService = inject(CategoryExtraService);
@@ -147,7 +147,7 @@ export class AddEditItemDialogComponent implements OnInit {
     if (this.data.foodId) {
       await this.getFoodDataById(this.data.foodId);
     } else {
-      // await this.getAllCategories();
+      await this.getAllCategories();
     }
   }
 
@@ -273,10 +273,10 @@ export class AddEditItemDialogComponent implements OnInit {
 
       if (this.data.foodId) {
         foods = await this.foodService.updateFoodWithExtras(this.data.foodId, data.foodData, extraIds);
-        this.toastr.success('Item atualizado com sucesso!');
+        this.toast.success('Item atualizado com sucesso!');
       } else {
         foods = await this.foodService.createFoodWithExtras(data.foodData, extraIds);
-        this.toastr.success('Item criado com sucesso!');
+        this.toast.success('Item criado com sucesso!');
       }
 
       this.dialogRef.close(foods);

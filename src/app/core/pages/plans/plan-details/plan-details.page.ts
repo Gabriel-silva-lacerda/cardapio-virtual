@@ -17,7 +17,6 @@ export class PlanDetailsPage {
   public plan = signal<Plans>({} as Plans);
   private route = inject(ActivatedRoute);
   private plansService = inject(PlansService);
-  // private toastr = inject(ToastrService);
   // private stripeService = inject(StripeService);
   private planId!: number | string | null;
   async ngOnInit() {

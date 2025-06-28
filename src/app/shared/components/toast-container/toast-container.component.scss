@@ -1,0 +1,41 @@
+@keyframes fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-slide-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.95);
+  }
+}
+
+.animate-fade-slide {
+  animation: fade-slide 0.2s ease-out forwards;
+}
+
+.animate-fade-slide-out {
+  animation: fade-slide-out 0.2s ease-in forwards;
+}
+
+.teste {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
+  pointer-events: all;
+  border-radius: 5px;
+}

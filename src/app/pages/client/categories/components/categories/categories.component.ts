@@ -13,7 +13,6 @@ import { CategoryService } from 'src/app/pages/client/home/services/category.ser
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FoodService } from '@shared/services/food/food.service';
@@ -21,6 +20,7 @@ import { LoadingScreenComponent } from '@shared/components/loading-screen/loadin
 import { CompanyCategoryService } from '@shared/services/company/company-category.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { iCategory } from '@shared/interfaces/category/category.interface';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-categories',
@@ -37,7 +37,7 @@ export class CategoriesComponent {
   private categoryService = inject(CategoryService);
   private foodService = inject(FoodService);
   private authService = inject(AuthService);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   private dialog = inject(MatDialog);
   private companyCategoryService = inject(CompanyCategoryService);
   private companyCategoryViewService = inject(CompanyCategoryViewService);
@@ -73,7 +73,7 @@ export class CategoriesComponent {
 
       this.isCategoryAssociatedMap[categoryId] = true;
 
-      this.toastr.success('Categoria foi adicionada com sucesso');
+      this.toast.success('Categoria foi adicionada com sucesso');
     } finally {
       this.loading.update((l) => ({ ...l, setCategories: false }));
     }
@@ -99,7 +99,7 @@ export class CategoriesComponent {
             );
 
             if (hasFoods) {
-              this.toastr.warning(
+              this.toast.warning(
                 'Não é possível excluir a categoria pois há comidas associadas a ela.'
               );
               return;
@@ -112,7 +112,7 @@ export class CategoriesComponent {
 
             delete this.isCategoryAssociatedMap[categoryId];
 
-            this.toastr.success('Categoria removida com sucesso!');
+            this.toast.success('Categoria removida com sucesso!');
             dialogRef.close(true);
           } finally {
             this.loadingService.hideLoading();

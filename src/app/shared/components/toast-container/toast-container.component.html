@@ -1,0 +1,35 @@
+<div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[1002] space-y-2">
+  @for (msg of messages(); track msg.id) {
+    <div
+class="flex items-center gap-2 px-4 py-2 bg-white rounded-md shadow-[0_3px_6px_-4px_rgba(0,0,0,0.12),_0_6px_16px_rgba(0,0,0,0.08),_0_9px_28px_8px_rgba(0,0,0,0.05)] pointer-events-auto"      [ngClass]="{
+        'animate-fade-slide': msg.visible,
+        'animate-fade-slide-out': !msg.visible
+      }"
+      >
+      <span
+        class="text-xl"
+        [ngClass]="{
+          'text-green-500': msg.type === 'success',
+          'text-red-500': msg.type === 'error',
+          'text-yellow-500': msg.type === 'warning'
+        }"
+      >
+        @switch (msg.type) {
+          @case ('success') {
+            <i class="fas fa-check-circle text-green-600 text-xl mt-1"></i>
+          }
+          @case ('error') {
+            <i class="fas fa-times-circle text-red-600 text-xl mt-1"></i>
+          }
+          @case ('warning') {
+            <i class="fas fa-exclamation-circle text-yellow-500 text-xl mt-1"></i>
+          }
+          @default {
+            <i class="fas fa-info-circle text-gray-500 text-xl mt-1"></i>
+          }
+        }
+      </span>
+      <span class="text-sm text-gray-700">{{ msg.message }}</span>
+    </div>
+  }
+</div>

@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, input, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
 import { BackButtonComponent } from '@shared/components/back-button/back-button.component';
 import { CartComponent } from '@shared/components/cart/cart.component';
-import { SideMenuComponent } from '@shared/components/side-menu/side-menu.component';
 import { iMenuItem } from '@shared/components/side-menu/components/menu-list/menu-list.interface';
 import { fade } from '@shared/utils/animations.util';
 import { AuthService } from '../../../domain/auth/services/auth.service';

@@ -30,7 +30,7 @@ export class StripeService extends BaseService {
       .subscribe(async (response) => {
 
         if (response.error) {
-          this.toastr.error(response.message, 'Erro');
+          this.toast.error(response.message);
           return;
         }
 
@@ -98,9 +98,8 @@ export class StripeService extends BaseService {
     ).subscribe({
       next: async (response) => {
         if (response.error) {
-          this.toastr.error(
-            response.message,
-            'Erro ao criar sessão de pagamento'
+          this.toast.error(
+            response.message
           );
           return;
         }
@@ -113,7 +112,7 @@ export class StripeService extends BaseService {
       },
       error: (err) => {
         console.error('❌ Erro na requisição:', err);
-        this.toastr.error('Erro inesperado ao iniciar pagamento.');
+        this.toast.error('Erro inesperado ao iniciar pagamento.');
         this.loadingService.hideLoading();
       },
     });

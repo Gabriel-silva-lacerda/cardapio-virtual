@@ -1,17 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
-import { ToastrService } from 'ngx-toastr';
+import { catchError } from 'rxjs/operators';
 import { LoadingService } from '../loading/loading.service';
 import { environment } from '@enviroment/environment.development';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export abstract class BaseService {
   protected http: HttpClient = inject(HttpClient);
-  protected toastr: ToastrService = inject(ToastrService);
+  protected toast = inject(ToastService);
   protected apiUrl: string = environment.API_URL;
   protected apiCep = environment.VIACEP_URL;
 

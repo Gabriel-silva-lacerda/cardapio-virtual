@@ -15,7 +15,7 @@ export class SubcategoryService extends BaseSupabaseService  {
       .order('name', { ascending: true });
 
     if (error) {
-      this.toastr.error('Erro ao buscar subcategorias:', error.message);
+      this.toast.error('Erro ao buscar subcategorias');
       return;
     }
 

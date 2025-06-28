@@ -3,10 +3,9 @@ import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { injectSupabase } from '@shared/functions/inject-supabase.function';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
-import { ToastrService } from 'ngx-toastr';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { CompanyService } from '@shared/services/company/company.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -20,9 +19,8 @@ export class ResetPasswordComponent {
 
   private supabase = injectSupabase();
   private router = inject(Router);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   public companyService = inject(CompanyService);
-
 
   public resetFields: iDynamicField[] = [
     {
@@ -35,7 +33,7 @@ export class ResetPasswordComponent {
 
   public async submit() {
     if (!this.dynamicForm.form.valid) {
-      this.toastr.error('Preencha o campo senha!', 'Erro!');
+      this.toast.error('Preencha o campo senha!');
       return;
     }
 
@@ -46,12 +44,12 @@ export class ResetPasswordComponent {
     });
 
     if (error) {
-      this.toastr.error(error.message, 'Erro');
+      this.toast.error(error.message);
       return;
     }
 
     this.dynamicForm.form.reset();
-    this.toastr.success('Senha atualizada com sucesso!', 'Sucesso!');
+    this.toast.success('Senha atualizada com sucesso!');
     this.router.navigate(['/auth', this.companyService.companyName()]);
   }
 }

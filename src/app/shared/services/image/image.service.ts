@@ -11,7 +11,7 @@ export class ImageService extends BaseSupabaseService {
   async uploadImage(file: File, path: string): Promise<string | null> {
     const { data, error } = await this.supabaseService.supabase.storage.from('images').upload(path, file, { upsert: true });
     if (error) {
-      this.toastr.error('Erro no upload:', error.message);
+      this.toast.error('Erro no upload');
       return null;
     }
     return data?.path || null;
@@ -25,7 +25,7 @@ export class ImageService extends BaseSupabaseService {
       const { error } = await this.supabaseService.supabase.storage.from('images').remove(imagePath);
 
       if (error) {
-        this.toastr.error('Erro ao deletar imagem do Storage:', error.message)
+        this.toast.error('Erro ao deletar imagem do Storage')
         return false;
       }
     }
@@ -39,7 +39,7 @@ export class ImageService extends BaseSupabaseService {
       .createSignedUrl(imagePath, 3600);
 
     if (error) {
-      this.toastr.error('Erro ao buscar a imagem:', error.message);
+      this.toast.error('Erro ao buscar a imagem');
       return null;
     }
 

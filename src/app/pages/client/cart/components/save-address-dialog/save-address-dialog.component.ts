@@ -7,6 +7,7 @@ import { DeliveryAddress } from '../../interfaces/address';
 import { OrderService } from '@shared/services/order/order.service';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-save-address-dialog',
@@ -21,6 +22,8 @@ import { GenericDialogComponent } from '@shared/components/generic-dialog/generi
 })
 export class SaveAddressDialogComponent {
   private orderService = inject(OrderService);
+  private toast = inject(ToastService);
+
   public loadingSaveAddress = signal(false);
   public selectedAddress = signal<DeliveryAddress | null>(null);
 
@@ -80,7 +83,7 @@ export class SaveAddressDialogComponent {
 
       this.dialogRef.close(address);
     } catch (error) {
-      this.orderService.toastr.error('Erro ao definir endereço como padrão');
+      this.toast.error('Erro ao definir endereço como padrão');
       this.loadingSaveAddress.set(false);
     } finally {
       this.loadingSaveAddress.set(false);

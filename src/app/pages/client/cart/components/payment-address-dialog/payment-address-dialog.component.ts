@@ -17,7 +17,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { ToastrService } from 'ngx-toastr';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
 import { fadeInOut } from '@shared/utils/animations.util';
@@ -36,6 +35,7 @@ import { SkeletonCardComponent } from '../skeleton-card/skeleton-card.component'
 import { SkeletonButtonComponent } from '../skeleton-button/skeleton-button.component';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 import { DeliveryAddressService } from '@shared/services/order/delivery-address.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-payment-address-dialog',
@@ -58,7 +58,7 @@ import { DeliveryAddressService } from '@shared/services/order/delivery-address.
 export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private cdr = inject(ChangeDetectorRef);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   private orderService = inject(OrderService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
@@ -174,7 +174,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
         this.selectedAddress.set(selected);
       }
     } catch (error) {
-      this.orderService.toastr.error('Erro ao carregar endereço padrão');
+      this.toast.error('Erro ao carregar endereço padrão');
     } finally {
       this.loading.update((l) => ({ ...l, selectedAddressFromDatabase: false }));
     }
@@ -198,7 +198,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
     this.viaCepService.getCep(value).subscribe({
       next: (addressData: ViaCep | ViaCepError) => {
         if ((addressData as ViaCepError).erro === 'true') {
-          this.toastr.error('CEP não encontrado ou inválido.');
+          this.toast.error('CEP não encontrado ou inválido.');
 
           form.patchValue({
             street: null,
@@ -237,7 +237,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
         }
       },
       error: () => {
-        this.toastr.error('CEP não encontrado ou inválido.');
+        this.toast.error('CEP não encontrado ou inválido.');
 
         form.patchValue({
           street: null,
@@ -282,7 +282,7 @@ export class PaymentAddressDialogComponent implements OnInit, AfterViewInit {
 
   async onConfirm() {
     if (this.selectedDelivery() && this.dynamicForm?.form?.invalid) {
-      this.toastr.error('Por favor, preencha todos os campos obrigatórios.');
+      this.toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 

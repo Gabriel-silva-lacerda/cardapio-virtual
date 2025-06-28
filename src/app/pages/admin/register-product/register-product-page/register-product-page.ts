@@ -11,8 +11,8 @@ import { FoodAdminViewService } from '@shared/services/food/food-admin-view.serv
 import { FoodService } from '@shared/services/food/food.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
-import { ToastrService } from 'ngx-toastr';
 import { AddEditItemDialogComponent } from 'src/app/pages/client/menu/components/add-edit-item-dialog/add-edit-item-dialog.component';
 
 @Component({
@@ -27,7 +27,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
   private foodAdminViewService = inject(FoodAdminViewService);
   private loadingService = inject(LoadingService);
   private imageService = inject(ImageService);
-  private toastrService = inject(ToastrService);
+  private toast = inject(ToastService);
 
   public loading = signal(false);
 
@@ -109,7 +109,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
         const error = await this.foodService.delete(food.id);
 
         if (!error && deletedImage) {
-          this.toastrService.success('Item deletado com sucesso!');
+          this.toast.success('Item deletado com sucesso!');
           this.deleteItemFromList(food.id);
           dialogRef.close(true);
         }
@@ -126,6 +126,5 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
       return updated;
     });
   }
-
 }
 

@@ -7,7 +7,7 @@ import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynami
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
 import { ExtraService } from '@shared/services/extra/extra.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-add-extra-dialog',
@@ -19,7 +19,7 @@ export class AddExtraDialogComponent {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
 
   private extraService = inject(ExtraService);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   public loadingService = inject(LoadingService);
 
   public existingExtras: iExtra[] = [];
@@ -122,7 +122,7 @@ export class AddExtraDialogComponent {
     const extraData = await this.extraService.insert<iExtra>({ name, price });
 
     if (extraData) {
-      this.toastr.success('Extra adicionado com sucesso!');
+      this.toast.success('Extra adicionado com sucesso!');
       this.dialogRef.close(true);
     }
   }

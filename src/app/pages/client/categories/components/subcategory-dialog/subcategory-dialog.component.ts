@@ -1,4 +1,3 @@
-import { ToastrService } from 'ngx-toastr';
 import {
   Component,
   inject,
@@ -10,11 +9,12 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
-import { iCategory } from 'src/app/pages/client/home/interfaces/category.interface';
 import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { Validators } from '@angular/forms';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { SubcategoryService } from '../../../home/services/subcategory.service';
+import { iCategory } from '@shared/interfaces/category/category.interface';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-subcategory-dialog',
@@ -29,7 +29,7 @@ export class SubcategoryDialogComponent implements OnInit{
   private categoryService = inject(CategoryService);
   private subcategoryService = inject(SubcategoryService);
   private localStorageService = inject(LocalStorageService);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
 
   public loading = signal(false);
   public companyId = this.localStorageService.getSignal('companyId', '0');
@@ -71,7 +71,7 @@ export class SubcategoryDialogComponent implements OnInit{
     const { name, category_id } = this.dynamicForm.form.value;
 
     if (!name || !category_id) {
-      this.toastr.error('Preencha todos os campos obrigatórios');
+      this.toast.error('Preencha todos os campos obrigatórios');
       return;
     }
 
@@ -83,7 +83,7 @@ export class SubcategoryDialogComponent implements OnInit{
         company_id: this.companyId(),
       });
 
-      this.toastr.success('Subcategoria criada com sucesso!');
+      this.toast.success('Subcategoria criada com sucesso!');
       this.dialogRef.close(category_id);
     } finally {
       this.loading.set(false);

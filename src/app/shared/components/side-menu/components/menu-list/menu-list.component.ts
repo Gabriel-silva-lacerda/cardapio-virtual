@@ -1,6 +1,6 @@
 import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { iMenuItem } from './menu-list.interface';
 import { RouterLink } from '@angular/router';
 import { NgClass, NgIf } from '@angular/common';
@@ -14,6 +14,8 @@ import { SideMenuService } from '../../services/side-menu.service';
 })
 export class MenuListComponent {
   @Input() menuItems: iMenuItem[] = [];
+  @Output() itemSelected = new EventEmitter<void>();
+
   public sideMenuService = inject(SideMenuService);
   public companyService = inject(CompanyService);
 }

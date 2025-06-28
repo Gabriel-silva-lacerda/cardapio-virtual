@@ -16,5 +16,5 @@
       <i class="fas fa-times"></i>
     </button>
   </div>
-  <app-menu-list [menuItems]="menuItems"></app-menu-list>
+  <app-menu-list [menuItems]="menuItems" (itemSelected)="close.emit()"></app-menu-list>
 </div>

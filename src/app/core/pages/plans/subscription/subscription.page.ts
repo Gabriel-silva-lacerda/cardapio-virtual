@@ -7,7 +7,6 @@ import { debounceTime, firstValueFrom, Subject, takeUntil } from 'rxjs';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PlansService } from '@shared/services/plans/plans.service';
 import { Plans } from '@shared/interfaces/plans/plans.interface';
-import { ToastrService } from 'ngx-toastr';
 import { CurrencyPipe } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { StripeService } from '@shared/services/stripe/stripe.service';
@@ -15,6 +14,7 @@ import { Company } from '@shared/interfaces/company/company';
 import { BRAZILIAN_STATES } from '@shared/constants/brazilian-states';
 import { fade } from '@shared/utils/animations.util';
 import { CompanyService } from '@shared/services/company/company.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-subscription',
@@ -33,7 +33,7 @@ export class SubscriptionPage {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private route = inject(ActivatedRoute);
   private plansService = inject(PlansService);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   private stripeService = inject(StripeService);
   private planId!: number | string | null;
   private companyService = inject(CompanyService);
@@ -175,7 +175,7 @@ export class SubscriptionPage {
         'state',
       ]);
     } catch (error) {
-      this.toastr.error('CEP não encontrado ou inválido.');
+      this.toast.error('CEP não encontrado ou inválido.');
 
       form.patchValue({
         street: null,

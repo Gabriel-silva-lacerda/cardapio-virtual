@@ -1,17 +1,17 @@
 import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../supabase/supabase.service';
-import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../loading/loading.service';
 import { InsertOptions } from '@shared/interfaces/insert-options/insert-options';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export abstract class BaseSupabaseService {
   protected abstract table: string;
+  protected toast = inject(ToastService);
 
   public loadingService = inject(LoadingService);
-  public toastr = inject(ToastrService);
   public supabaseService = inject(SupabaseService);
 
   async getAll<T>(selectFields: string = '*'): Promise<T[]> {
@@ -197,7 +197,7 @@ export abstract class BaseSupabaseService {
       };
 
       const message = supabaseErrors[error.code] || error.message || defaultMessage;
-      this.toastr.error(message, `Erro Supabase: ${error.code}`);
+      this.toast.error(message);
     }
   }
 }

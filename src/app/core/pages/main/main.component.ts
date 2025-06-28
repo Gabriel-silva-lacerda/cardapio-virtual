@@ -7,10 +7,11 @@ import { NgClass } from '@angular/common';
 import { CompanyService } from '@shared/services/company/company.service';
 import { UiService } from '@shared/services/ui/ui.service';
 import { SideMenuService } from '@shared/components/side-menu/services/side-menu.service';
+import { ToastContainerComponent } from '@shared/components/toast-container/toast-container.component';
 
 @Component({
   selector: 'app-main',
-  imports: [RouterOutlet, HeaderAdminComponent, NgClass, RouterLink],
+  imports: [RouterOutlet, HeaderAdminComponent, NgClass, RouterLink, ToastContainerComponent],
   templateUrl: './main.component.html',
   animations: [fade],
 })

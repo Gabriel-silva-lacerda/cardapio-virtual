@@ -7,8 +7,8 @@ import { Company } from '@shared/interfaces/company/company';
 import { CompanyService } from '@shared/services/company/company.service';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { StripeService } from '@shared/services/stripe/stripe.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 import { expandAnimation, fade } from '@shared/utils/animations.util';
-import { ToastrService } from 'ngx-toastr';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 
@@ -23,7 +23,7 @@ export class PerfilPage {
   private stripeService = inject(StripeService);
   private localStorageService = inject(LocalStorageService);
   private companyService = inject(CompanyService);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   private companyData = signal<Company>({} as Company);
   private destroy$ = new Subject<void>();
   private companyId = this.localStorageService.getSignal('companyId', 0);
@@ -64,7 +64,7 @@ export class PerfilPage {
 
   createStripeAccount() {
     if (!this.companyData()?.email) {
-      this.toastr.error('Email da empresa não encontrado.');
+      this.toast.error('Email da empresa não encontrado.');
       return;
     }
 

@@ -7,12 +7,12 @@ import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-fo
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { CompanyService } from '@shared/services/company/company.service';
-import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from '@shared/services/error-handler/error-handler.service';
 import { fade, fadeIn } from '@shared/utils/animations.util';
 import { AuthService } from '../../services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { UserCompanyService } from '../../services/user-company.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +29,7 @@ export class LoginPage {
   private localStorageService = inject(LocalStorageService);
   private supabase = injectSupabase();
   private router = inject(Router);
-  private toastrService = inject(ToastrService);
+  private toast = inject(ToastService);
   private errorHandler = inject(ErrorHandlerService);
   private authService = inject(AuthService);
   private userCompanyService = inject(UserCompanyService)
@@ -96,9 +96,9 @@ export class LoginPage {
     const { error } = await this.supabase.auth.resend({ type: 'signup', email });
 
     if (error) {
-      this.toastrService.error('Erro ao reenviar o código de confirmação.', 'Erro');
+      this.toast.error('Erro ao reenviar o código de confirmação.');
     } else {
-      this.toastrService.success('Código de confirmação reenviado com sucesso!', 'Sucesso');
+      this.toast.success('Código de confirmação reenviado com sucesso!');
       this.isEmailConfirmed.set(true);
     }
 
@@ -115,14 +115,14 @@ export class LoginPage {
   }
 
   private fail(message: string) {
-    this.toastrService.error(message, 'Erro');
+    this.toast.error(message);
     this.localStorageService.clearSupabaseAuthToken();
     this.setLoading(false);
   }
 
   private handleAuthError(error: any) {
     if (error.message.includes('Email not confirmed')) {
-      this.toastrService.error('Por favor, confirme seu e-mail antes de continuar.', 'Erro');
+      this.toast.error('Por favor, confirme seu e-mail antes de continuar.');
       this.isEmailConfirmed.set(false);
     } else {
       this.errorHandler.handleError(error.message);

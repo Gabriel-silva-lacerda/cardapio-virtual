@@ -1,4 +1,3 @@
-import { ToastrService } from 'ngx-toastr';
 import { CurrencyPipe } from '@angular/common';
 import {
   Component,
@@ -24,6 +23,7 @@ import { Company } from '@shared/interfaces/company/company';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.directive';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-payment',
@@ -51,7 +51,7 @@ export class PaymentComponent {
   private deliveryFeeService = inject(DeliveryFeeService);
   private companyService = inject(CompanyService);
   private localStorageService = inject(LocalStorageService);
-  private toastrService = inject(ToastrService);
+  private toast = inject(ToastService);
 
   public companyId = this.localStorageService.getSignal('companyId', '0');
   public loading = signal(false);
@@ -89,7 +89,7 @@ export class PaymentComponent {
               (this.selectedDelivery() ? fee : 0);
           },
           error: () => {
-            this.toastrService.error('Erro ao calcular taxa de entrega');
+            this.toast.error('Erro ao calcular taxa de entrega');
             this.loadingAddress.set(false);
           },
           complete: () => {

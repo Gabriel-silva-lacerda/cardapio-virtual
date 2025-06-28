@@ -12,7 +12,6 @@ import {
 import { Router } from '@angular/router';
 import { iFood } from '@shared/interfaces/food/food.interface';
 import { FoodService } from '@shared/services/food/food.service';
-import { ToastrService } from 'ngx-toastr';
 import { CartService } from '../../services/cart/cart.service';
 import {
   getCurrentDayOfWeek,
@@ -20,9 +19,9 @@ import {
 } from '@shared/utils/day.util';
 import { DayOfWeek } from '@shared/enums/day-of-week.enum';
 import { MatTooltip } from '@angular/material/tooltip';
-import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { CompanyService } from '@shared/services/company/company.service';
+import { ToastService } from '@shared/services/toast/toast.service';
 
 @Component({
   selector: 'app-footer-food',
@@ -38,7 +37,7 @@ export class FooterFoodComponent implements OnInit, OnChanges {
 
   private foodService = inject(FoodService);
   private router = inject(Router);
-  private toastr = inject(ToastrService);
+  private toast = inject(ToastService);
   private cartService = inject(CartService);
   public authService = inject(AuthService);
   public companyService = inject(CompanyService);
@@ -119,9 +118,7 @@ export class FooterFoodComponent implements OnInit, OnChanges {
 
     this.cartService.addOrUpdateCartItem(cartItem, this.newItem, this.authService.currentUser()?.id);
 
-    this.toastr.success('Produto adicionado ao carrinho: ', this.food?.name, {
-      positionClass: 'toast-top-left',
-    });
+    this.toast.success('Produto adicionado ao carrinho');
 
     const targetRoute = this.newItem
       ? ['/app', this.companyService.companyName()]
