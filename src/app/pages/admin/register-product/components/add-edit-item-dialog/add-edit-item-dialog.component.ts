@@ -17,12 +17,12 @@ import { LocalStorageService } from '@shared/services/localstorage/localstorage.
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { Subject } from 'rxjs';
-import { WEEK_DAYS_OPTIONS } from '../../constants/week-days-options';
+import { WEEK_DAYS_OPTIONS } from '../../../../client/menu/constants/week-days-options';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { iFood, IFoodAdmin } from '@shared/interfaces/food/food.interface';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
-import { SubcategoryService } from '../../../home/services/subcategory.service';
+import { SubcategoryService } from '../../../../client/home/services/subcategory.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
 import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
@@ -205,7 +205,6 @@ export class AddEditItemDialogComponent implements OnInit {
     try {
       // Supondo que seu foodService tenha método para consultar views
       const foodData = await this.foodAdminViewService.getByField<IFoodAdmin>('id', foodId.toString());
-      console.log('Food Data:', foodData);
       if (!foodData) return;
 
       this.imageUrl = foodData.image_url || null;
@@ -214,10 +213,10 @@ export class AddEditItemDialogComponent implements OnInit {
 
       // Atualiza as categorias da empresa direto da view
       // this.categories.set(foodData.company_categories ?? []);
-      this.setFoodFieldOptions('category_id', foodData.company_categories ?? []);
+      this.setFoodFieldOptions('category_id', foodData.company?.categories ?? []);
 
       // Atualiza extras da categoria direto da view
-      this.setFoodFieldOptions('extras', foodData.category_extras ?? []);
+      this.setFoodFieldOptions('extras', foodData.extras ?? []);
 
       // Atualiza subcategorias da categoria direto da view
       // this.subcategories.set(foodData.subcategories ?? []);
@@ -228,7 +227,6 @@ export class AddEditItemDialogComponent implements OnInit {
       if (foodData.image_url) {
         await this.updateImagePreview(foodData.image_url);
       }
-
       this.populateForm(foodData, foodData.food_extra_ids ?? [] );
     } finally {
       this.setLoading('default', false);
@@ -245,7 +243,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private populateForm(foodData: IFoodAdmin, extrasId: string[]): void {
     this.dynamicForm.form.patchValue({
       ...foodData,
-      category_id: foodData.category_id,
+      category_id: foodData.category.id,
       extras: extrasId,
       has_day_of_week: foodData.day_of_week !== null,
       day_of_week: foodData.day_of_week || null,
@@ -315,7 +313,6 @@ export class AddEditItemDialogComponent implements OnInit {
 
   private async onCategoryChange(data: unknown, form: FormGroup) {
     const categoryId = String(data);
-
     if(!categoryId) return;
       this.setLoading('default', true);
       this.resetDependentFields(form);

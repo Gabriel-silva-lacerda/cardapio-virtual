@@ -17,6 +17,14 @@ export const adminRoutes: Routes = [
         (m) => m.RegisterProductPage
       ),
     canActivate: [AdminGuard],
+  },
+  {
+    path: 'cadastrar-categoria',
+    loadComponent: () =>
+      import('../admin/register-category/register-category-page/register-category.page').then(
+        (m) => m.RegisterCategoryPage
+      ),
+    canActivate: [AdminGuard],
   }
 ];
 

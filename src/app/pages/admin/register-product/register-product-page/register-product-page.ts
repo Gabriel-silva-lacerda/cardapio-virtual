@@ -2,32 +2,34 @@ import { Component, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BaseSearchPaginatedComponent } from '@shared/components/base-search-paginated/base-search-paginated.component';
 import { IconButtonComponent } from '@shared/components/icon-button/icon-button.component';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ListRegisterPageLayoutComponent } from '@shared/components/list-register-page-layout/list-register-page-layout.component';
 import { PageLayoutAdminComponent } from '@shared/components/page-layout-admin/page-layout-admin.component';
-import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
-import { iFoodWithCategorySubcategory } from '@shared/interfaces/group/group-food.interface';
+import { IFoodAdmin } from '@shared/interfaces/food/food.interface';
 import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
 import { FoodService } from '@shared/services/food/food.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastService } from '@shared/services/toast/toast.service';
 import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
-import { AddEditItemDialogComponent } from 'src/app/pages/client/menu/components/add-edit-item-dialog/add-edit-item-dialog.component';
+import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
+import { fadeScale } from '@shared/utils/animations.util';
 
 @Component({
   selector: 'app-register-product-page',
-  imports: [PageLayoutAdminComponent, IconButtonComponent, SearchInputComponent, LoadingComponent],
+  imports: [PageLayoutAdminComponent, IconButtonComponent, ListRegisterPageLayoutComponent],
   templateUrl: './register-product-page.html',
-  styleUrl: './register-product-page.scss'
+  styleUrl: './register-product-page.scss',
+  animations: [fadeScale],
 })
-export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithCategorySubcategory> {
+export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin> {
   private foodService = inject(FoodService);
   private dialog = inject(MatDialog);
   private foodAdminViewService = inject(FoodAdminViewService);
   private loadingService = inject(LoadingService);
   private imageService = inject(ImageService);
   private toast = inject(ToastService);
+  public isOpen = signal(false);
 
   public loading = signal(false);
 
@@ -35,8 +37,8 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
     super();
   }
 
-  protected async fetchData(query: string, page: number, pageSize: number): Promise<iFoodWithCategorySubcategory[]> {
-    const result = await this.foodAdminViewService.searchPaginated<iFoodWithCategorySubcategory>(
+  protected async fetchData(query: string, page: number, pageSize: number): Promise<IFoodAdmin[]> {
+    const result = await this.foodAdminViewService.searchPaginated<IFoodAdmin>(
       query,
       ['name', 'description', 'category_name'],
       page,
@@ -48,18 +50,18 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
     return this.addImageUrls(result);
   }
 
-  private async addImageUrls(foods: iFoodWithCategorySubcategory[]): Promise<iFoodWithCategorySubcategory[]> {
+  private async addImageUrls(foods: IFoodAdmin[]): Promise<IFoodAdmin[]> {
     return foods.map(this.formatFood);
   }
 
-  private formatFood(food: iFoodWithCategorySubcategory): iFoodWithCategorySubcategory {
+  private formatFood(food: IFoodAdmin): IFoodAdmin {
     return {
       ...food,
       image_url: getImageUrl(food.image_url || ''),
     };
   }
 
-  public openDialogFood(food?: iFoodWithCategorySubcategory): void {
+  public openDialogFood(food?: IFoodAdmin): void {
     const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
       width: '400px',
       height: '739px',
@@ -71,7 +73,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
     });
   }
 
-  private updateItemList(newFood: iFoodWithCategorySubcategory): void {
+  private updateItemList(newFood: IFoodAdmin): void {
     this.items.update((currentItems) => {
       const updated = this.formatFood(newFood);
       const index = currentItems.findIndex(item => item.id === newFood.id);
@@ -86,7 +88,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
     });
   }
 
-  public openDialogRemoveFood(food: iFoodWithCategorySubcategory): void {
+  public openDialogRemoveFood(food: IFoodAdmin): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: {
@@ -99,7 +101,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<iFoodWithC
     });
   }
 
-  private async removeFood(food: iFoodWithCategorySubcategory, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
+  private async removeFood(food: IFoodAdmin, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
     try {
       this.loadingService.showLoading();
 

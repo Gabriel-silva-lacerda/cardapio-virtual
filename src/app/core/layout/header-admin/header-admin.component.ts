@@ -39,8 +39,18 @@ public menuItems = [
     icon: 'fa fa-utensils'
   },
   {
+    label: 'Categorias',
+    href: `/app/${this.companyService.companyName()}/admin/cadastrar-categoria`,
+    icon: 'fa fa-th-large'
+  },
+  {
     label: 'Subcategorias',
     href: `/app/${this.companyService.companyName()}/admin/subcategorias`,
+    icon: 'fa fa-th-large'
+  },
+  {
+    label: 'Adicionais',
+    href: `/app/${this.companyService.companyName()}/admin/extras`,
     icon: 'fa fa-th-large'
   },
   {

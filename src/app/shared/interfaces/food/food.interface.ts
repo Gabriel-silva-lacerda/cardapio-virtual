@@ -15,20 +15,20 @@ export interface iFood {
   subcategory_id?: string;
 }
 
-export interface IFoodAdmin {
-  category_extras: iCategoryExtra[];
-  category_id: string;
-  category_name: string;
-  company_categories: iCompanyCategory[];
-  company_id: string;
-  created_at: string;
-  day_of_week: string | null;
-  description: string | null;
+export interface IFoodAdmin extends iFood {
   food_extra_ids: string[];
-  id: string;
-  image_url: string | null;
-  name: string;
-  price: number;
+
+  category: {
+    id: string;
+    name: string;
+  };
+
+  company: {
+    id: string;
+    categories: iCompanyCategory[];
+  };
+
+  extras: iCategoryExtra[];
   subcategories: iSubcategory[];
-  subcategory_id: string | null;
 }
+
