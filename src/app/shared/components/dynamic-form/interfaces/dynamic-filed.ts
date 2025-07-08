@@ -23,5 +23,6 @@ export interface iDynamicField {
   tooltip?: string;
   disabled?: boolean;
   directive?: string;
+  placeholder?: string;
 }
 

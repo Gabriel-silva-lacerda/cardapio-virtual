@@ -9,23 +9,23 @@
     (loadMore)="loadMore()"
   >
     <ng-container list>
-        @for (category of items(); track category.id) {
-          <div class="bg-white rounded-md shadow-md p-3 flex items-center justify-between border border-primary/10 cursor-pointer" (click)="(category)">
-            <div class="flex items-center gap-3">
-              <div>
-                <div class="font-semibold text-base text-gray-900 truncate">{{ category.name }}</div>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <app-icon-button icon="fa-solid fa-pen-to-square" customClass="!mt-0" (click)="(category)" />
-              <app-icon-button icon="fa-solid fa-trash" customClass="!mt-0" (click)="(category)" />
+      @for (category of items(); track category.id) {
+        <div class="bg-white rounded-md shadow-md p-3 flex items-center justify-between border border-primary/10 cursor-pointer" (click)="openDialog(category)">
+          <div class="flex items-center gap-3">
+            <div>
+              <div class="font-semibold text-base text-gray-900 truncate">{{ category.name }}</div>
             </div>
           </div>
+          <div class="flex gap-2">
+            <app-icon-button icon="fa-solid fa-pen-to-square" customClass="!mt-0" (click)="openDialog(category); $event.stopPropagation()" />
+            <app-icon-button icon="fa-solid fa-trash" customClass="!mt-0" (click)="openDialogRemoveCategory(category); $event.stopPropagation()" />
+          </div>
+        </div>
 
-        }
-        @empty {
-          <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
-        }
+      }
+      @empty {
+        <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
+      }
     </ng-container>
   </app-list-register-page-layout>
 </app-page-layout-admin>

@@ -12,54 +12,54 @@ import { CompanyService } from '@shared/services/company/company.service';
 export class HeaderAdminComponent {
   private companyService = inject(CompanyService);
   public authService = inject(AuthService);
-public menuItems = [
-  {
-    label: 'Home',
-    href: `/app/${this.companyService.companyName()}/admin`,
-    icon: 'fa fa-home'
-  },
-  {
-    label: 'Perfil',
-    href: `/app/${this.companyService.companyName()}/admin/perfil`,
-    icon: 'fa fa-user'
-  },
-  {
-    label: 'Dashboard',
-    href: `/app/${this.companyService.companyName()}/admin/dashboard`,
-    icon: 'fa fa-chart-bar'
-  },
-  {
-    label: 'Pedidos',
-    href: `/app/${this.companyService.companyName()}/admin/pedidos`,
-    icon: 'fa fa-shopping-cart'
-  },
-  {
-    label: 'Produtos',
-    href: `/app/${this.companyService.companyName()}/admin/cadastrar-produto`,
-    icon: 'fa fa-utensils'
-  },
-  {
-    label: 'Categorias',
-    href: `/app/${this.companyService.companyName()}/admin/cadastrar-categoria`,
-    icon: 'fa fa-th-large'
-  },
-  {
-    label: 'Subcategorias',
-    href: `/app/${this.companyService.companyName()}/admin/subcategorias`,
-    icon: 'fa fa-th-large'
-  },
-  {
-    label: 'Adicionais',
-    href: `/app/${this.companyService.companyName()}/admin/extras`,
-    icon: 'fa fa-th-large'
-  },
-  {
-    label: 'Sair',
-    isButton: true,
-    icon: 'fa fa-sign-out-alt',
-    action: () => {
-      this.authService.logout();
+  public menuItems = [
+    {
+      label: 'Home',
+      href: `/app/${this.companyService.companyName()}/admin`,
+      icon: 'fa fa-home'
+    },
+    {
+      label: 'Perfil',
+      href: `/app/${this.companyService.companyName()}/admin/perfil`,
+      icon: 'fa fa-user'
+    },
+    {
+      label: 'Dashboard',
+      href: `/app/${this.companyService.companyName()}/admin/dashboard`,
+      icon: 'fa fa-chart-bar'
+    },
+    {
+      label: 'Pedidos',
+      href: `/app/${this.companyService.companyName()}/admin/pedidos`,
+      icon: 'fa fa-shopping-cart'
+    },
+    {
+      label: 'Produtos',
+      href: `/app/${this.companyService.companyName()}/admin/cadastrar-produto`,
+      icon: 'fa fa-utensils'
+    },
+    {
+      label: 'Categorias',
+      href: `/app/${this.companyService.companyName()}/admin/cadastrar-categoria`,
+      icon: 'fa fa-th-large'
+    },
+    {
+      label: 'Subcategorias',
+      href: `/app/${this.companyService.companyName()}/admin/cadastrar-subcategorias`,
+      icon: 'fa fa-th-large'
+    },
+    {
+      label: 'Adicionais',
+      href: `/app/${this.companyService.companyName()}/admin/extras`,
+      icon: 'fa fa-th-large'
+    },
+    {
+      label: 'Sair',
+      isButton: true,
+      icon: 'fa fa-sign-out-alt',
+      action: () => {
+        this.authService.logout();
+      }
     }
-  }
-];
+  ];
 }

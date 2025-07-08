@@ -36,6 +36,8 @@ export class CategoriesPage implements OnInit {
         'company_id',
         this.companyService.companyId()
       );
+
+      console.log('Fetched categories:', categories);
       this.categories.set(categories);
     } finally {
       this.loading.set(false);

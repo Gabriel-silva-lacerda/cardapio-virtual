@@ -45,8 +45,6 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin
       pageSize
     );
 
-    console.log('Fetched foods:', result);
-
     return this.addImageUrls(result);
   }
 

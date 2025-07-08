@@ -23,6 +23,7 @@
         }"
         [mask]="field.mask || ''"
         (ngModelChange)="field.onChange && field.onChange($event, form)"
+        placeholder="{{ field.placeholder || '' }}"
       />
 
       <input
