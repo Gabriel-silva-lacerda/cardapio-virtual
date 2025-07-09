@@ -9,7 +9,7 @@ import { ToastService } from '@shared/services/toast/toast.service';
   styleUrl: './toast-container.component.scss'
 })
 export class ToastContainerComponent {
-  private toastService: ToastService = inject(ToastService);
+  public toastService: ToastService = inject(ToastService);
   messages = this.toastService.messages;
 
 }

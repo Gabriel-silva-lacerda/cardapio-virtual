@@ -1,0 +1,33 @@
+<app-generic-dialog
+  [title]="subcategory ? 'Editar Item' : 'Adicionar Item'"
+  (close)="onClose()"
+>
+  <ng-container body>
+    <div class="bg-[#fff]">
+      <div class="bg-[#fff]">
+        <app-dynamic-form #formMenu [fields]="subcategoryFields" [isEdit]="subcategory ? true : false"></app-dynamic-form>
+      </div>
+
+      <div class="flex gap-2 mt-3">
+        <app-button
+          [label]="'Cancelar'"
+          class="w-1/2"
+          [isLoading]="this.loadingService.loading()"
+          [isCanceled]="true"
+          (click)="onClose()"
+        ></app-button>
+        <app-button
+          [label]="'Salvar'"
+          class="w-1/2"
+          (click)="onSave()"
+          [isLoading]="this.loadingService.loading()"
+          [disabled]="formMenu.form.invalid || this.loadingService.loading()"
+        ></app-button>
+      </div>
+    </div>
+  </ng-container>
+</app-generic-dialog>
+
+@if(loading()) {
+<app-loading-screen />
+}

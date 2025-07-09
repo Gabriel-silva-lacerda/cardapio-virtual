@@ -29,8 +29,8 @@ export const adminRoutes: Routes = [
   {
     path: 'cadastrar-subcategoria',
     loadComponent: () =>
-      import('../admin/register-category/register-category-page/register-category.page').then(
-        (m) => m.RegisterCategoryPage
+      import('../admin/register-subcategory/register-subcategory-page/register-subcategory-page').then(
+        (m) => m.RegisterSubcategoryPage
       ),
     canActivate: [AdminGuard],
   }

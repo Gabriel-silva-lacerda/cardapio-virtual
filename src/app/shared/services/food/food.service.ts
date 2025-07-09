@@ -108,7 +108,7 @@ export class FoodService extends BaseSupabaseService {
       await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
     }
 
-    return updatedFood;
+    return updatedFood as any;
   }
 
   public resetFoodValues() {

@@ -14,9 +14,9 @@ import { fade } from '@shared/utils/animations.util';
       </p>
       <a
         (click)="goBack()"
-        class="inline-block bg-primary DEFAULT text-white px-6 py-3 rounded-md shadow hover:bg-primary dark:hover:bg-primary-dark transition"
+        class="inline-block cursor-pointer bg-primary DEFAULT text-white px-6 py-3 rounded-md shadow hover:bg-primary dark:hover:bg-primary-dark transition"
       >
-        Voltar para o Início
+        Voltar para a página anterior
       </a>
     </div>
   `,

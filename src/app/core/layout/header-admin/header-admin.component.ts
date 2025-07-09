@@ -45,7 +45,7 @@ export class HeaderAdminComponent {
     },
     {
       label: 'Subcategorias',
-      href: `/app/${this.companyService.companyName()}/admin/cadastrar-subcategorias`,
+      href: `/app/${this.companyService.companyName()}/admin/cadastrar-subcategoria`,
       icon: 'fa fa-th-large'
     },
     {

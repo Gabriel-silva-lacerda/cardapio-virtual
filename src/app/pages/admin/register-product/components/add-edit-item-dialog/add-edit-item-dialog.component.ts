@@ -29,6 +29,7 @@ import { FoodAdminViewService } from '@shared/services/food/food-admin-view.serv
 import { sanitizeFileName } from '@shared/utils/file-name/file-name.util';
 import { iCategory } from '@shared/interfaces/category/category.interface';
 import { ToastService } from '@shared/services/toast/toast.service';
+import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -48,7 +49,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private imageService = inject(ImageService);
   private toast = inject(ToastService);
   private subcategoryService = inject(SubcategoryService);
-  private companyCategoryViewService = inject(CompanyCategoryViewService)
+  private categoryService = inject(CategoryService)
   private categoryExtraService = inject(CategoryExtraService);
   private currentExtras: string[] = [];
   private currentSubcategoryId: string = '';
@@ -154,7 +155,7 @@ export class AddEditItemDialogComponent implements OnInit {
   private async getAllCategories() {
     this.setLoading('categories', true);
     try {
-      const categories = await this.companyCategoryViewService.getAllByField<iCategory>('company_id', this.companyId());
+      const categories = await this.categoryService.getAllByField<iCategory>('company_id', this.companyId());
       this.setFoodFieldOptions('category_id', categories);
       this.dynamicForm.disableFields(['extras', 'subcategory_id']);
     } finally {

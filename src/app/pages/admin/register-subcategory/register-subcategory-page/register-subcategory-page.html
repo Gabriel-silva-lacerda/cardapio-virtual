@@ -1,0 +1,31 @@
+<app-page-layout-admin>
+  <app-list-register-page-layout
+    title="Subcategorias"
+    addLabel="Novo"
+    [isLoading]="isLoading()"
+    [hasMore]="hasMoreData()"
+    (add)="openDialog()"
+    (searchChange)="onSearchChange($event)"
+    (loadMore)="loadMore()"
+  >
+    <ng-container list>
+      @for (subcategory of items(); track subcategory.id) {
+        <div class="bg-white rounded-md shadow-md p-3 flex items-center justify-between border border-primary/10 cursor-pointer" (click)="openDialog(subcategory)">
+          <div class="flex items-center gap-3">
+            <div>
+              <div class="font-semibold text-base text-gray-900 truncate">{{ subcategory.name }}</div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <app-icon-button icon="fa-solid fa-pen-to-square" customClass="!mt-0" (click)="openDialog(subcategory); $event.stopPropagation()" />
+            <app-icon-button icon="fa-solid fa-trash" customClass="!mt-0" (click)="openDialogRemoveSubcategory(subcategory); $event.stopPropagation()" />
+          </div>
+        </div>
+
+      }
+      @empty {
+        <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
+      }
+    </ng-container>
+  </app-list-register-page-layout>
+</app-page-layout-admin>

@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export interface ToastMessage {
   id: string;
@@ -7,6 +6,8 @@ export interface ToastMessage {
   type: 'success' | 'error' | 'warning';
   duration?: number;
   visible: boolean;
+  timeoutId?: any;
+  paused?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -16,17 +17,19 @@ export class ToastService {
 
   show(message: string, type: ToastMessage['type'], duration = 3000) {
     const id = crypto.randomUUID();
+
     const toast: ToastMessage = {
       id,
       message,
       type,
       duration,
-      visible: true
+      visible: true,
     };
 
     this.messagesSignal.update((prev) => [...prev, toast]);
 
-    setTimeout(() => this.hide(id), duration);
+    const timeoutId = setTimeout(() => this.hide(id), duration);
+    this.setTimeoutId(id, timeoutId);
   }
 
   success(msg: string, duration = 3000) {
@@ -42,16 +45,48 @@ export class ToastService {
   }
 
   private hide(id: string) {
-    // Marca como invisível (ativa a animação)
     this.messagesSignal.update((list) =>
       list.map((m) => (m.id === id ? { ...m, visible: false } : m))
     );
 
-    // Aguarda o tempo da animação antes de remover
     setTimeout(() => this.dismiss(id), 400);
   }
 
   dismiss(id: string) {
+    this.clearTimeout(id);
     this.messagesSignal.update((list) => list.filter((m) => m.id !== id));
+  }
+
+  pause(id: string) {
+    const toast = this.messagesSignal().find((m) => m.id === id);
+    if (toast?.timeoutId) {
+      clearTimeout(toast.timeoutId);
+      this.messagesSignal.update((list) =>
+        list.map((m) => m.id === id ? { ...m, timeoutId: undefined, paused: true } : m)
+      );
+    }
+  }
+
+  resume(id: string) {
+    const toast = this.messagesSignal().find((m) => m.id === id);
+    if (toast && toast.paused && toast.duration) {
+      const timeoutId = setTimeout(() => this.hide(id), toast.duration);
+      this.messagesSignal.update((list) =>
+        list.map((m) => m.id === id ? { ...m, timeoutId, paused: false } : m)
+      );
+    }
+  }
+
+  private setTimeoutId(id: string, timeoutId: any) {
+    this.messagesSignal.update((list) =>
+      list.map((m) => (m.id === id ? { ...m, timeoutId } : m))
+    );
+  }
+
+  private clearTimeout(id: string) {
+    const toast = this.messagesSignal().find((m) => m.id === id);
+    if (toast?.timeoutId) {
+      clearTimeout(toast.timeoutId);
+    }
   }
 }

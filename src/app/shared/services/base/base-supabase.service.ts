@@ -118,6 +118,7 @@ export abstract class BaseSupabaseService {
     id: number | string,
     updates: Partial<T>
   ): Promise<T> {
+
     const { data, error } = await this.supabaseService.supabase
       .from(this.table)
       .update(updates)
