@@ -182,41 +182,42 @@ export abstract class BaseSupabaseService {
     return data as T[];
   }
 
-   async searchPaginated2<T>(
-    query: string,
-    fields: string[],
-    page: number = 1,
-    pageSize: number = 10,
-    selectFields: string = '*',
-    extraFilters: Record<string, string | number> = {}
-  ): Promise<T[]> {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
+async searchPaginated2<T>(
+  query: string,
+  fields: string[],
+  page: number = 1,
+  pageSize: number = 10,
+  selectFields: string = '*',
+  fixedFilters: Record<string, any> = {}
+): Promise<T[]> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
-    let supabaseQuery = this.supabaseService.supabase
-      .from(this.table)
-      .select(selectFields)
-      .range(from, to);
+  const queryBuilder = this.supabaseService.supabase
+    .from(this.table)
+    .select(selectFields)
+    .range(from, to);
 
-    // 🔍 Adiciona filtro de texto se houver `query`
-    if (query && fields.length > 0) {
-      const filter = fields.map(field => `${field}.ilike.%${query}%`).join(',');
-      supabaseQuery = supabaseQuery.or(filter);
-    }
-
-    // ✅ Sempre aplica os filtros extras, como category_id
-    for (const [key, value] of Object.entries(extraFilters)) {
-      supabaseQuery = supabaseQuery.eq(key, value);
-    }
-
-    const { data, error } = await supabaseQuery;
-
-    if (error) {
-      this.throwHandledError(error, `Erro ao buscar registros paginados com filtro na tabela ${this.table}.`);
-    }
-
-    return data as T[];
+  // Aplica filtro "OR" se houver busca
+  if (query && fields.length > 0) {
+    const orFilter = fields.map(field => `${field}.ilike.%${query}%`).join(',');
+    queryBuilder.or(orFilter);
   }
+
+  // Aplica filtros fixos (ex: company_id)
+  for (const key in fixedFilters) {
+    queryBuilder.eq(key, fixedFilters[key]);
+  }
+
+  const { data, error } = await queryBuilder;
+
+  if (error) {
+    this.throwHandledError(error, `Erro ao buscar registros paginados na tabela ${this.table}.`);
+  }
+
+  return data as T[];
+}
+
 
 
   // ==== Tratamento de Erros ====

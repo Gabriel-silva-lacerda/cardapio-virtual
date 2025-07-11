@@ -33,16 +33,13 @@ export abstract class BaseSearchPaginatedComponent<T> {
   }
 
   public async search(query: string, reset: boolean = false) {
-    console.log(reset)
     if (this.isLoading() || (!reset && !this.hasMoreData())) return;
 
     this.isLoading.set(true);
     try {
       const result = await this.fetchData(query, this.currentPage(), this.pageSize);
       const newData = result || [];
-      console.log(reset)
       if (reset) {
-        console.log('Resetting data with:', newData);
         this.items.set(newData);
         this.currentPage.set(1);
       } else {

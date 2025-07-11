@@ -1,5 +1,5 @@
 <app-page-layout-admin>
-  <app-list-register-page-layout
+  <!-- <app-list-register-page-layout
     title="Produtos"
     addLabel="Novo"
     [isLoading]="isLoading()"
@@ -8,11 +8,8 @@
     (searchChange)="onSearchChange($event)"
     (loadMore)="loadMore()"
     [showAddButton]="false"
-    [selectedId]="selectedCategoryId()"
-    [selectItems]="categories()"
-    (itemSelected)="onCategorySelected($event)"
-  >
-    <ng-container customHeader>
+  > -->
+    <!-- <ng-container customHeader>
       <div class="flex flex-col gap-2">
         <div class="relative flex justify-end gap-2 shadow-sm rounded-md text-black">
           <button
@@ -37,7 +34,6 @@
               <button
                 class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
               >
-                          <!-- (click)="openDialogSubcategories(); isOpen.set(false)" -->
                 <i class="fa-solid fa-layer-group"></i>
                 Subcategorias
               </button>
@@ -55,13 +51,11 @@
                 <button
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
                 >
-                  <!-- (click)="openDialogExtra(); isOpen.set(false)" -->
                   <i class="fa-solid fa-plus"></i> Adicionar
                 </button>
                 <button
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
                 >
-                            <!-- (click)="openDialogManageExtra(); isOpen.set(false)" -->
                 <i class="fa-solid fa-gear"></i>
                   Gerenciar
                 </button>
@@ -70,7 +64,6 @@
               <button
                 class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
               >
-              <!-- (click)="openDialogFee(); isOpen.set(false)" -->
                 <i class="fa-solid fa-truck"></i>
                 Taxa de entrega
               </button>
@@ -78,40 +71,87 @@
           }
         </div>
       </div>
-    </ng-container>
-    <ng-container list>
-      @for (food of items(); track food.id) {
-        <div class="bg-white rounded-md shadow-md p-3 flex flex-col gap-2 border border-primary/10 cursor-pointer text-black" (click)="openDialogFood(food)">
-          <div class="flex items-center gap-3">
-            <img
-              [src]="food.image_url"
-              alt="{{ food.name }}"
-              class="w-16 h-16 object-cover rounded-md border border-gray-200 bg-gray-50"
-            />
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold text-base text-gray-900 truncate">{{ food.name }}</div>
-              <div class="text-xs text-gray-500 truncate">
-                Categoria: <span class="font-medium text-primary">{{ food.category.name }}</span>
-              </div>
-              <div class="text-sm text-primary font-bold mt-1">R$ {{ food.price }}</div>
-            </div>
-            <div class="flex flex-col gap-2 ml-2 z-30">
-              <app-icon-button icon="fa-solid fa-pen-to-square" (click)="openDialogFood(food); $event.stopPropagation()" />
-              <app-icon-button icon="fa-solid fa-trash" (click)="openDialogRemoveFood(food); $event.stopPropagation()" />
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2 text-xs text-gray-600 mt-2">
-            <div>
-              <span class="font-semibold">Descrição:</span>
-              <span class="line-clamp-2">{{ food.description || '-' }}</span>
-            </div>
-          </div>
-        </div>
-      }
-      @empty {
-        <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
-      }
-    </ng-container>
+    </ng-container> -->
 
-  </app-list-register-page-layout>
+    <!-- <ng-container customFilter>
+       <app-select-dropdown
+      [items]="categories()"
+      [selectedId]="selectedCategoryId()"
+      (selectedIdChange)="onCategorySelected($event)"
+  ></app-select-dropdown>
+
+
+  <app-select-dropdown
+    [items]="subcategories()"
+    [selectedId]="selectedSubcategoryId()"
+    (selectedIdChange)="onSubcategorySelected($event)"
+  ></app-select-dropdown>
+    </ng-container> -->
+
+<div class="flex items-center justify-between">
+  <h1 class="text-xl font-bold text-primary">Produtos</h1>
+    <button
+      class="bg-primary text-white px-4 py-2 rounded-md flex items-center gap-2 shadow hover:bg-primary-dark transition"
+      (click)="openDialogFood()"
+    >
+      <i class="fas fa-plus"></i>
+      <span class="font-medium">Novo</span>
+    </button>
+</div>
+
+<div class="flex items-center gap-2 my-4">
+  <app-search-input class="w-full" customClass="!m-0" (searchChange)="onSearchChange($event)" />
+</div>
+
+<div class="flex flex-col gap-4">
+  <div class="space-y-6">
+    @for (categorie of categories(); track categorie.id) {
+      <div class="border border-gray-300 rounded-md p-4 bg-white text-black shadow-sm">
+        <div class="text-lg font-bold mb-2 text-primary">📦 {{ categorie.name }}</div>
+          @for (sub of subcategories() | filterByField:'category_id':categorie.id; track sub.id) {
+            <div class="mb-4 ml-4 border-l-2 pl-4 border-primary/40">
+              <div class="flex justify-between items-center mb-2">
+                <div class="text-md font-semibold text-primary">└─ {{ sub.name }}</div>
+                <button
+                  class="text-sm bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition"
+                >
+                  + Adicionar Produto
+                </button>
+              </div>
+              <div class="flex items-center gap-2 my-4">
+                <app-search-input class="w-full" customClass="!m-0" (searchChange)="onSearchChange($event)" />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 @for (food of items() | filterByField:'subcategory_id':sub.id; track food.id) {
+                  <div
+                    class="bg-gray-50 rounded-md p-3 border border-primary/10 shadow hover:shadow-md transition cursor-pointer"
+                    (click)="openDialogFood(food)"
+                  >
+                    <div class="flex items-center gap-3">
+                      <img [src]="food.image_url" class="w-16 h-16 object-cover rounded" />
+                      <div>
+                        <div class="font-medium truncate">{{ food.name }}</div>
+                        <div class="text-xs text-gray-500">R$ {{ food.price }}</div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+            @if(hasMoreData() && !isLoading()) {
+              <div class="flex justify-center mt-4">
+                <button (click)="loadMore()" class="text-primary underline text-sm mx-auto mt-4">
+                  Carregar mais
+                </button>
+              </div>
+            }
+          }
+      </div>
+    }
+    @empty {
+      <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
+    }
+  </div>
+</div>
+
 </app-page-layout-admin>

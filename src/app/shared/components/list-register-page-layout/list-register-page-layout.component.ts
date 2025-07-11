@@ -15,12 +15,9 @@ export class ListRegisterPageLayoutComponent {
   @Input() showAddButton: boolean = true;
   @Input() isLoading: boolean = false;
   @Input() hasMore: boolean = false;
-  @Input() selectedId: string | null = null;
-  @Input() selectItems: any
 
   @Output() add = new EventEmitter<void>();
   @Output() searchChange = new EventEmitter<string>();
   @Output() loadMore = new EventEmitter<void>();
-  @Output() itemSelected = new EventEmitter<string | null>();
   public isOpen = signal(false);
 }

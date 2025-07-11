@@ -1,0 +1,11 @@
+<select
+  class="p-2 border rounded text-black bg-white"
+  [(ngModel)]="selectedId"
+  (ngModelChange)="selectedIdChange.emit($event)"
+>
+  @for (item of items; track item.id) {
+    <option [value]="item.id">
+      {{ item.name }}
+    </option>
+  }
+</select>

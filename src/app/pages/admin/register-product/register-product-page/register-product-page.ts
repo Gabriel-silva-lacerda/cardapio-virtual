@@ -19,12 +19,18 @@ import { AddEditCategoryDialogComponent } from '../../register-category/componen
 import { AddEditSubcategoryDialogComponent } from '../../register-subcategory/components/add-edit-subcategory-dialog/add-edit-subcategory-dialog.component';
 import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { CompanyService } from '@shared/services/company/company.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule, NgModel } from '@angular/forms';
+import { SelectDropdownComponent } from '@shared/components/select-dropdown/select-dropdown.component';
+import { SubcategoryService } from 'src/app/pages/client/home/services/subcategory.service';
+import { TesteService } from '@shared/services/full-menu/teste.service';
+import { FilterByFieldPipe } from "../../../../widget/pipes/filter-by-field.pipe";
+import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
+import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
 
 @Component({
   selector: 'app-register-product-page',
-  imports: [PageLayoutAdminComponent, IconButtonComponent, ListRegisterPageLayoutComponent, FormsModule, CommonModule],
+  imports: [PageLayoutAdminComponent, FormsModule, CommonModule, FilterByFieldPipe, SearchInputComponent],
   templateUrl: './register-product-page.html',
   styleUrl: './register-product-page.scss',
   animations: [fadeScale],
@@ -39,52 +45,60 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin
   private toast = inject(ToastService);
   private categoryService = inject(CategoryService);
   private companyService = inject(CompanyService);;
+  private subcategoryService = inject(SubcategoryService);
 
   public isOpen = signal(false);
   public loading = signal(false);
-  public categories = signal<iCategory[]>([]);
   public selectedCategoryId = signal<string | null>(null);
+  public selectedSubcategoryId = signal<string | null>(null);
+  public categories = signal<iCategory[]>([]);
+  public subcategories = signal<iSubcategory[]>([]);
 
   constructor() {
     super();
   }
 
   async ngOnInit() {
-    this.getCategories();
-
-     // Recarrega os dados quando trocar a categoria
+    await this.initializeData();
   }
 
-  private async getCategories() {
+  private async initializeData(): Promise<void> {
+    this.isLoading.set(true);
     try {
-      const categories = await this.categoryService.getAllByField<iCategory>(
-        'company_id',
-        this.companyService.companyId()
-      );
-      this.categories.set(categories);
-
-      if (categories.length) {
-        this.selectedCategoryId.set(categories[0].id);
-      }
+      await Promise.all([this.getCategories(), this.getSubcategories()]);
     } finally {
+      this.isLoading.set(false);
     }
   }
 
-  onCategorySelected(categoryId: string | null) {
-    this.selectedCategoryId.set(categoryId);
-    this.search(this.searchQuery$.getValue(), true);
+  private async getCategories(): Promise<void> {
+    const categories = await this.categoryService.getAllByField<iCategory>(
+      'company_id',
+      this.companyService.companyId(),
+      'id, name'
+    );
+    this.categories.set(categories);
+  }
+
+  private async getSubcategories(): Promise<void> {
+    const subcategories = await this.subcategoryService.getAllByField<iSubcategory>(
+      'company_id',
+      this.companyService.companyId(),
+      'id, name, category_id'
+    );
+    this.subcategories.set(subcategories);
   }
 
   protected async fetchData(query: string, page: number, pageSize: number): Promise<IFoodAdmin[]> {
-    const categoryId = this.selectedCategoryId();
-
     const result = await this.foodAdminViewService.searchPaginated2<IFoodAdmin>(
       query,
-      ['name', 'description', 'category_name'],
+      ['name', 'description'],
       page,
       pageSize,
       '*',
-      categoryId ? { category_id: categoryId } : {}
+      {
+        company_id: this.companyService.companyId(),
+      }
     );
 
     return this.addImageUrls(result);
@@ -108,7 +122,7 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      // if (result) this.getAllCategories();
+    //  if (result) this.getCategories();
     });
   }
 
