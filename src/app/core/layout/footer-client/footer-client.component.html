@@ -3,7 +3,7 @@
     @for (link of links ; track $index) {
       <a
         [routerLink]="[link.path]"
-        class="relative"
+        class="relative text-black"
         [ngClass]="{ 'text-primary': activeLinks[link.path] }"
       >
         {{ link.label }}

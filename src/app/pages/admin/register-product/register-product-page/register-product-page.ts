@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { BaseSearchPaginatedComponent } from '@shared/components/base-search-paginated/base-search-paginated.component';
 import { IconButtonComponent } from '@shared/components/icon-button/icon-button.component';
@@ -14,13 +14,21 @@ import { ToastService } from '@shared/services/toast/toast.service';
 import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
 import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
 import { fadeScale } from '@shared/utils/animations.util';
+import { iCategory } from '@shared/interfaces/category/category.interface';
+import { AddEditCategoryDialogComponent } from '../../register-category/components/add-edit-category-dialog/add-edit-category-dialog.component';
+import { AddEditSubcategoryDialogComponent } from '../../register-subcategory/components/add-edit-subcategory-dialog/add-edit-subcategory-dialog.component';
+import { CategoryService } from 'src/app/pages/client/home/services/category.service';
+import { CompanyService } from '@shared/services/company/company.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'app-register-product-page',
-  imports: [PageLayoutAdminComponent, IconButtonComponent, ListRegisterPageLayoutComponent],
+  imports: [PageLayoutAdminComponent, IconButtonComponent, ListRegisterPageLayoutComponent, FormsModule, CommonModule],
   templateUrl: './register-product-page.html',
   styleUrl: './register-product-page.scss',
   animations: [fadeScale],
+
 })
 export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin> {
   private foodService = inject(FoodService);
@@ -29,20 +37,54 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin
   private loadingService = inject(LoadingService);
   private imageService = inject(ImageService);
   private toast = inject(ToastService);
-  public isOpen = signal(false);
+  private categoryService = inject(CategoryService);
+  private companyService = inject(CompanyService);;
 
+  public isOpen = signal(false);
   public loading = signal(false);
+  public categories = signal<iCategory[]>([]);
+  public selectedCategoryId = signal<string | null>(null);
 
   constructor() {
     super();
   }
 
+  async ngOnInit() {
+    this.getCategories();
+
+     // Recarrega os dados quando trocar a categoria
+  }
+
+  private async getCategories() {
+    try {
+      const categories = await this.categoryService.getAllByField<iCategory>(
+        'company_id',
+        this.companyService.companyId()
+      );
+      this.categories.set(categories);
+
+      if (categories.length) {
+        this.selectedCategoryId.set(categories[0].id);
+      }
+    } finally {
+    }
+  }
+
+  onCategorySelected(categoryId: string | null) {
+    this.selectedCategoryId.set(categoryId);
+    this.search(this.searchQuery$.getValue(), true);
+  }
+
   protected async fetchData(query: string, page: number, pageSize: number): Promise<IFoodAdmin[]> {
-    const result = await this.foodAdminViewService.searchPaginated<IFoodAdmin>(
+    const categoryId = this.selectedCategoryId();
+
+    const result = await this.foodAdminViewService.searchPaginated2<IFoodAdmin>(
       query,
       ['name', 'description', 'category_name'],
       page,
-      pageSize
+      pageSize,
+      '*',
+      categoryId ? { category_id: categoryId } : {}
     );
 
     return this.addImageUrls(result);
@@ -57,6 +99,17 @@ export class RegisterProductPage extends BaseSearchPaginatedComponent<IFoodAdmin
       ...food,
       image_url: getImageUrl(food.image_url || ''),
     };
+  }
+
+  openCategoryDialog(category?: iCategory | undefined): void {
+    const dialogRef = this.dialog.open(AddEditCategoryDialogComponent, {
+      width: '400px',
+      data: category,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      // if (result) this.getAllCategories();
+    });
   }
 
   public openDialogFood(food?: IFoodAdmin): void {

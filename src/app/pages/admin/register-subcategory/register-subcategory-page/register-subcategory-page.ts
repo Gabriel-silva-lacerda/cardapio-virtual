@@ -42,7 +42,7 @@ export class RegisterSubcategoryPage extends BaseSearchPaginatedComponent<iSubca
   openDialog(subcategory?: iSubcategory | undefined): void {
     const dialogRef = this.dialog.open(AddEditSubcategoryDialogComponent, {
       width: '400px',
-      data: subcategory,
+      data: { subcategory },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

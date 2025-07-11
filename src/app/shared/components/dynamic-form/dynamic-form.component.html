@@ -1,7 +1,7 @@
 <form [formGroup]="form">
   <ng-container *ngFor="let field of fields">
-    <div class="flex flex-col">
-      <label class="text-gray-500 text-text4 mb-1" for="{{ field.name }}">
+    <div class="flex flex-col ">
+      <label class="text-gray-500 text-text4 mb-1 {{ field.customClass || '' }}" for="{{ field.name }}">
         {{ field.label }}
       </label>
       <input
@@ -15,7 +15,7 @@
         id="{{ field.name }}"
         [type]="field.type"
         [formControlName]="field.name"
-        class="input-primary py-3"
+        class="input-primary py-3 {{ field.customClass || '' }}"
         [ngStyle]="{ padding: field.padding }"
         [ngClass]="{
           'input-error':
@@ -80,7 +80,7 @@
           />
         </div>
       </div>
-
+<!--
       <div class="relative w-full">
         <select
           *ngIf="field.type === 'select'"
@@ -116,6 +116,68 @@
           class="input-primary py-1 px-0 outline-none focus:border border-gray-50 teste w-full"
           [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
         ></p-multiSelect>
+      </div> -->
+      <div class="relative w-full">
+        <select
+          *ngIf="field.type === 'select'"
+          id="{{ field.name }}"
+          [formControlName]="field.name"
+          class="input-primary py-3 w-full {{ field.customClass || '' }}"
+          [ngClass]="{
+            'input-error':
+              form.get(field.name)?.invalid && form.get(field.name)?.touched
+          }"
+          (ngModelChange)="field.onChange && field.onChange($event, form)"
+          [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
+        >
+          <option value="">Selecione...</option>
+          <option *ngFor="let option of field.options" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <app-icon-button
+          *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
+          icon="fas fa-plus"
+          class="absolute right-7"
+          (click)="field?.onClick()"
+        />
+        <app-icon-button
+          *ngIf="isEdit && field.onEdit && form.get(field.name)?.value"
+          icon="fa-solid fa-pen-to-square"
+          class="absolute right-7"
+          (click)="field?.onClick(form)"
+        />
+      </div>
+
+      <div
+        *ngIf="field.type === 'multiselect'"
+        [matTooltip]="isDisabled[field.name] ? field.tooltip : ''"
+        class="w-full relative"
+      >
+        <p-multiSelect
+          id="{{ field.name }}"
+          [options]="field.options"
+          optionLabel="label"
+          optionValue="value"
+          [formControlName]="field.name"
+          placeholder="Selecione os itens"
+          class="input-primary !bg-white py-1 px-0 outline-none focus:border border-gray-50 teste w-full"
+          [ngClass]="{ 'disabled pointer-events-none': isDisabled[field.name] }"
+        ></p-multiSelect>
+
+        <app-icon-button
+          *ngIf="!isEdit && field.onClick && !isDisabled[field.name]"
+          icon="fas fa-plus"
+          class="absolute right-7"
+          (click)="field?.onClick()"
+        />
+
+        <app-icon-button
+          *ngIf="isEdit && field.onEdit && form.get(field.name)?.value !== ''"
+          icon="fa-solid fa-pen-to-square"
+          class="absolute right-7"
+          (click)="field?.onClick(form)"
+        />
       </div>
     </div>
 

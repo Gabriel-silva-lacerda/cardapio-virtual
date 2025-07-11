@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 })
 export class SearchInputComponent {
   @Input() placeholder: string = 'Pesquisar...';
+  @Input() customClass: string = '';
   @Output() searchChange = new EventEmitter<string>(); // Emite eventos
 
   public searchQuery = signal('');

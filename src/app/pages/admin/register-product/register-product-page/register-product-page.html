@@ -8,82 +8,80 @@
     (searchChange)="onSearchChange($event)"
     (loadMore)="loadMore()"
     [showAddButton]="false"
+    [selectedId]="selectedCategoryId()"
+    [selectItems]="categories()"
+    (itemSelected)="onCategorySelected($event)"
   >
     <ng-container customHeader>
-      <div class="relative flex justify-end gap-2 shadow-sm rounded-md">
-        <button
-          class="bg-primary px-4 py-2 rounded-md text-white flex items-center gap-2"
-          (click)="isOpen.set(!isOpen())"
-        >
-          <i class="fa-solid fa-gear"></i>
-          Gerenciar Itens
-        </button>
-
-        @if (isOpen()) {
-          <div
-            @fadeScale
-            class="absolute right-0 top-[35px] mt-2 w-56 bg-white border rounded shadow-md z-50"
+      <div class="flex flex-col gap-2">
+        <div class="relative flex justify-end gap-2 shadow-sm rounded-md text-black">
+          <button
+            class="bg-primary px-4 py-2 rounded-md text-white flex items-center gap-2"
+            (click)="isOpen.set(!isOpen())"
           >
-            <button
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-              (click)="openDialogFood(); isOpen.set(false)"
-            >
-              <i class="fa-solid fa-plus"></i>
-              Adicionar comida
-            </button>
-            <button
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-
-            >
-                        <!-- (click)="openDialogSubcategories(); isOpen.set(false)" -->
-              <i class="fa-solid fa-layer-group"></i>
-              Subcategorias
-            </button>
-            <div class="relative group">
-            <button
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-puzzle-piece"></i>
-              Adicionais
-              <i class="fa-solid fa-chevron-right ml-auto"></i>
-            </button>
-
+            <i class="fa-solid fa-gear"></i>
+            Gerenciar Itens
+          </button>
+          @if (isOpen()) {
             <div
-              class="absolute left-10 top-8 ml-1 mt-0 w-48 bg-white border rounded shadow-md hidden group-hover:block z-50"
+              @fadeScale
+              class="absolute right-0 top-[35px] mt-2 w-56 bg-white border rounded shadow-md z-50"
             >
               <button
                 class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-
+                (click)="openCategoryDialog(); isOpen.set(false)"
               >
-                <!-- (click)="openDialogExtra(); isOpen.set(false)" -->
-                <i class="fa-solid fa-plus"></i> Adicionar
+                <i class="fa-solid fa-plus"></i>
+                Criar item
               </button>
               <button
                 class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-
               >
-                          <!-- (click)="openDialogManageExtra(); isOpen.set(false)" -->
-              <i class="fa-solid fa-gear"></i>
-                Gerenciar
+                          <!-- (click)="openDialogSubcategories(); isOpen.set(false)" -->
+                <i class="fa-solid fa-layer-group"></i>
+                Subcategorias
+              </button>
+              <div class="relative group">
+              <button
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+              >
+                <i class="fa-solid fa-puzzle-piece"></i>
+                Adicionais
+                <i class="fa-solid fa-chevron-right ml-auto"></i>
+              </button>
+              <div
+                class="absolute left-10 top-8 ml-1 mt-0 w-48 bg-white border rounded shadow-md hidden group-hover:block z-50"
+              >
+                <button
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                >
+                  <!-- (click)="openDialogExtra(); isOpen.set(false)" -->
+                  <i class="fa-solid fa-plus"></i> Adicionar
+                </button>
+                <button
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+                >
+                            <!-- (click)="openDialogManageExtra(); isOpen.set(false)" -->
+                <i class="fa-solid fa-gear"></i>
+                  Gerenciar
+                </button>
+              </div>
+            </div>
+              <button
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
+              >
+              <!-- (click)="openDialogFee(); isOpen.set(false)" -->
+                <i class="fa-solid fa-truck"></i>
+                Taxa de entrega
               </button>
             </div>
-          </div>
-
-            <button
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-
-            >
-            <!-- (click)="openDialogFee(); isOpen.set(false)" -->
-              <i class="fa-solid fa-truck"></i>
-              Taxa de entrega
-            </button>
-          </div>
-        }
-    </div>
+          }
+        </div>
+      </div>
     </ng-container>
     <ng-container list>
       @for (food of items(); track food.id) {
-        <div class="bg-white rounded-md shadow-md p-3 flex flex-col gap-2 border border-primary/10 cursor-pointer" (click)="openDialogFood(food)">
+        <div class="bg-white rounded-md shadow-md p-3 flex flex-col gap-2 border border-primary/10 cursor-pointer text-black" (click)="openDialogFood(food)">
           <div class="flex items-center gap-3">
             <img
               [src]="food.image_url"
@@ -114,5 +112,6 @@
         <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
       }
     </ng-container>
+
   </app-list-register-page-layout>
 </app-page-layout-admin>

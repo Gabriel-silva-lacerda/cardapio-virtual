@@ -1,11 +1,11 @@
 <app-generic-dialog
-  [title]="subcategory ? 'Editar Item' : 'Adicionar Item'"
+  [title]="data.subcategory ? 'Editar Item' : 'Adicionar Item'"
   (close)="onClose()"
 >
   <ng-container body>
     <div class="bg-[#fff]">
       <div class="bg-[#fff]">
-        <app-dynamic-form #formMenu [fields]="subcategoryFields" [isEdit]="subcategory ? true : false"></app-dynamic-form>
+        <app-dynamic-form #formMenu [fields]="subcategoryFields" [isEdit]="data.subcategory ? true : false"></app-dynamic-form>
       </div>
 
       <div class="flex gap-2 mt-3">

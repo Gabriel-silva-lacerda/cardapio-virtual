@@ -34,7 +34,6 @@ import { ToastService } from '@shared/services/toast/toast.service';
     LoadingComponent,
     PickupOptionComponent,
     LoadingScreenComponent,
-    FormsModule,
     OnlyNumbersDirective,
   ],
   templateUrl: './payment.component.html',

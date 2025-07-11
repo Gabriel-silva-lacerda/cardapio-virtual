@@ -15,7 +15,7 @@ export interface iDynamicField {
   forgotPasswordLink?: string;
   onChange?: (data: unknown | null | object | boolean | string | number, form: FormGroup) => void;
   onFileUpload?: (file: File, form: FormGroup) => void;
-  onClick?: () => void;
+  onClick?: (form?: any) => void;
   onEdit?: (form: FormGroup) => void;
   options?: { label: string; value: string | number | boolean }[];
   mask?: string;
@@ -24,5 +24,6 @@ export interface iDynamicField {
   disabled?: boolean;
   directive?: string;
   placeholder?: string;
+  customClass?: string;
 }
 

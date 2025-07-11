@@ -27,7 +27,7 @@ export class AddEditSubcategoryDialogComponent {
   private categoryService = inject(CategoryService);
   public loadingService = inject(LoadingService);
   public dialogRef = inject(MatDialogRef<AddEditSubcategoryDialogComponent>);
-  public subcategory = inject(MAT_DIALOG_DATA) as iSubcategory | undefined;
+  public data = inject(MAT_DIALOG_DATA) as { subcategory: any, categoryId: any, showItem: any; }  ;
   public loading = signal(false);
   // public categories = signal<iCategory[]>([]);
 
@@ -45,35 +45,41 @@ export class AddEditSubcategoryDialogComponent {
       label: 'Categoria',
       type: 'select',
       options: [], // vai popular depois
-      validators: [Validators.required],
+      validators: this.data.showItem ? [] :  [Validators.required],
       padding: '10px',
+      customClass: this.data.showItem ? 'hidden' : '', // se showItem for true, esconde o campo
     }
   ];
 
-  async ngAfterViewInit() {
+    async ngAfterViewInit() {
     this.loading.set(true);
-
-    // Buscar categorias da empresa e popular o campo select
-    const companyId = this.companyService.companyId();
-    const categories = await this.categoryService.getAllByField('company_id',companyId) as any;
-    // this.categories.set(categories);
-
-    // Atualizar opções do select no campo 'category_id'
-    const selectField = this.subcategoryFields.find(f => f.name === 'category_id');
-    if (selectField) {
-      selectField.options = categories.map((c: any) => ({ label: c.name, value: c.id }));
-    }
-
-    if (this.subcategory) {
-      const patchData: any = {
-        name: this.subcategory.name,
-        category_id: this.subcategory.category_id || null,
-      };
-
-      this.dynamicForm?.form.patchValue(patchData);
-    }
-
+    await this.initSelectOptions();
+    this.patchForm();
     this.loading.set(false);
+  }
+
+  private async initSelectOptions() {
+    // Só busca categorias se for necessário exibir o campo
+    if (this.data.subcategory || !this.data.showItem) {
+      const companyId = this.companyService.companyId();
+      const categories = await this.categoryService.getAllByField('company_id', companyId);
+      const selectField = this.subcategoryFields.find(f => f.name === 'category_id');
+
+      if (selectField) {
+        selectField.options = categories.map((c: any) => ({
+          label: c.name,
+          value: c.id,
+        }));
+      }
+    }
+  }
+
+  private patchForm() {
+    const patchData: any = {
+      name: this.data.subcategory?.name ?? '',
+      category_id: this.data.subcategory?.category_id ?? this.data.categoryId ?? null,
+    };
+    this.dynamicForm?.form.patchValue(patchData);
   }
 
 
@@ -88,12 +94,8 @@ export class AddEditSubcategoryDialogComponent {
       const formData = this.dynamicForm.form.value;
       let subcategory;
 
-      if (this.subcategory) {
-        subcategory = await this.subcategoryService.update(
-          this.subcategory.id,
-          { ...formData, company_id: this.companyService.companyId() }
-        );
-
+      if (this.data.subcategory) {
+        subcategory = await this.subcategoryService.update(this.data.subcategory.id, { ...formData, company_id: this.companyService.companyId() });
         if(subcategory) this.toast.success('Subcategoria atualizada com sucesso!');
       } else {
         subcategory = await this.subcategoryService.insert({ ...formData, company_id: this.companyService.companyId() });

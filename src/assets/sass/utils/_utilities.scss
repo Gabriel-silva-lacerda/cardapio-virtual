@@ -1,5 +1,5 @@
 .input-primary {
-  @apply bg-white-light border border-gray-300 rounded-lg p-2 outline-none mb-2;
+  @apply bg-white-light border border-gray-300 rounded-lg p-2 outline-none mb-2 text-black;
   &:disabled {
     @apply bg-gray-300;
   }
