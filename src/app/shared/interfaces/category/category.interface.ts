@@ -2,6 +2,9 @@ export interface iCategory {
   id: string;
   name: string;
   icon: string;
+  created_at?: string;
+  updated_at?: string;
+  company_id?: string | null;
 }
 
 export interface iCompanyCategory {

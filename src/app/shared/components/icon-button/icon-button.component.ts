@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LoadingComponent } from '../loading/loading.component';
 
 @Component({
@@ -12,4 +12,5 @@ export class IconButtonComponent {
   @Input() isLoading: boolean = false;
   @Input() disabled: boolean = false;
   @Input() customClass: string = '';
+  @Output() onClick = new EventEmitter<MouseEvent>();
 }

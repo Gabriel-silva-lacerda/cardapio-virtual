@@ -1,157 +1,120 @@
 <app-page-layout-admin>
-  <!-- <app-list-register-page-layout
-    title="Produtos"
-    addLabel="Novo"
-    [isLoading]="isLoading()"
-    [hasMore]="hasMoreData()"
-    (add)="openDialogFood()"
-    (searchChange)="onSearchChange($event)"
-    (loadMore)="loadMore()"
-    [showAddButton]="false"
-  > -->
-    <!-- <ng-container customHeader>
-      <div class="flex flex-col gap-2">
-        <div class="relative flex justify-end gap-2 shadow-sm rounded-md text-black">
-          <button
-            class="bg-primary px-4 py-2 rounded-md text-white flex items-center gap-2"
-            (click)="isOpen.set(!isOpen())"
-          >
-            <i class="fa-solid fa-gear"></i>
-            Gerenciar Itens
-          </button>
-          @if (isOpen()) {
-            <div
-              @fadeScale
-              class="absolute right-0 top-[35px] mt-2 w-56 bg-white border rounded shadow-md z-50"
-            >
-              <button
-                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-                (click)="openCategoryDialog(); isOpen.set(false)"
-              >
-                <i class="fa-solid fa-plus"></i>
-                Criar item
-              </button>
-              <button
-                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-              >
-                <i class="fa-solid fa-layer-group"></i>
-                Subcategorias
-              </button>
-              <div class="relative group">
-              <button
-                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-              >
-                <i class="fa-solid fa-puzzle-piece"></i>
-                Adicionais
-                <i class="fa-solid fa-chevron-right ml-auto"></i>
-              </button>
-              <div
-                class="absolute left-10 top-8 ml-1 mt-0 w-48 bg-white border rounded shadow-md hidden group-hover:block z-50"
-              >
-                <button
-                  class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-plus"></i> Adicionar
-                </button>
-                <button
-                  class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-                >
-                <i class="fa-solid fa-gear"></i>
-                  Gerenciar
-                </button>
-              </div>
-            </div>
-              <button
-                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2"
-              >
-                <i class="fa-solid fa-truck"></i>
-                Taxa de entrega
-              </button>
-            </div>
-          }
-        </div>
-      </div>
-    </ng-container> -->
-
-    <!-- <ng-container customFilter>
-       <app-select-dropdown
-      [items]="categories()"
-      [selectedId]="selectedCategoryId()"
-      (selectedIdChange)="onCategorySelected($event)"
-  ></app-select-dropdown>
-
-
-  <app-select-dropdown
-    [items]="subcategories()"
-    [selectedId]="selectedSubcategoryId()"
-    (selectedIdChange)="onSubcategorySelected($event)"
-  ></app-select-dropdown>
-    </ng-container> -->
-
-<div class="flex items-center justify-between">
-  <h1 class="text-xl font-bold text-primary">Produtos</h1>
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-bold text-primary">Produtos</h1>
     <button
       class="bg-primary text-white px-4 py-2 rounded-md flex items-center gap-2 shadow hover:bg-primary-dark transition"
-      (click)="openDialogFood()"
+      (click)="openCategoryDialog()"
     >
       <i class="fas fa-plus"></i>
       <span class="font-medium">Novo</span>
     </button>
-</div>
+  </div>
 
-<div class="flex items-center gap-2 my-4">
-  <app-search-input class="w-full" customClass="!m-0" (searchChange)="onSearchChange($event)" />
-</div>
+  <div class="flex items-center gap-2 my-4">
+    <app-search-input class="w-full" customClass="!m-0" />
+  </div>
 
-<div class="flex flex-col gap-4">
-  <div class="space-y-6">
-    @for (categorie of categories(); track categorie.id) {
-      <div class="border border-gray-300 rounded-md p-4 bg-white text-black shadow-sm">
-        <div class="text-lg font-bold mb-2 text-primary">📦 {{ categorie.name }}</div>
-          @for (sub of subcategories() | filterByField:'category_id':categorie.id; track sub.id) {
-            <div class="mb-4 ml-4 border-l-2 pl-4 border-primary/40">
-              <div class="flex justify-between items-center mb-2">
-                <div class="text-md font-semibold text-primary">└─ {{ sub.name }}</div>
-                <button
-                  class="text-sm bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition"
-                >
-                  + Adicionar Produto
-                </button>
+  <div class="flex flex-col gap-4">
+    <div class="space-y-6">
+      @for (category of categories(); track category.id) {
+        <div class="border p-4 rounded mb-4 bg-white">
+          <div class="text-lg font-bold mb-2 text-primary">
+            {{ category.name }}
+          </div>
+
+          @for (sub of subcategories() | filterByField: 'category_id' : category.id; track sub.id) {
+            <div class="ml-4 mb-4 border-l-2 pl-4 border-primary/40">
+              <div class="flex justify-between items-center cursor-pointer" (click)="toggleSubcategory(sub.id)">
+                <div class="text-md font-semibold text-primary">
+                  └─ {{ sub.name }}
+                </div>
+                <i
+                  class="fa-solid fa-chevron-down text-primary text-sm transition-transform duration-300"
+                  [ngClass]="{ 'rotate-180': expandedSubcategories()[sub.id] }"
+                ></i>
               </div>
-              <div class="flex items-center gap-2 my-4">
-                <app-search-input class="w-full" customClass="!m-0" (searchChange)="onSearchChange($event)" />
+
+              <div class="flex items-center justify-between w-full mt-2">
+                <div class="flex gap-2 items-end">
+                  <button class="bg-primary h-9 text-white px-3 rounded-md flex items-center gap-2 shadow hover:bg-primary-dark transition" (click)="openProductDialog(sub.id)">
+                    Novo produto
+                  </button>
+                  <app-icon-button icon="fa-solid fa-edit" customClass="h-9 w-9 text-md !m-0" (onClick)="openCategoryDialog(category, sub)"  />
+                  <app-icon-button icon="fa-solid fa-copy" customClass="h-9 w-9 text-md !m-0" (onClick)="openDialogDuplicateCategoryAndSubcategory(category, sub)" />
+                  <app-icon-button icon="fa-solid fa-trash" customClass="h-9 w-9 text-md !m-0" />
+                </div>
+
+                <div class="text-black border-primary border py-1 px-2 rounded-md">
+                  <span>items: {{ (foodsBySubcategory()[sub.id] || []).length }}</span>
+                </div>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                 @for (food of items() | filterByField:'subcategory_id':sub.id; track food.id) {
-                  <div
-                    class="bg-gray-50 rounded-md p-3 border border-primary/10 shadow hover:shadow-md transition cursor-pointer"
-                    (click)="openDialogFood(food)"
-                  >
-                    <div class="flex items-center gap-3">
-                      <img [src]="food.image_url" class="w-16 h-16 object-cover rounded" />
-                      <div>
-                        <div class="font-medium truncate">{{ food.name }}</div>
-                        <div class="text-xs text-gray-500">R$ {{ food.price }}</div>
-                      </div>
+
+              <div
+                class="overflow-hidden transition-all duration-300 ease-in-out"
+                [ngClass]="{
+                  'max-h-0 opacity-0': !expandedSubcategories()[sub.id],
+                  'max-h-[500px] opacity-100': expandedSubcategories()[sub.id]
+                }"
+              >
+                <div class="flex flex-col items-center gap-2 my-4">
+                  @if((foodsBySubcategory()[sub.id] || []).length > 0 ) {
+                    <app-search-input
+                      class="w-full"
+                      customClass="!m-0"
+                      (searchChange)="onSubcategorySearchChange(sub.id, $event)"
+                    />
+                  }
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2 text-black">
+                  @if(loadingFoodsBySubcategory()[sub.id]) {
+                    <div class="flex justify-center mt-4 col-span-full">
+                      <app-loading size="w-10 h-10" />
                     </div>
-                  </div>
-                }
+                  }
+                  @else {
+                    @for (food of (foodsBySubcategory()[sub.id]); track food.id) {
+                      <div
+                        class="bg-gray-50 p-3 rounded shadow border border-primary/10 cursor-pointer flex justify-between"
+                        (click)="openProductDialog(food)"
+                      >
+                        <div class="flex items-center gap-3">
+                          <img [src]="food.image_url" class="w-16 h-16 object-cover rounded" />
+                          <div>
+                            <div class="font-medium truncate">{{ food.name }}</div>
+                            <div class="text-xs text-gray-500 max-w-52">{{ food.description }}</div>
+                            <div class="text-xs text-primary font-medium">R$ {{ food.price }}</div>
+                          </div>
+                        </div>
+                        <div class="flex items-end gap-2 ml-2 z-30">
+                          <app-icon-button icon="fa-solid fa-pen-to-square" (click)="openProductDialog(food); $event.stopPropagation()" />
+                          <app-icon-button icon="fa-solid fa-copy" />
+                          <app-icon-button icon="fa-solid fa-list-check" tooltip="Opcionais" />
+                          <app-icon-button icon="fa-solid fa-trash" />
+                        </div>
+                      </div>
+
+                    }
+                    @empty {
+                      <div class="text-gray-400 italic col-span-full">Nenhum produto nessa subcategoria</div>
+                    }
+                  }
+                </div>
               </div>
             </div>
-            @if(hasMoreData() && !isLoading()) {
-              <div class="flex justify-center mt-4">
-                <button (click)="loadMore()" class="text-primary underline text-sm mx-auto mt-4">
-                  Carregar mais
-                </button>
-              </div>
-            }
           }
-      </div>
-    }
-    @empty {
-      <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
-    }
-  </div>
-</div>
+        </div>
+      }
 
+      @empty {
+        <div class="text-center text-gray-400 mt-10">Nenhum produto encontrado.</div>
+      }
+
+
+      @if(loading()) {
+        <div class="flex justify-center mt-4">
+          <app-loading size="w-10 h-10" />
+        </div>
+      }
+    </div>
+  </div>
 </app-page-layout-admin>

@@ -38,15 +38,22 @@ export abstract class BaseSupabaseService {
     return data as T;
   }
 
-  async getAllByField<T>(
+    async getAllByField<T>(
     field: string,
     value: string | number | number[],
-    selectFields: string = '*'
+    selectFields: string = '*',
+    options?: { orderBy?: string; ascending?: boolean }
   ): Promise<T[]> {
-    const { data, error } = await this.supabaseService.supabase
+    let query = this.supabaseService.supabase
       .from(this.table)
       .select(selectFields)
       .eq(field, value);
+
+    if (options?.orderBy) {
+      query = query.order(options.orderBy, { ascending: options.ascending ?? true });
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       this.throwHandledError(error, `Erro ao buscar registros na tabela ${this.table} com ${field} = ${value}.`);
@@ -54,6 +61,7 @@ export abstract class BaseSupabaseService {
 
     return data as T[];
   }
+
 
   async getByField<T>(
     field: string,
@@ -156,6 +164,58 @@ export abstract class BaseSupabaseService {
       this.throwHandledError(error, `Erro ao excluir o item na tabela ${this.table}.`);
     }
   }
+
+  async getAllByFields<T>(
+    filters: Record<string, string | number>,
+    selectFields: string = '*'
+  ): Promise<T[]> {
+    let query = this.supabaseService.supabase.from(this.table).select(selectFields);
+
+    for (const [field, value] of Object.entries(filters)) {
+      query = query.eq(field, value);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      this.throwHandledError(error, `Erro ao buscar registros na tabela ${this.table} com filtros ${JSON.stringify(filters)}.`);
+    }
+
+    return data as T[];
+  }
+
+  async search<T>(
+    query: string,
+    searchFields: string[],
+    filters: Record<string, any> = {},
+  ): Promise<T[]> {
+    let queryBuilder = this.supabaseService.supabase
+      .from(this.table)
+      .select('*');
+
+    // Aplica filtros fixos (ex: company_id, subcategory_id)
+    for (const [field, value] of Object.entries(filters)) {
+      queryBuilder = queryBuilder.eq(field, value);
+    }
+
+    // Aplica busca por texto (OR com ilike nos campos)
+    if (query && query.trim() !== '' && searchFields.length > 0) {
+      const orQuery = searchFields
+        .map(field => `${field}.ilike.%${query}%`)
+        .join(',');
+
+      queryBuilder = queryBuilder.or(orQuery);
+    }
+
+    const { data, error } = await queryBuilder;
+
+    if (error) {
+      this.throwHandledError(error, 'Erro ao buscar dados');
+    }
+
+    return data as T[];
+  }
+
 
   async searchPaginated<T>(
     query: string,

@@ -22,7 +22,12 @@ export abstract class BaseSearchPaginatedComponent<T> {
   }
 
   // Método abstrato que cada componente deve implementar
-  protected abstract fetchData(query: string, page: number, pageSize: number): Promise<T[]>;
+  protected abstract fetchData(
+    query: string,
+    page: number,
+    pageSize: number,
+    extraParams?: Record<string, any>
+  ): Promise<T[]>;
 
   async init() {
     await this.search('', true);
@@ -32,12 +37,12 @@ export abstract class BaseSearchPaginatedComponent<T> {
     this.searchQuery$.next(query);
   }
 
-  public async search(query: string, reset: boolean = false) {
+  public async search(query: string, reset: boolean = false, extraParams?: Record<string, any>) {
     if (this.isLoading() || (!reset && !this.hasMoreData())) return;
 
     this.isLoading.set(true);
     try {
-      const result = await this.fetchData(query, this.currentPage(), this.pageSize);
+      const result = await this.fetchData(query, this.currentPage(), this.pageSize, extraParams);
       const newData = result || [];
       if (reset) {
         this.items.set(newData);
@@ -51,6 +56,7 @@ export abstract class BaseSearchPaginatedComponent<T> {
       this.isLoading.set(false);
     }
   }
+
 
   public loadMore() {
     if (this.isLoading() || !this.hasMoreData()) return;

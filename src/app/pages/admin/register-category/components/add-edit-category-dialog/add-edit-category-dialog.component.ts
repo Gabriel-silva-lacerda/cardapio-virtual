@@ -57,6 +57,7 @@ export class AddEditCategoryDialogComponent {
       this.loading.set(true);
       this.dynamicForm?.form.patchValue({
         name: this.data.category?.name,
+        subcategory_name: this.data.subcategory?.name || ''
       });
 
       this.loading.set(false);
