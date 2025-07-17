@@ -8,6 +8,7 @@ import { GenericDialogComponent } from '@shared/components/generic-dialog/generi
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { iCategory } from '@shared/interfaces/category/category.interface';
+import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
 import { CompanyService } from '@shared/services/company/company.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastService } from '@shared/services/toast/toast.service';
@@ -30,7 +31,7 @@ export class AddEditCategoryDialogComponent {
 
   public loadingService = inject(LoadingService);
   public dialogRef = inject(MatDialogRef<AddEditCategoryDialogComponent>);
-  public data = inject(MAT_DIALOG_DATA) as { category: any, subcategory: any};
+  public data = inject(MAT_DIALOG_DATA) as { isEditCategory: any, category: any, subcategory: any};
   public loading = signal(false);
 
   public categoryFields: iDynamicField[] = [
@@ -43,70 +44,107 @@ export class AddEditCategoryDialogComponent {
       padding: '10px',
     },
     {
-    name: 'subcategory_name',
-    label: 'Nome da subcategoria',
-    placeholder: 'Tradicional, Refrigerante, etc.',
-    type: 'text',
-    validators: [Validators.required],
-    padding: '10px',
-  },
+      name: 'has_subcategory',
+      label: 'Essa categoria terá subcategorias?',
+      type: 'checkbox',
+      padding: '10px',
+      defaultValue: false
+    },
+    {
+      name: 'subcategory_name',
+      label: 'Nome da subcategoria',
+      placeholder: 'Tradicional, Refrigerante, etc.',
+      type: 'text',
+      validators: [],
+      padding: '10px',
+      visibleIf: (form) => form.get('has_subcategory')?.value === true,
+    },
   ];
 
-  ngAfterViewInit() {
-    if (this.data.category) {
-      this.loading.set(true);
-      this.dynamicForm?.form.patchValue({
-        name: this.data.category?.name,
-        subcategory_name: this.data.subcategory?.name || ''
-      });
 
-      this.loading.set(false);
-    }
+  ngAfterViewInit() {
+    this.patchForm();
   }
 
-  onClose() {
+  private patchForm(): void {
+    if (!this.data.category) return;
+
+    this.loading.set(true);
+
+    const isEdit = this.data.isEditCategory;
+
+
+    this.dynamicForm.form.patchValue({
+      name: this.data.category?.name,
+      has_subcategory: !!this.data.subcategory,
+      subcategory_name: this.data.subcategory?.name || '',
+    });
+
+    if (!isEdit)
+      this.dynamicForm.disableFields(['name']);
+
+    if (isEdit)
+      this.categoryFields = this.categoryFields.filter(f => f.name !== 'subcategory_name' && f.name !== 'has_subcategory');
+
+    this.loading.set(false);
+  }
+
+  public onClose(): void {
     this.dialogRef.close();
   }
 
- async onSave() {
+  public async onSave(): Promise<void> {
     if (this.dynamicForm.form.invalid) return;
 
+    this.loading.set(true);
     try {
-      this.loading.set(true);
-      const { name, subcategory_name } = this.dynamicForm.form.value;
+      const { name, has_subcategory, subcategory_name } = this.dynamicForm.form.value;
+      console.log(has_subcategory)
       const companyId = this.companyService.companyId();
 
-      let category: any;
+      const category = await this.saveCategory(name, companyId, has_subcategory);
 
-      // Atualiza ou cria categoria
-      if (this.data?.category) {
-        category = await this.categoryService.update(this.data?.category.id, { name, company_id: companyId });
-      } else {
-        category = await this.categoryService.insert({ name, company_id: companyId });
+      let subcategorySaved = null;
+      if (has_subcategory && subcategory_name?.trim()) {
+        subcategorySaved = await this.saveSubcategory(subcategory_name, category.id, companyId);
       }
 
-      // Atualiza ou cria subcategoria
-      if (category && subcategory_name) {
-        if (this.data?.subcategory?.id) {
-          await this.subcategoryService.update(this.data?.subcategory?.id, {
-            name: subcategory_name,
-            category_id: category.id,
-            company_id: companyId
-          });
-        } else {
-          await this.subcategoryService.insert({
-            name: subcategory_name,
-            category_id: category.id,
-            company_id: companyId
-          });
-        }
-      }
+      const message = this.getSuccessMessage(!!has_subcategory, !!subcategorySaved);
+      this.toast.success(message);
 
-      this.toast.success('Categoria e subcategoria salvas com sucesso!');
       this.dialogRef.close(category);
     } finally {
       this.loading.set(false);
     }
   }
 
+  private async saveCategory(name: string, company_id: string, has_subcategory: boolean): Promise<iCategory> {
+    if (this.data.category) {
+      return this.categoryService.update(this.data.category.id, { name, company_id, has_subcategory });
+    }
+
+    return this.categoryService.insert({ name, company_id, has_subcategory });
+  }
+
+  private async saveSubcategory(name: string, category_id: string | undefined, company_id: string): Promise<iSubcategory | null> {
+    if (!name) return null;
+
+    if (this.data.subcategory?.id) {
+      return this.subcategoryService.update(this.data.subcategory.id, { name, category_id, company_id });
+    }
+
+    return this.subcategoryService.insert({ name, category_id, company_id });
+  }
+
+  private getSuccessMessage(hasSubcategory: boolean, subcategorySaved: boolean): string {
+    if (this.data.isEditCategory) {
+      return 'Categoria editada com sucesso!';
+    }
+
+    if (hasSubcategory && subcategorySaved) {
+      return 'Subcategoria criada com sucesso!';
+    }
+
+    return 'Categoria criada com sucesso!';
+  }
 }

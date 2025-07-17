@@ -1,33 +1,43 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { BaseSearchPaginatedComponent } from '@shared/components/base-search-paginated/base-search-paginated.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { debounceTime, Subject, takeUntil } from 'rxjs';
+
+// Components
 import { IconButtonComponent } from '@shared/components/icon-button/icon-button.component';
-import { ListRegisterPageLayoutComponent } from '@shared/components/list-register-page-layout/list-register-page-layout.component';
 import { PageLayoutAdminComponent } from '@shared/components/page-layout-admin/page-layout-admin.component';
+import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
+import { AddEditCategoryDialogComponent } from '../../register-category/components/add-edit-category-dialog/add-edit-category-dialog.component';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
+
+// Interfaces
 import { IFoodAdmin } from '@shared/interfaces/food/food.interface';
-import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
+import { iCategory } from '@shared/interfaces/category/category.interface';
+import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
+
+// Services
 import { FoodService } from '@shared/services/food/food.service';
-import { ImageService } from '@shared/services/image/image.service';
+import { CategoryService } from 'src/app/pages/client/home/services/category.service';
+import { SubcategoryService } from 'src/app/pages/client/home/services/subcategory.service';
+import { CompanyService } from '@shared/services/company/company.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
 import { ToastService } from '@shared/services/toast/toast.service';
+import { ImageService } from '@shared/services/image/image.service';
+import { DuplicationService } from '../shared/service/duplication.service';
+
+// Utils
 import { getImageUrl } from '@shared/utils/get-image/get-image.utits';
-import { AddEditItemDialogComponent } from '../components/add-edit-item-dialog/add-edit-item-dialog.component';
 import { fadeScale } from '@shared/utils/animations.util';
-import { iCategory } from '@shared/interfaces/category/category.interface';
-import { AddEditCategoryDialogComponent } from '../../register-category/components/add-edit-category-dialog/add-edit-category-dialog.component';
-import { AddEditSubcategoryDialogComponent } from '../../register-subcategory/components/add-edit-subcategory-dialog/add-edit-subcategory-dialog.component';
-import { CategoryService } from 'src/app/pages/client/home/services/category.service';
-import { CompanyService } from '@shared/services/company/company.service';
-import { CommonModule, NgClass, NgFor } from '@angular/common';
-import { FormsModule, NgModel } from '@angular/forms';
-import { SubcategoryService } from 'src/app/pages/client/home/services/subcategory.service';
-import { FilterByFieldPipe } from "../../../../widget/pipes/filter-by-field.pipe";
-import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
-import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
-import { debounceTime, Subject } from 'rxjs';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { openConfirmDialog } from '@shared/utils/dialog/dialog.util';
+import { getBaseName, getNextCopyName } from '../shared/utils/base-name-util';
+
+// Pipes
+import { FilterByFieldPipe } from "../../../../widget/pipes/filter-by-field.pipe";
+import { eCategoryLevel } from '../shared/enums/category-level.enum';
+import { eCategoryFilterKey } from '../shared/enums/category-filter-key.enum';
 
 @Component({
   selector: 'app-register-product-page',
@@ -40,14 +50,14 @@ import { openConfirmDialog } from '@shared/utils/dialog/dialog.util';
 export class RegisterProductPage {
   private foodService = inject(FoodService);
   private dialog = inject(MatDialog);
-  private foodAdminViewService = inject(FoodAdminViewService);
   private loadingService = inject(LoadingService);
-  private imageService = inject(ImageService);
   private toast = inject(ToastService);
   private categoryService = inject(CategoryService);
-  private companyService = inject(CompanyService);;
+  private companyService = inject(CompanyService);
   private subcategoryService = inject(SubcategoryService);
+  private duplicationService = inject(DuplicationService);
 
+  // Signals
   public isOpen = signal(false);
   public loading = signal(false);
   public selectedCategoryId = signal<string | null>(null);
@@ -55,15 +65,23 @@ export class RegisterProductPage {
   public categories = signal<iCategory[]>([]);
   public subcategories = signal<iSubcategory[]>([]);
   public expandedSubcategories = signal<Record<string, boolean>>({});
-  public foodsBySubcategory = signal<Record<string, any[]>>({});
-  private searchSubject = new Subject<{ subcategoryId: string; query: string }>();
-  public loadingFoodsBySubcategory = signal<Record<string, boolean>>({});
+  public expandedCategories = signal<Record<string, boolean>>({});
+  public foodsByContainer = signal<any>({});
+  public loadingFoodsByContainer = signal<any>({});
+  public foodCountByContainer = signal<any>({});
+  public eCategoryLevel = eCategoryLevel;
+
+  private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<{ id: string; query: string; type: eCategoryLevel }>();
 
   async ngOnInit() {
     await this.initializeData();
-    this.searchSubject.pipe(debounceTime(500)).subscribe(({ subcategoryId, query }) => {
-      this.getFoodsBySubcategory(subcategoryId, query);
-    });
+    this.listenSearch();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private async initializeData(): Promise<void> {
@@ -76,250 +94,188 @@ export class RegisterProductPage {
   }
 
   private async getCategories(): Promise<void> {
-    const categories = await this.categoryService.getAllByField<iCategory>(
-      'company_id',
-      this.companyService.companyId(),
-      '*',
-      { orderBy: 'created_at', ascending: false }
-    );
+    const categories = await this.categoryService.getAllByField<iCategory>('company_id', this.companyService.companyId(), '*', {
+      orderBy: 'created_at',
+      ascending: false,
+    });
     this.categories.set(categories);
   }
 
   private async getSubcategories(): Promise<void> {
-    const subcategories = await this.subcategoryService.getAllByField<iSubcategory>(
-      'company_id',
-      this.companyService.companyId(),
-      'id, name, category_id'
-    );
+    const subcategories = await this.subcategoryService.getAllByField<iSubcategory>('company_id', this.companyService.companyId());
     this.subcategories.set(subcategories);
   }
 
-  async toggleSubcategory(subcategoryId: string) {
-    const expandedMap: Record<string, boolean> = {};
-
-    const isCurrentlyOpen = this.expandedSubcategories()[subcategoryId];
-    if (!isCurrentlyOpen) {
-      expandedMap[subcategoryId] = true;
-      this.expandedSubcategories.set(expandedMap);
-
-      if (!this.foodsBySubcategory()[subcategoryId]) {
-        await this.getFoodsBySubcategory(subcategoryId, '');
+  private listenSearch(): void {
+    this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(({ id, query, type }) => {
+      if (query?.trim()) {
+        const filterKey = type === eCategoryLevel.Subcategory ? eCategoryFilterKey.Subcategory : eCategoryFilterKey.Category;
+        this.fetchFoods(id, query, filterKey);
       }
+    });
+  }
+
+  async toggleContainer(id: string, type: eCategoryLevel): Promise<void> {
+    const expandedSignal = type === eCategoryLevel.Category ? this.expandedCategories : this.expandedSubcategories;
+    const isCurrentlyOpen = expandedSignal()[id];
+
+    if (type === eCategoryLevel.Category) {
+      this.expandedCategories.set({});
     } else {
       this.expandedSubcategories.set({});
     }
-  }
-  async getFoodsBySubcategory(subcategoryId: string, query: string) {
-    this.loadingFoodsBySubcategory.update(state => ({ ...state, [subcategoryId]: true }));
 
-    try {
-      const foods = await this.getFoods(subcategoryId, query);
-      this.foodsBySubcategory.update(state => ({
-        ...state,
-        [subcategoryId]: foods,
-      }));
-    } catch {
-      this.toast.error('Erro ao carregar alimentos');
-    } finally {
-      this.loadingFoodsBySubcategory.update(state => ({ ...state, [subcategoryId]: false }));
+    if (!isCurrentlyOpen) {
+      expandedSignal.update(state => ({ ...state, [id]: true }));
+
+      if (!this.foodsByContainer()[id]) {
+        const filterKey = this.getFilterKey(type);
+        await this.fetchFoods(id, '', filterKey);
+      }
     }
   }
 
-  async getFoods(subcategoryId: string, query: string): Promise<IFoodAdmin[]> {
-    const filters = {
-      company_id: this.companyService.companyId(),
-      subcategory_id: subcategoryId,
-    };
-
-    const foods = await this.foodService.search<IFoodAdmin>(
-      query,
-      ['name', 'description'],
-      filters,
-    );
-
-    return this.addImageUrls(foods);
+  private getFilterKey(type: eCategoryLevel): eCategoryFilterKey {
+    return type === eCategoryLevel.Category ? eCategoryFilterKey.Category : eCategoryFilterKey.Subcategory;
   }
 
-  private async addImageUrls(foods: IFoodAdmin[]): Promise<IFoodAdmin[]> {
-    return foods.map(this.formatFood);
+
+  private async fetchFoods(id: string, query: string, filterKey: eCategoryFilterKey): Promise<void> {
+    this.loadingFoodsByContainer.update(state => ({ ...state, [id]: true }));
+    try {
+      const filters = { company_id: this.companyService.companyId(), [filterKey]: id };
+      let foods = await this.foodService.search<IFoodAdmin>(query, ['name', 'description'], filters);
+      if (filterKey === eCategoryFilterKey.Subcategory) foods = foods.map(this.formatFood);
+      this.foodsByContainer.update(state => ({ ...state, [id]: foods }));
+    } catch (error) {
+      this.toast.error('Erro ao carregar alimentos.');
+      console.error(error);
+    } finally {
+      this.loadingFoodsByContainer.update(state => ({ ...state, [id]: false }));
+    }
   }
 
   private formatFood(food: IFoodAdmin): IFoodAdmin {
-    return {
-      ...food,
-      image_url: getImageUrl(food.image_url || ''),
-    };
+    return { ...food, image_url: getImageUrl(food.image_url || '') };
   }
 
-  onSubcategorySearchChange(subcategoryId: string, query: string) {
-    this.searchSubject.next({ subcategoryId, query });
+  onSearchChange(id: string, query: string, type: eCategoryLevel.Category | eCategoryLevel.Subcategory): void {
+    this.searchSubject.next({ id, query, type });
   }
 
-  public openDialogDuplicateCategoryAndSubcategory(category: iCategory, subcategory: iSubcategory): void {
-    openConfirmDialog<{ category: iCategory; subcategory: iSubcategory }>(this.dialog, {
+  public openDialogDuplicateCategory(category: iCategory): void {
+    const signalSubcategories = computed(() =>this.subcategories().filter(s => s.category_id === category.id));
+    const message = this.createDuplicateCategoryMessage(category, signalSubcategories());
+
+    openConfirmDialog<{ category: iCategory; subcategories: Signal<iSubcategory[]> }>(this.dialog, {
       title: 'Duplicar categoria',
-      message: `Deseja duplicar a categoria "${category.name}" e a subcategoria "${subcategory.name}"?`,
+      message: message,
       confirmText: 'Duplicar',
       cancelText: 'Cancelar',
-      payload: { category, subcategory },
+      payload: { category, subcategories: signalSubcategories },
       onConfirm: async (payload, dialogRef) => {
         if (payload) {
-          await this.duplicateCategoryAndSubcategory(payload.category, payload.subcategory);
-          dialogRef.close();
+          await this.handleDuplicateCategory(payload, dialogRef);
         }
       },
     });
   }
 
-  private async duplicateCategoryAndSubcategory(category: iCategory, subcategory: iSubcategory): Promise<void> {
-    this.loadingService.showLoading()
+  private async handleDuplicateCategory(
+    payload: { category: iCategory; subcategories: Signal<iSubcategory[]> },
+    dialogRef: MatDialogRef<ConfirmDialogComponent>
+  ): Promise<void> {
     try {
-      const companyId = this.companyService.companyId();
+      this.loadingService.showLoading();
+      await this.duplicationService.duplicateCategoryAndSubcategories(
+        payload.category,
+        payload.subcategories(),
+        this.companyService.companyId(),
+        this.foodsByContainer()
+      );
 
-      // 🔹 1. Gerar nome da nova categoria com sufixo incremental
-      const baseCategoryName = this.getBaseName(category.name);
-      const categoryNames = this.categories().map(c => c.name);
-      const newCategoryName = this.getNextCopyName(baseCategoryName, categoryNames);
-
-      const duplicatedCategory: Partial<iCategory> = {
-        name: newCategoryName,
-        company_id: companyId,
-      };
-
-      const newCategory = await this.categoryService.insert<iCategory>(duplicatedCategory);
-
-      // 🔹 2. Gerar nome da nova subcategoria com sufixo incremental
-      const baseSubcategoryName = this.getBaseName(subcategory.name);
-      const subcategoryNames = this.subcategories().map(sc => sc.name);
-      const newSubcategoryName = this.getNextCopyName(baseSubcategoryName, subcategoryNames);
-
-      const duplicatedSubcategory: Partial<iSubcategory> = {
-        name: newSubcategoryName,
-        category_id: newCategory.id,
-        company_id: companyId,
-      };
-
-      const newSubcategory = await this.subcategoryService.insert<iSubcategory>(duplicatedSubcategory);
-
-      // 🔹 3. Duplicar os produtos da subcategoria
-      const originalFoods = this.foodsBySubcategory()[subcategory.id] ?? [];
-      const existingFoodNames = originalFoods.map(f => f.name);
-
-      const duplicatedFoods: Partial<IFoodAdmin>[] = originalFoods.map(food => {
-        const baseFoodName = this.getBaseName(food.name);
-        const newFoodName = this.getNextCopyName(baseFoodName, existingFoodNames);
-        existingFoodNames.push(newFoodName); // prevenir duplicação
-        return {
-          ...food,
-          id: undefined,
-          name: newFoodName,
-          subcategory_id: newSubcategory.id,
-          created_at: undefined,
-          updated_at: undefined,
-        };
-      });
-
-      for (const food of duplicatedFoods) {
-        await this.foodService.insert<IFoodAdmin>(food);
-      }
-
-      // 🔹 4. Atualizar estado local
-      this.categories.set([...this.categories(), newCategory]);
-      this.subcategories.set([...this.subcategories(), newSubcategory]);
-
-      if (duplicatedFoods.length > 0) {
-        const newFoodsWithImageUrls = await this.addImageUrls(duplicatedFoods as IFoodAdmin[]);
-        this.foodsBySubcategory.update(state => ({
-          ...state,
-          [newSubcategory.id]: newFoodsWithImageUrls,
-        }));
-      }
-
-      this.toast.success('Categoria, subcategoria e produtos duplicados com sucesso!');
-    } finally {
+      this.toast.success('Categoria com subcategorias e produtos duplicados com sucesso!');
+      this.initializeData();
+      dialogRef.close();
+    } finally  {
       this.loadingService.hideLoading();
     }
   }
 
-  private getBaseName(name: string): string {
-    return name.replace(/\s+\(cópia(?: \d+)?\)$/, '').trim();
+  private createDuplicateCategoryMessage(category: iCategory, subcategories: iSubcategory[]): string {
+    if (subcategories.length > 0) {
+      const firstSubName = subcategories[0].name;
+      return `Deseja duplicar a categoria "${category.name}" e suas subcategorias (ex: "${firstSubName}")?`;
+    } else {
+      return `Deseja duplicar a categoria "${category.name}" sem subcategorias?`;
+    }
   }
 
-  private getNextCopyName(baseName: string, existingNames: string[]): string {
-    const regex = new RegExp(`^${this.escapeRegex(baseName)}\\s+\\(cópia(?:\\s(\\d+))?\\)$`, 'i');
 
-    const copyNumbers = existingNames
-      .map(name => {
-        const match = name.match(regex);
-        return match ? parseInt(match[1] || '1', 10) : null;
-      })
-      .filter(num => num !== null) as number[];
-
-    const nextNumber = copyNumbers.length > 0 ? Math.max(...copyNumbers) + 1 : 1;
-    return `${baseName} (cópia${nextNumber > 1 ? ' ' + nextNumber : ''})`;
+  public openDialogConfirmRemoveFood(food: IFoodAdmin): void {
+    openConfirmDialog<IFoodAdmin>(this.dialog, {
+      title: 'Deletar Item',
+      message: `Tem certeza que deseja deletar o item "${food.name}"? Esta ação é irreversível.`,
+      confirmText: 'Deletar',
+      cancelText: 'Cancelar',
+      payload: food,
+      onConfirm: async (payload, dialogRef) => {
+        if (payload) {
+          await this.removeFood(payload, dialogRef);
+        }
+      },
+    });
   }
 
-  private escapeRegex(text: string): string {
-    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  openCategoryDialog(category?: iCategory | undefined, subcategory?: iSubcategory | void): void {
+  openCategoryAndSubcategoryDialog(isEditCategory = false, category?: iCategory | undefined, subcategory?: iSubcategory): void {
     const dialogRef = this.dialog.open(AddEditCategoryDialogComponent, {
       width: '400px',
-      data: { category, subcategory }
+      data: { isEditCategory, category, subcategory }
     });
 
-    dialogRef.afterClosed().subscribe(async (result) => {
-     if (result) await this.initializeData();
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(async (result) => {
+      if (result) await this.initializeData();
     });
   }
 
-  public openProductDialog(food?: IFoodAdmin): void {
+  public openProductDialog(category?: iCategory, subcategory?: iSubcategory | null, food?: any): void {
     const dialogRef = this.dialog.open(AddEditItemDialogComponent, {
       width: '400px',
       height: '739px',
-      data: { foodId: food?.id },
+      data: { category, subcategory, food },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      // if (result) this.updateItemList(result);
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(async (result: IFoodAdmin | null | undefined) => {
+      if (result) {
+        const containerId = result.subcategory_id || result.category_id;
+        const containerType = result.subcategory_id ? eCategoryFilterKey.Subcategory : eCategoryFilterKey.Category;
+
+        if (containerId) {
+          await this.fetchFoods(containerId as string, '', containerType);
+        }
+      }
     });
   }
 
-  // private updateItemList(newFood: IFoodAdmin): void {
-  //   this.items.update((currentItems) => {
-  //     const updated = this.formatFood(newFood);
-  //     const index = currentItems.findIndex(item => item.id === newFood.id);
+  private async removeFood(food: IFoodAdmin, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
+    // try {
+    //   this.loadingService.showLoading();
 
-  //     const newList = index !== -1
-  //       ? currentItems.map(item => (item.id === newFood.id ? updated : item))
-  //       : [updated, ...currentItems];
+    //   const imagePath = food.image_url?.replace(/^.*\/food-images\//, 'food-images/');
+    //   const deletedImage = imagePath ? await this.imageService.deleteImage(imagePath) : true;
+    //   if(food.id !== undefined) {
+    //     const error = await this.foodService.delete(food.id);
 
-  //     this.hasMoreData.set(newList.length >= this.pageSize);
-
-  //     return newList;
-  //   });
-  // }
-
-  // private async removeFood(food: IFoodAdmin, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
-  //   try {
-  //     this.loadingService.showLoading();
-
-  //     const imagePath = food.image_url?.replace(/^.*\/food-images\//, 'food-images/');
-  //     const deletedImage = imagePath ? await this.imageService.deleteImage(imagePath) : true;
-  //     if(food.id !== undefined) {
-  //       const error = await this.foodService.delete(food.id);
-
-  //       if (!error && deletedImage) {
-  //         this.toast.success('Item deletado com sucesso!');
-  //         this.deleteItemFromList(food.id);
-  //         dialogRef.close(true);
-  //       }
-  //     }
-  //   } finally {
-  //     this.loadingService.hideLoading();
-  //   }
-  // }
+    //     if (!error && deletedImage) {
+    //       this.toast.success('Item deletado com sucesso!');
+    //       this.deleteItemFromList(food.id);
+    //       dialogRef.close(true);
+    //     }
+    //   }
+    // } finally {
+    //   this.loadingService.hideLoading();
+    // }
+  }
 
   // private deleteItemFromList(id: string): void {
   //   this.items.update(currentItems => {

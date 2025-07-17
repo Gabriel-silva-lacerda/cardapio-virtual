@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   inject,
   OnInit,
@@ -46,7 +47,7 @@ import { AddEditSubcategoryDialogComponent } from '../../../register-subcategory
   templateUrl: './add-edit-item-dialog.component.html',
   styleUrl: './add-edit-item-dialog.component.scss',
 })
-export class AddEditItemDialogComponent implements OnInit {
+export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private localStorageService = inject(LocalStorageService);
   private foodService = inject(FoodService);
@@ -61,7 +62,11 @@ export class AddEditItemDialogComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
-  public data = inject(MAT_DIALOG_DATA) as { foodId: number };
+  public data = inject(MAT_DIALOG_DATA) as {
+    food?: IFoodAdmin;
+    category?: iCategory;
+    subcategory?: iSubcategory;
+  };
   public loadingService = inject(LoadingService);
   public destroy$ = new Subject<void>();
   public imageUrl: string | null = null;
@@ -96,51 +101,20 @@ export class AddEditItemDialogComponent implements OnInit {
       directive: 'onlyNumbers',
     },
     {
-      name: 'extras',
-      label: 'Adicionais',
-      type: 'multiselect',
-      validators: [],
+      name: 'category_id',
+      label: 'Categoria',
+      type: 'select',
+      validators: [Validators.required],
       padding: '10px',
-      tooltip: 'Selecione uma categoria primeiro!',
-      onClick: async () => {}
+      onChange: async (data: unknown, form: FormGroup) => this.onCategoryChange(data, form),
     },
-    // {
-    //   name: 'category_id',
-    //   label: 'Categoria',
-    //   type: 'select',
-    //   validators: [Validators.required],
-    //   padding: '10px',
-    //   onChange: async (data: unknown, form: FormGroup) => this.onCategoryChange(data, form),
-    //   onClick: async () => this.openCategoryDialog()
-    // },
-    // {
-    //   name: 'subcategory_id',
-    //   label: 'Subcategoria',
-    //   type: 'select',
-    //   validators: [Validators.required],
-    //   padding: '10px',
-    //   onClick: async () => this.openSubcategoryDialog()
-    // },
-
-
-    // {
-    //   name: 'has_day_of_week',
-    //   label: 'Esse item pode ter todos os dias da semana?',
-    //   type: 'select',
-    //   options: [
-    //     { label: 'Sim', value: true },
-    //     { label: 'Não', value: false },
-    //   ],
-    //   validators: [Validators.required],
-    //   padding: '10px',
-    //   onChange: (data: string | unknown, form: FormGroup) => {
-    //     if (data === 'true') {
-    //       this.removeDayOfWeekField(form);
-    //     } else {
-    //       this.addDayOfWeekField(form);
-    //     }
-    //   },
-    // },
+    {
+      name: 'subcategory_id',
+      label: 'Subcategoria',
+      type: 'select',
+      validators: [Validators.required],
+      padding: '10px',
+    },
     {
       name: 'image_url',
       label: 'Imagem',
@@ -150,27 +124,52 @@ export class AddEditItemDialogComponent implements OnInit {
     },
   ];
 
-  async ngOnInit() {
+  ngOnInit(): void {
+
+  }
+
+  async ngAfterViewInit() {
     this.initializeForm();
   }
 
   private async initializeForm() {
-    if (this.data.foodId) {
-      await this.getFoodDataById(this.data.foodId);
+    if (this.data.food) {
+      await this.getFoodDataById(this.data.food);
     } else {
-      await this.getAllCategories();
+      // await this.getAllCategories();
+      this.populateFormFromFoodData();
     }
   }
 
-  private async getAllCategories() {
-    this.setLoading('categories', true);
-    try {
-      const categories = await this.categoryService.getAllByField<iCategory>('company_id', this.companyId());
-      this.setFoodFieldOptions('category_id', categories);
-      this.dynamicForm.disableFields(['subcategory_id']);
-    } finally {
-      this.setLoading('categories', false);
-    }
+  // private async getAllCategories() {
+  //   this.setLoading('categories', true);
+  //   try {
+  //     const categories = await this.categoryService.getAllByField<iCategory>('company_id', this.companyId());
+  //     this.setFoodFieldOptions('category_id', categories);
+  //     this.dynamicForm.disableFields(['subcategory_id']);
+  //   } finally {
+  //     this.setLoading('categories', false);
+  //   }
+  // }
+
+  private populateFormFromFoodData(): void {
+    const category = this.data.category;
+    const subcategory = this.data.subcategory;
+    console.log(category, subcategory);
+
+    this.setFoodFieldOptions('category_id', [category as any]);
+    this.setFoodFieldOptions('subcategory_id', [subcategory as any]);
+
+    this.dynamicForm.form.patchValue({
+      category_id: category?.id,
+    });
+
+    setTimeout(() => {
+      this.dynamicForm.form.patchValue({
+        subcategory_id: subcategory?.id,
+      });
+      this.dynamicForm.disableFields(['category_id', 'subcategory_id']);
+    }, 100);
   }
 
   private setFoodFieldOptions(fieldName: string, items: { id: string; name: string }[]) {
@@ -211,11 +210,11 @@ export class AddEditItemDialogComponent implements OnInit {
     return (this.foodFields.find(f => f.name === fieldName)?.options ?? []).map(o => o.value as string);
   }
 
-  private async getFoodDataById(foodId: number) {
+  private async getFoodDataById(food: any) {
     this.setLoading('default', true);
     try {
       // Supondo que seu foodService tenha método para consultar views
-      const foodData = await this.foodAdminViewService.getByField<IFoodAdmin>('id', foodId.toString());
+      const foodData = food;
       if (!foodData) return;
 
       this.imageUrl = foodData.image_url || null;
@@ -274,17 +273,17 @@ export class AddEditItemDialogComponent implements OnInit {
 
     this.setLoading('default', true);
     try {
-      const formData = this.dynamicForm.form.value;
+      const formData = this.dynamicForm.form.getRawValue();
       const imageUrl = await this.handleImageUpload(formData);
-      const data = this.buildFoodPayload(this.dynamicForm.form.value, imageUrl);
-      const extraIds = data.extras;
+      const data = this.buildFoodPayload(formData, imageUrl);
+
       let foods;
 
-      if (this.data.foodId) {
-        foods = await this.foodService.updateFoodWithExtras(this.data.foodId, data.foodData, extraIds);
+      if (this.data.food) {
+        foods = await this.foodService.updateFoodWithExtras(this.data.food.id, data);
         this.toast.success('Item atualizado com sucesso!');
       } else {
-        foods = await this.foodService.createFoodWithExtras(data.foodData, extraIds);
+        foods = await this.foodService.createFoodWithExtras(data);
         this.toast.success('Item criado com sucesso!');
       }
 
@@ -296,21 +295,21 @@ export class AddEditItemDialogComponent implements OnInit {
     }
   }
 
-  private buildFoodPayload(formData: any, imageUrl: string | null = null): { foodData: iFood; extras: string[] } {
-    const { extras = [], ...foodData } = {
+  private buildFoodPayload(formData: any, imageUrl: string | null = null): iFood {
+    return {
       ...formData,
       image_url: imageUrl || 'food-images/default-food.png',
       company_id: this.companyId(),
       day_of_week: formData.day_of_week || null,
     };
-    return { foodData, extras };
   }
+
 
   private async handleImageUpload(formData: any): Promise<string | null> {
     const file = formData.image_url;
     if (!(file instanceof File)) return formData.image_url;
 
-    if (this.data.foodId && this.imageUrl) {
+    if (this.data.food && this.imageUrl) {
       await this.imageService.deleteImage(this.imageUrl);
     }
 

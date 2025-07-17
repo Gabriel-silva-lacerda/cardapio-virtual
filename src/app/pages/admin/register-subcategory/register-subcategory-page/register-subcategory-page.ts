@@ -63,40 +63,40 @@ export class RegisterSubcategoryPage extends BaseSearchPaginatedComponent<iSubca
     });
   }
 
-  public openDialogRemoveSubcategory(subcategory: iSubcategory): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
-      data: {
-        title: 'Excluir Subcategoria',
-        message: 'Tem certeza que deseja excluir essa subcategoria?',
-        confirmText: 'Excluir',
-        cancelText: 'Cancelar',
-        onConfirm: () => this.removeSubcategory(subcategory, dialogRef),
-      },
-    });
-  }
+  // public openDialogRemoveSubcategory(subcategory: iSubcategory): void {
+  //   const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+  //     width: '350px',
+  //     data: {
+  //       title: 'Excluir Subcategoria',
+  //       message: 'Tem certeza que deseja excluir essa subcategoria?',
+  //       confirmText: 'Excluir',
+  //       cancelText: 'Cancelar',
+  //       onConfirm: () => this.removeSubcategory(subcategory, dialogRef),
+  //     },
+  //   });
+  // }
 
-  private async removeSubcategory(subcategory: iSubcategory, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
-    try {
-      this.loading.set(true);
+  // private async removeSubcategory(subcategory: iSubcategory, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
+  //   try {
+  //     this.loading.set(true);
 
-      const foods = await this.foodService.getAllByField<iSubcategory>('subcategory_id', subcategory.id);
+  //     const foods = await this.foodService.getAllByField<iSubcategory>('subcategory_id', subcategory.id);
 
-      if(foods.length > 0) {
-        this.toast.warning('Não é possível excluir uma subcategoria com comidas associadas.');
-        return;
-      }
-      const error = await this.subCategoryService.delete(subcategory.id);
+  //     if(foods.length > 0) {
+  //       this.toast.warning('Não é possível excluir uma subcategoria com comidas associadas.');
+  //       return;
+  //     }
+  //     const error = await this.subCategoryService.delete(subcategory.id);
 
-      if (!error) {
-        this.toast.success('Subcategoria deletada com sucesso!');
-        this.deleteItemFromList(subcategory.id);
-        dialogRef.close(true);
-      }
-    } finally {
-      this.loading.set(false);
-    }
-  }
+  //     if (!error) {
+  //       this.toast.success('Subcategoria deletada com sucesso!');
+  //       this.deleteItemFromList(subcategory.id);
+  //       dialogRef.close(true);
+  //     }
+  //   } finally {
+  //     this.loading.set(false);
+  //   }
+  // }
 
   private deleteItemFromList(id: string): void {
     this.items.update(currentItems => {

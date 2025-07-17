@@ -1,10 +1,11 @@
 export interface iCategory {
-  id: string;
+  id?: string;
   name: string;
-  icon: string;
+  icon?: string;
   created_at?: string;
   updated_at?: string;
   company_id?: string | null;
+  has_subcategory?: boolean;
 }
 
 export interface iCompanyCategory {

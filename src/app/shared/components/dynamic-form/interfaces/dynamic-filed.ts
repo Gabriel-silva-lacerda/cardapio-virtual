@@ -25,5 +25,7 @@ export interface iDynamicField {
   directive?: string;
   placeholder?: string;
   customClass?: string;
+  visibleIf?: (form: FormGroup) => boolean;
+  defaultValue?: string | number | boolean;
 }
 

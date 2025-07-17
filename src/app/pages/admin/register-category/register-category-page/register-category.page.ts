@@ -77,33 +77,33 @@ export class RegisterCategoryPage extends BaseSearchPaginatedComponent<iCategory
         message: 'Tem certeza que deseja excluir essa categoria?',
         confirmText: 'Excluir',
         cancelText: 'Cancelar',
-        onConfirm: () => this.removeCategory(category, dialogRef),
+        // onConfirm: () => this.removeCategory(category, dialogRef),
       },
     });
   }
 
-  private async removeCategory(category: iCategory, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
-    try {
-      this.loading.set(true);
+  // private async removeCategory(category: iCategory, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {
+  //   try {
+  //     this.loading.set(true);
 
-      const subcategories = await this.subCategoryService.getAllByField<iSubcategory>('category_id', category.id);
+  //     const subcategories = await this.subCategoryService.getAllByField<iSubcategory>('category_id', category.id);
 
-      if(subcategories.length > 0) {
-        this.toast.warning('Não é possível excluir uma categoria com subcategorias associadas.');
-        return;
-      }
+  //     if(subcategories.length > 0) {
+  //       this.toast.warning('Não é possível excluir uma categoria com subcategorias associadas.');
+  //       return;
+  //     }
 
-      const error = await this.categoryService.delete(category.id);
+  //     const error = await this.categoryService.delete(category.id);
 
-      if (!error) {
-        this.toast.success('Categoria deletada com sucesso!');
-        this.deleteItemFromList(category.id);
-        dialogRef.close(true);
-      }
-    } finally {
-      this.loading.set(false);
-    }
-  }
+  //     if (!error) {
+  //       this.toast.success('Categoria deletada com sucesso!');
+  //       this.deleteItemFromList(category.id);
+  //       dialogRef.close(true);
+  //     }
+  //   } finally {
+  //     this.loading.set(false);
+  //   }
+  // }
 
   private deleteItemFromList(id: string): void {
     this.items.update(currentItems => {

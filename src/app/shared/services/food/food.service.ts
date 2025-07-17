@@ -74,39 +74,38 @@ export class FoodService extends BaseSupabaseService {
 
   async createFoodWithExtras(
     foodData: iFood,
-    extraIds: string[]
   ): Promise<iFood> {
     const food = await this.insert<iFood>(foodData);
 
-    if (extraIds.length > 0) {
-      const foodExtras = extraIds.map((extraId) => ({
-        food_id: food.id,
-        extra_id: extraId,
-      }));
+    // if (extraIds.length > 0) {
+    //   const foodExtras = extraIds.map((extraId) => ({
+    //     food_id: food.id,
+    //     extra_id: extraId,
+    //   }));
 
-      await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
-    }
+    //   await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
+    // }
 
     return food;
   }
 
   async updateFoodWithExtras(
-    foodId: number,
+    foodId: any,
     foodData: iFood,
-    extraIds: string[]
   ): Promise<iFood> {
+
     const updatedFood = await this.update<iFood>(foodId, foodData);
 
     await this.foodExtrasService.deleteByFilter({ food_id: foodId });
 
-    if (extraIds.length > 0) {
-      const foodExtras = extraIds.map((extraId) => ({
-        food_id: foodId,
-        extra_id: extraId,
-      }));
+    // if (extraIds.length > 0) {
+    //   const foodExtras = extraIds.map((extraId) => ({
+    //     food_id: foodId,
+    //     extra_id: extraId,
+    //   }));
 
-      await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
-    }
+    //   await this.foodExtrasService.insert(foodExtras, { wrapInArray: false });
+    // }
 
     return updatedFood as any;
   }

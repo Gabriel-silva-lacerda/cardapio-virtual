@@ -130,15 +130,15 @@ export class CategoriesComponent {
         'company_id',
         this.companyId()
       );
-      categories.forEach((category) => {
-        this.isCategoryAssociatedMap[category.id] = true;
-      });
+      // categories.forEach((category) => {
+      //   this.isCategoryAssociatedMap[category.id] = true;
+      // });
     } finally {
       this.loading.update((l) => ({ ...l, getCategories: false }));
     }
   }
 
-  public trackById(index: number, item: iCategory): number {
-    return +item.id;
-  }
+  // public trackById(index: number, item: iCategory): number {
+  //   return +item.id;
+  // }
 }

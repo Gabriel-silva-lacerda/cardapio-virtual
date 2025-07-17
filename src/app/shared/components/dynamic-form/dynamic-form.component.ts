@@ -54,7 +54,7 @@ export class DynamicFormComponent implements OnInit {
   public imagePreviewUrl: string | null = null;
   public isDisabled: { [key: string]: boolean } = {};
 
-  constructor(@Inject(ERROR_MESSAGES) private errors: ErrorMessages) {}
+  constructor(@Inject(ERROR_MESSAGES) private errors: any) {}
 
   ngOnInit() {
     this.creatForm();
@@ -63,10 +63,13 @@ export class DynamicFormComponent implements OnInit {
   creatForm() {
     this.form = this.fb.group(
       this.fields.reduce((acc, field) => {
-        acc[field.name] =
-          field.type === 'multiselect'
-            ? [[], field.validators || []]
-            : ['', field.validators || []];
+        const initialValue = field.defaultValue !== undefined ? field.defaultValue : '';
+
+        const finalInitialValue = field.type === 'multiselect'
+          ? (field.defaultValue !== undefined ? field.defaultValue : [])
+          : initialValue;
+
+        acc[field.name] = [finalInitialValue, field.validators || []];
 
         return acc;
       }, {} as { [key: string]: [any, ValidatorFn | ValidatorFn[]] })
@@ -78,13 +81,17 @@ export class DynamicFormComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
 
-      this.form.patchValue({ [field.name]: file.name });
+      this.form.patchValue({ [field.name]: file });
       this.selectedFileName = file.name;
       this.imagePreviewUrl = URL.createObjectURL(file);
 
       if (field.onFileUpload) {
         field.onFileUpload(file, this.form);
       }
+    } else {
+      this.selectedFileName = '';
+      this.imagePreviewUrl = null;
+      this.form.get(field.name)?.setValue(null);
     }
   }
 
@@ -99,32 +106,32 @@ export class DynamicFormComponent implements OnInit {
         return errors['customError'];
       }
 
-      const errorFn = this.errors[errorKey];
+      const errorFn = (this.errors as any)[errorKey]; // Cast para any ou defina o tipo correto para 'errors'
       return errorFn ? errorFn(errors[errorKey]) : `Erro desconhecido`;
     });
   }
 
-disableFields(fieldNames: string[]) {
-  fieldNames.forEach(fieldName => {
-    const control = this.form.get(fieldName);
-    if (control && !control.disabled) {
-      control.disable();
-    }
-  });
-  // Atualize isDisabled para refletir isso no template
-  fieldNames.forEach(fieldName => this.isDisabled[fieldName] = true);
-}
+  disableFields(fieldNames: string[]) {
+    fieldNames.forEach(fieldName => {
+      const control = this.form.get(fieldName);
+      if (control && !control.disabled) {
+        control.disable();
+      }
+    });
+    // Atualize isDisabled para refletir isso no template
+    fieldNames.forEach(fieldName => this.isDisabled[fieldName] = true);
+  }
 
-enableFields(fieldNames: string[]) {
-  fieldNames.forEach(fieldName => {
-    const control = this.form.get(fieldName);
-    if (control && control.disabled) {
-      control.enable();
-    }
-  });
-  // Atualize isDisabled para refletir isso no template
-  fieldNames.forEach(fieldName => this.isDisabled[fieldName] = false);
-}
+  enableFields(fieldNames: string[]) {
+    fieldNames.forEach(fieldName => {
+      const control = this.form.get(fieldName);
+      if (control && control.disabled) {
+        control.enable();
+      }
+    });
+    // Atualize isDisabled para refletir isso no template
+    fieldNames.forEach(fieldName => this.isDisabled[fieldName] = false);
+  }
 
 
   clearFields(fieldNames: string[]) {
