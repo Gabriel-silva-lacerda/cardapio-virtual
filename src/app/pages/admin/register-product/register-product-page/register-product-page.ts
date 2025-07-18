@@ -38,10 +38,13 @@ import { getBaseName, getNextCopyName } from '../shared/utils/base-name-util';
 import { FilterByFieldPipe } from "../../../../widget/pipes/filter-by-field.pipe";
 import { eCategoryLevel } from '../shared/enums/category-level.enum';
 import { eCategoryFilterKey } from '../shared/enums/category-filter-key.enum';
+import { FoodListComponent } from '../components/food-list/food-list.component';
+import { CategoryHeaderComponent } from '../components/category-header/category-header.component';
+import { FoodCardComponent } from '../components/food-card/food-card.component';
 
 @Component({
   selector: 'app-register-product-page',
-  imports: [PageLayoutAdminComponent, FormsModule, CommonModule, LoadingComponent, FilterByFieldPipe, SearchInputComponent, IconButtonComponent],
+  imports: [PageLayoutAdminComponent, FormsModule, CommonModule, SearchInputComponent, LoadingComponent, FilterByFieldPipe, CategoryHeaderComponent, FoodCardComponent],
   templateUrl: './register-product-page.html',
   styleUrl: './register-product-page.scss',
   animations: [fadeScale],
@@ -211,7 +214,6 @@ export class RegisterProductPage {
     }
   }
 
-
   public openDialogConfirmRemoveFood(food: IFoodAdmin): void {
     openConfirmDialog<IFoodAdmin>(this.dialog, {
       title: 'Deletar Item',
@@ -284,5 +286,39 @@ export class RegisterProductPage {
   //     return updated;
   //   });
   // }
+
+  // Dentro da classe RegisterProductPage
+
+// Para subcategoria selecionada
+  foodCardData = ({ id, isSubcategory }: { id: string | undefined;isSubcategory: boolean; }) => ({
+    foods: this.foodsByContainer()[id ?? ''] || [],
+    loading: this.loadingFoodsByContainer()[id ?? ''] || false,
+    isSubcategory,
+    itemCount: this.foodCountByContainer()[id ?? ''] || 0,
+    expanded: isSubcategory
+      ? this.expandedSubcategories()[id ?? ''] || false
+      : this.expandedCategories()[id ?? ''] || false,
+  });
+
+  foodCardCallbacks = ({
+    category,
+    id,
+    isSubcategory,
+    subcategory,
+  }: {
+    category: iCategory;
+    id: string | undefined;
+    isSubcategory: boolean;
+    subcategory?: iSubcategory | null;
+  }) => ({
+    novoProduto: () => this.openProductDialog(category, isSubcategory ? subcategory : null),
+    searchChange: (term: string) =>
+      this.onSearchChange(id ?? '', term, isSubcategory ? eCategoryLevel.Subcategory : eCategoryLevel.Category),
+    openFoodDialog: (food: IFoodAdmin) =>
+      this.openProductDialog(category, isSubcategory ? subcategory : null, food),
+    editFood: (food: IFoodAdmin) =>
+      this.openProductDialog(category, isSubcategory ? subcategory : null, food),
+    removeFood: (food: IFoodAdmin) => this.openDialogConfirmRemoveFood(food),
+  });
 }
 

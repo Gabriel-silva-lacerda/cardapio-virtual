@@ -1,0 +1,11 @@
+<!-- category-header.component.html -->
+<div class="flex justify-between items-center cursor-pointer" (click)="toggle.emit()">
+  <span class="text-lg font-bold text-primary">{{ name }}</span>
+  <div class="flex items-center gap-2" (click)="$event.stopPropagation()">
+    <app-icon-button icon="fa-solid fa-edit" (onClick)="onEdit.emit()"></app-icon-button>
+    <app-icon-button icon="fa-solid fa-copy" (onClick)="onDuplicate.emit()"></app-icon-button>
+    @if(!hasSubcategory) {
+      <i class="fa-solid fa-chevron-down text-primary text-sm transition-transform duration-300" [ngClass]="{ 'rotate-180': expanded }"></i>
+    }
+  </div>
+</div>
