@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { iCategory } from "@shared/interfaces/category/category.interface";
 import { IFoodAdmin } from "@shared/interfaces/food/food.interface";
 import { iSubcategory } from "@shared/interfaces/subcategory/subcategory.interface";
-import { FoodService } from "@shared/services/food/food.service";
+import { FoodApi } from "@shared/api/food/food.api";
 import { ImageService } from "@shared/services/image/image.service";
 import { getImageUrl } from "@shared/utils/get-image/get-image.utits";
 import { CategoryService } from "src/app/pages/client/home/services/category.service";
@@ -14,7 +14,7 @@ export class DuplicationService {
   constructor(
     private categoryService: CategoryService,
     private subcategoryService: SubcategoryService,
-    private foodService: FoodService
+    private foodApi: FoodApi,
   ) {}
 
   async duplicateCategoryAndSubcategories(
@@ -92,7 +92,7 @@ export class DuplicationService {
       const newName = getNextCopyName(baseName, Array.from(namesInUse));
       namesInUse.add(newName);
 
-      await this.foodService.insert({
+      await this.foodApi.insert({
         name: newName,
         description: food.description,
         price: food.price,

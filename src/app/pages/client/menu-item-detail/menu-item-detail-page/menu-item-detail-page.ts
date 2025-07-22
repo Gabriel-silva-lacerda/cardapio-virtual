@@ -13,6 +13,7 @@ import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { ExtraService } from '@shared/services/extra/extra.service';
 import { iExtra } from '@shared/interfaces/extra/extra.interface';
+import { FoodApi } from '@shared/api/food/food.api';
 
 @Component({
   selector: 'app-food-view',
@@ -24,6 +25,7 @@ import { iExtra } from '@shared/interfaces/extra/extra.interface';
 export class MenuItemDetailPage {
   private route = inject(ActivatedRoute);
   private foodService = inject(FoodService);
+  private foodApi = inject(FoodApi);
   private extraService = inject(ExtraService);
   private localStorageService = inject(LocalStorageService);
   private authService = inject(AuthService);
@@ -68,7 +70,7 @@ export class MenuItemDetailPage {
 
   private async loadFoodAndExtras(foodId: string) {
     const [food, extras] = await Promise.all([
-      this.foodService.getFoodById(foodId),
+      this.foodApi.getFoodById(foodId),
       this.extraService.getExtrasByFoodId(foodId),
     ]);
 

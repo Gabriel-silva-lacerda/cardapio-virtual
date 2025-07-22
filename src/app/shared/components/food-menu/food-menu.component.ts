@@ -22,13 +22,13 @@ import {
   getCurrentDayOfWeek,
   getUnavailableItemMessage,
 } from '@shared/utils/day.util';
-import { FoodService } from '@shared/services/food/food.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { AuthService } from 'src/app/domain/auth/services/auth.service';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
 import { iCartItem } from '@shared/interfaces/cart/cart.interface';
 import { CompanyService } from '@shared/services/company/company.service';
+import { FoodService } from '@shared/services/food/food.service';
 
 @Component({
   selector: 'app-food-menu',

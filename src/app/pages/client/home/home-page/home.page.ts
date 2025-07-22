@@ -5,7 +5,7 @@ import { fade, fadeInOut, fadeScale } from '@shared/utils/animations.util';
 import { SKELETON_COUNT } from '@shared/constants/skeleton-count';
 import { SubcategoriesComponent } from '@shared/components/subcategories/subcategories.component';
 import { SubcategoryItemComponent } from '@shared/components/subcategory-item/subcategory-item.component';
-import { FoodService } from '@shared/services/food/food.service';
+import { FoodApi } from '@shared/api/food/food.api';
 import { CategoriesComponent } from '../../categories/components/categories/categories.component';
 import { SkeletonCategoriesComponent } from '../../categories/components/skeleton-categories/skeleton-categories.component';
 import { SkeletonFoodComponent } from '../../menu/components/skeleton-food/skeleton-food.component';
@@ -37,7 +37,7 @@ import { iCategory } from '@shared/interfaces/category/category.interface';
 export class HomePage implements OnInit {
   private fullMenuViewService = inject(FullMenuViewService);
   public authService = inject(AuthService);
-  public foodService = inject(FoodService);
+  public foodApi = inject(FoodApi);
   public subcategories = signal<iSubcategoryWithFoods[]>([]);
   public loading = signal(false);
   public categories = signal<iCategory[]>([]);

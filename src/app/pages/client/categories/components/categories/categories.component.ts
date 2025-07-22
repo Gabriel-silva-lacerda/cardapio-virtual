@@ -15,7 +15,7 @@ import { LoadingService } from '@shared/services/loading/loading.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ConfirmDialogComponent } from '@shared/dialogs/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { FoodService } from '@shared/services/food/food.service';
+import { FoodApi } from '@shared/api/food/food.api';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { CompanyCategoryService } from '@shared/services/company/company-category.service';
 import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
@@ -35,7 +35,7 @@ export class CategoriesComponent {
 
   private localStorageService = inject(LocalStorageService);
   private categoryService = inject(CategoryService);
-  private foodService = inject(FoodService);
+  private foodApi = inject(FoodApi);
   private authService = inject(AuthService);
   private toast = inject(ToastService);
   private dialog = inject(MatDialog);
@@ -92,7 +92,7 @@ export class CategoriesComponent {
             this.loadingService.showLoading();
 
             const groupedCategory =
-              await this.foodService.getFoodsGroupedByCategoryId(categoryId);
+              await this.foodApi.getFoodsGroupedByCategoryId(categoryId);
 
             const hasFoods = groupedCategory?.subcategories?.some(
               (subcategory) => subcategory.foods.length > 0

@@ -25,26 +25,15 @@ interface FoodContainerCallbacks {
   styleUrl: './food-card.component.scss'
 })
 export class FoodCardComponent {
-  @Input() data!: FoodContainerData;
-  @Input() callbacks!: FoodContainerCallbacks;
+  @Input() foods: any[] = [];
+  @Input() loading = false;
+  @Input() isSubcategory = false;
+  @Input() itemCount = 0;
+  @Input() expanded = false;
 
-  onNovoProduto() {
-    this.callbacks.novoProduto();
-  }
-
-  onSearchChange(term: any) {
-    this.callbacks.searchChange(term);
-  }
-
-  onOpenFoodDialog(food: any) {
-    this.callbacks.openFoodDialog(food);
-  }
-
-  onEditFood(food: any) {
-    this.callbacks.editFood(food);
-  }
-
-  onRemoveFood(food: any) {
-    this.callbacks.removeFood(food);
-  }
+  @Output() novoProduto = new EventEmitter<void>();
+  @Output() searchChange = new EventEmitter<string>();
+  @Output() openFoodDialog = new EventEmitter<any>();
+  @Output() editFood = new EventEmitter<any>();
+  @Output() removeFood = new EventEmitter<any>();
 }

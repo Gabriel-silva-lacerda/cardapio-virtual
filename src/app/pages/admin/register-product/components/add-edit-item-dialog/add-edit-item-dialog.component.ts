@@ -14,7 +14,7 @@ import {
 } from '@angular/material/dialog';
 import { DynamicFormComponent } from '@shared/components/dynamic-form/dynamic-form.component';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
-import { FoodService } from '@shared/services/food/food.service';
+import { FoodApi } from '@shared/api/food/food.api';
 import { LocalStorageService } from '@shared/services/localstorage/localstorage.service';
 import { ImageService } from '@shared/services/image/image.service';
 import { LoadingService } from '@shared/services/loading/loading.service';
@@ -50,7 +50,7 @@ import { AddEditSubcategoryDialogComponent } from '../../../register-subcategory
 export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private localStorageService = inject(LocalStorageService);
-  private foodService = inject(FoodService);
+  private foodApi = inject(FoodApi);
   private imageService = inject(ImageService);
   private toast = inject(ToastService);
   private subcategoryService = inject(SubcategoryService);
@@ -213,7 +213,7 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
   private async getFoodDataById(food: any) {
     this.setLoading('default', true);
     try {
-      // Supondo que seu foodService tenha método para consultar views
+      // Supondo que seu foodApi tenha método para consultar views
       const foodData = food;
       if (!foodData) return;
 
@@ -280,10 +280,10 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
       let foods;
 
       if (this.data.food) {
-        foods = await this.foodService.updateFoodWithExtras(this.data.food.id, data);
+        foods = await this.foodApi.updateFoodWithExtras(this.data.food.id, data);
         this.toast.success('Item atualizado com sucesso!');
       } else {
-        foods = await this.foodService.createFoodWithExtras(data);
+        foods = await this.foodApi.createFoodWithExtras(data);
         this.toast.success('Item criado com sucesso!');
       }
 

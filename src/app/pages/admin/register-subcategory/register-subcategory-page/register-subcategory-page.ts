@@ -9,7 +9,7 @@ import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interfa
 import { ToastService } from '@shared/services/toast/toast.service';
 import { SubcategoryService } from 'src/app/pages/client/home/services/subcategory.service';
 import { AddEditSubcategoryDialogComponent } from '../components/add-edit-subcategory-dialog/add-edit-subcategory-dialog.component';
-import { FoodService } from '@shared/services/food/food.service';
+import { FoodApi } from '@shared/api/food/food.api';
 
 @Component({
   selector: 'app-register-subcategory',
@@ -21,7 +21,7 @@ export class RegisterSubcategoryPage extends BaseSearchPaginatedComponent<iSubca
   private subCategoryService = inject(SubcategoryService);
   private dialog = inject(MatDialog);
   private toast = inject(ToastService);
-  private foodService = inject(FoodService);
+  private foodApi = inject(FoodApi);
   public loading = signal(false);
 
   constructor() {
@@ -80,7 +80,7 @@ export class RegisterSubcategoryPage extends BaseSearchPaginatedComponent<iSubca
   //   try {
   //     this.loading.set(true);
 
-  //     const foods = await this.foodService.getAllByField<iSubcategory>('subcategory_id', subcategory.id);
+  //     const foods = await this.foodApi.getAllByField<iSubcategory>('subcategory_id', subcategory.id);
 
   //     if(foods.length > 0) {
   //       this.toast.warning('Não é possível excluir uma subcategoria com comidas associadas.');

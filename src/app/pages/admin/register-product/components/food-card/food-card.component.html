@@ -1,29 +1,32 @@
-<div class="flex items-center justify-between w-full mb-3">
-  <button
-    class="bg-primary h-9 text-white px-3 rounded-md flex items-center gap-2 shadow hover:bg-primary-dark transition"
-    (click)="onNovoProduto()"
-  >
-    Novo produto
-  </button>
-  <div class="text-black border-primary border py-1 px-2 rounded-md">
-    items: {{ data.itemCount }}
+<!-- food-container.component.html -->
+<div class="mt-5 mb-4">
+  <div class="flex items-center justify-between w-full mb-3">
+    <button
+      class="bg-primary h-9 text-white px-3 rounded-md flex items-center gap-2 shadow hover:bg-primary-dark transition"
+      (click)="novoProduto.emit()"
+    >
+      Novo produto
+    </button>
+    <div class="text-black border-primary border py-1 px-2 rounded-md">
+      items: {{ itemCount }}
+    </div>
   </div>
-</div>
 
-<div
-  class="overflow-hidden transition-all duration-300 ease-in-out"
-  [ngClass]="{
-    'max-h-0 opacity-0': !data.expanded,
-    'max-h-[500px] opacity-100': data.expanded
-  }"
->
-  <app-food-list
-    [foods]="data.foods"
-    [loading]="data.loading"
-    [isSubcategory]="data.isSubcategory"
-    (searchChange)="onSearchChange($event)"
-    (openFoodDialog)="onOpenFoodDialog($event)"
-    (editFood)="onEditFood($event)"
-    (removeFood)="onRemoveFood($event)"
-  ></app-food-list>
+  <div
+    class="overflow-hidden transition-all duration-300 ease-in-out"
+    [ngClass]="{
+      'max-h-0 opacity-0': !expanded,
+      'max-h-[500px] opacity-100': expanded
+    }"
+  >
+    <app-food-list
+      [foods]="foods"
+      [loading]="loading"
+      [isSubcategory]="isSubcategory"
+      (onSearchChange)="searchChange.emit($event)"
+      (openFoodDialog)="openFoodDialog.emit($event)"
+      (editFood)="editFood.emit($event)"
+      (removeFood)="removeFood.emit($event)"
+    ></app-food-list>
+  </div>
 </div>

@@ -19,7 +19,7 @@ import { iCategory } from '@shared/interfaces/category/category.interface';
 import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
 
 // Services
-import { FoodService } from '@shared/services/food/food.service';
+import { FoodApi } from '@shared/api/food/food.api';
 import { CategoryService } from 'src/app/pages/client/home/services/category.service';
 import { SubcategoryService } from 'src/app/pages/client/home/services/subcategory.service';
 import { CompanyService } from '@shared/services/company/company.service';
@@ -51,7 +51,7 @@ import { FoodCardComponent } from '../components/food-card/food-card.component';
 
 })
 export class RegisterProductPage {
-  private foodService = inject(FoodService);
+  private foodApi = inject(FoodApi);
   private dialog = inject(MatDialog);
   private loadingService = inject(LoadingService);
   private toast = inject(ToastService);
@@ -112,8 +112,7 @@ export class RegisterProductPage {
   private listenSearch(): void {
     this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(({ id, query, type }) => {
       if (query?.trim()) {
-        const filterKey = type === eCategoryLevel.Subcategory ? eCategoryFilterKey.Subcategory : eCategoryFilterKey.Category;
-        this.fetchFoods(id, query, filterKey);
+        this.getFoods(id, query, type);
       }
     });
   }
@@ -132,23 +131,15 @@ export class RegisterProductPage {
       expandedSignal.update(state => ({ ...state, [id]: true }));
 
       if (!this.foodsByContainer()[id]) {
-        const filterKey = this.getFilterKey(type);
-        await this.fetchFoods(id, '', filterKey);
+        await this.getFoods(id, '', type);
       }
     }
   }
 
-  private getFilterKey(type: eCategoryLevel): eCategoryFilterKey {
-    return type === eCategoryLevel.Category ? eCategoryFilterKey.Category : eCategoryFilterKey.Subcategory;
-  }
-
-
-  private async fetchFoods(id: string, query: string, filterKey: eCategoryFilterKey): Promise<void> {
+  private async getFoods(id: string, query: string, type: eCategoryLevel): Promise<void> {
     this.loadingFoodsByContainer.update(state => ({ ...state, [id]: true }));
     try {
-      const filters = { company_id: this.companyService.companyId(), [filterKey]: id };
-      let foods = await this.foodService.search<IFoodAdmin>(query, ['name', 'description'], filters);
-      if (filterKey === eCategoryFilterKey.Subcategory) foods = foods.map(this.formatFood);
+      const foods = await this.foodApi.getFoodsByContainer(this.companyService.companyId(), id, query, type);
       this.foodsByContainer.update(state => ({ ...state, [id]: foods }));
     } catch (error) {
       this.toast.error('Erro ao carregar alimentos.');
@@ -156,10 +147,6 @@ export class RegisterProductPage {
     } finally {
       this.loadingFoodsByContainer.update(state => ({ ...state, [id]: false }));
     }
-  }
-
-  private formatFood(food: IFoodAdmin): IFoodAdmin {
-    return { ...food, image_url: getImageUrl(food.image_url || '') };
   }
 
   onSearchChange(id: string, query: string, type: eCategoryLevel.Category | eCategoryLevel.Subcategory): void {
@@ -250,10 +237,10 @@ export class RegisterProductPage {
     dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(async (result: IFoodAdmin | null | undefined) => {
       if (result) {
         const containerId = result.subcategory_id || result.category_id;
-        const containerType = result.subcategory_id ? eCategoryFilterKey.Subcategory : eCategoryFilterKey.Category;
+      const containerLevel = result.subcategory_id ? eCategoryLevel.Subcategory : eCategoryLevel.Category;
 
         if (containerId) {
-          await this.fetchFoods(containerId as string, '', containerType);
+          await this.getFoods(containerId as string, '', containerLevel);
         }
       }
     });
@@ -266,7 +253,7 @@ export class RegisterProductPage {
     //   const imagePath = food.image_url?.replace(/^.*\/food-images\//, 'food-images/');
     //   const deletedImage = imagePath ? await this.imageService.deleteImage(imagePath) : true;
     //   if(food.id !== undefined) {
-    //     const error = await this.foodService.delete(food.id);
+    //     const error = await this.foodApi.delete(food.id);
 
     //     if (!error && deletedImage) {
     //       this.toast.success('Item deletado com sucesso!');
@@ -288,37 +275,4 @@ export class RegisterProductPage {
   // }
 
   // Dentro da classe RegisterProductPage
-
-// Para subcategoria selecionada
-  foodCardData = ({ id, isSubcategory }: { id: string | undefined;isSubcategory: boolean; }) => ({
-    foods: this.foodsByContainer()[id ?? ''] || [],
-    loading: this.loadingFoodsByContainer()[id ?? ''] || false,
-    isSubcategory,
-    itemCount: this.foodCountByContainer()[id ?? ''] || 0,
-    expanded: isSubcategory
-      ? this.expandedSubcategories()[id ?? ''] || false
-      : this.expandedCategories()[id ?? ''] || false,
-  });
-
-  foodCardCallbacks = ({
-    category,
-    id,
-    isSubcategory,
-    subcategory,
-  }: {
-    category: iCategory;
-    id: string | undefined;
-    isSubcategory: boolean;
-    subcategory?: iSubcategory | null;
-  }) => ({
-    novoProduto: () => this.openProductDialog(category, isSubcategory ? subcategory : null),
-    searchChange: (term: string) =>
-      this.onSearchChange(id ?? '', term, isSubcategory ? eCategoryLevel.Subcategory : eCategoryLevel.Category),
-    openFoodDialog: (food: IFoodAdmin) =>
-      this.openProductDialog(category, isSubcategory ? subcategory : null, food),
-    editFood: (food: IFoodAdmin) =>
-      this.openProductDialog(category, isSubcategory ? subcategory : null, food),
-    removeFood: (food: IFoodAdmin) => this.openDialogConfirmRemoveFood(food),
-  });
 }
-

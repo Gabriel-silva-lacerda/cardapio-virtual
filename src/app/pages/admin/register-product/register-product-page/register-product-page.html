@@ -36,17 +36,55 @@
                 (onEdit)="openCategoryAndSubcategoryDialog(false, category, sub)"
               ></app-category-header>
 
-              <app-food-card
-                [data]="foodCardData({ id: sub.id, isSubcategory: true })"
-                [callbacks]="foodCardCallbacks({ category, id: sub.id, isSubcategory: true, subcategory: sub })"
-              ></app-food-card>
+              @defer (on idle) {
+                <ng-container
+                  *ngIf="{
+                    foods: foodsByContainer()[sub.id],
+                    loading: loadingFoodsByContainer()[sub.id],
+                    itemCount: foodCountByContainer()[sub.id],
+                    expanded: expandedSubcategories()[sub.id]
+                  } as container"
+                >
+                  <app-food-card
+                    [foods]="container.foods"
+                    [loading]="container.loading"
+                    [isSubcategory]="true"
+                    [itemCount]="container.itemCount"
+                    [expanded]="container.expanded"
+                    (novoProduto)="openProductDialog(category, sub)"
+                    (searchChange)="onSearchChange(sub.id, $event, eCategoryLevel.Subcategory)"
+                    (openFoodDialog)="openProductDialog(category, sub, $event)"
+                    (editFood)="openProductDialog(category, sub, $event)"
+                    (removeFood)="openDialogConfirmRemoveFood($event)"
+                  ></app-food-card>
+                </ng-container>
+              }
             </div>
           }
         } @else {
-          <app-food-card
-            [data]="foodCardData({ id: category.id, isSubcategory: false })"
-            [callbacks]="foodCardCallbacks({ category, id: category.id, isSubcategory: false })"
-          ></app-food-card>
+          @defer (on idle) {
+            <ng-container
+              *ngIf="{
+                foods: foodsByContainer()[category.id ?? ''],
+                loading: loadingFoodsByContainer()[category.id ?? ''],
+                itemCount: foodCountByContainer()[category.id ?? ''],
+                expanded: expandedCategories()[category.id ?? '']
+              } as container"
+            >
+              <app-food-card
+                [foods]="container.foods"
+                [loading]="container.loading"
+                [isSubcategory]="false"
+                [itemCount]="container.itemCount"
+                [expanded]="container.expanded"
+                (novoProduto)="openProductDialog(category)"
+                (searchChange)="onSearchChange(category.id ?? '', $event, eCategoryLevel.Category)"
+                (openFoodDialog)="openProductDialog(category, null, $event)"
+                (editFood)="openProductDialog(category, null, $event)"
+                (removeFood)="openDialogConfirmRemoveFood($event)"
+              ></app-food-card>
+            </ng-container>
+          }
         }
       </div>
     } @empty {
