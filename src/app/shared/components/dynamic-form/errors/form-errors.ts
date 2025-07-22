@@ -15,6 +15,8 @@ export const DEFAULT_ERRORS = {
   passwordNotMatch: () => `As senhas não coincidem`,
   fullName: () => `Sobrenome obrigatório`,
   invalidDate: () => `Data inválida`,
+  invalidTime: () => `Horário inválido`,
+  invalidTimeOrder: () => `O horário final deve ser maior que o inicial`,
 };
 
 export const ERROR_MESSAGES = new InjectionToken('ERROR_MESSAGES', {

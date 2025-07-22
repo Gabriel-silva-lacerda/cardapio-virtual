@@ -13,7 +13,7 @@ export interface iDynamicField {
   validators?: ValidatorFn | ValidatorFn[];
   showForgotPassword?: boolean;
   forgotPasswordLink?: string;
-  onChange?: (data: unknown | null | object | boolean | string | number, form: FormGroup) => void;
+  onChange?: (data: unknown | null | object | boolean | string | number | Event, form: FormGroup) => void;
   onFileUpload?: (file: File, form: FormGroup) => void;
   onClick?: (form?: any) => void;
   onEdit?: (form: FormGroup) => void;
@@ -27,5 +27,6 @@ export interface iDynamicField {
   customClass?: string;
   visibleIf?: (form: FormGroup) => boolean;
   defaultValue?: string | number | boolean;
+  group?: any;
 }
 

@@ -1,4 +1,4 @@
-import { ValidatorFn } from '@angular/forms';
+import { AbstractControl, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -9,7 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ERROR_MESSAGES, ErrorMessages } from './errors/form-errors';
 import { iDynamicField } from '@shared/components/dynamic-form/interfaces/dynamic-filed';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,19 +19,23 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OnlyNumbersDirective } from 'src/app/widget/directives/only-numbers.directive';
 import { IconButtonComponent } from '../icon-button/icon-button.component';
+import { DatePickerModule } from 'primeng/datepicker';
+import { formatTime } from './shared/utils/time.utils';
 
 @Component({
   selector: 'app-dynamic-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     CommonModule,
     InputTextModule,
     NgxMaskDirective,
     MultiSelectModule,
     MatTooltipModule,
     OnlyNumbersDirective,
-    IconButtonComponent
+    IconButtonComponent,
+    DatePickerModule
   ],
   templateUrl: './dynamic-form.component.html',
   styleUrl: './dynamic-form.component.scss',
@@ -53,6 +57,7 @@ export class DynamicFormComponent implements OnInit {
   public selectedFileName!: string;
   public imagePreviewUrl: string | null = null;
   public isDisabled: { [key: string]: boolean } = {};
+  public tempTimeInterval: { [key: string]: { start?: string; end?: string } } = {};
 
   constructor(@Inject(ERROR_MESSAGES) private errors: any) {}
 
@@ -106,7 +111,7 @@ export class DynamicFormComponent implements OnInit {
         return errors['customError'];
       }
 
-      const errorFn = (this.errors as any)[errorKey]; // Cast para any ou defina o tipo correto para 'errors'
+      const errorFn = (this.errors as any)[errorKey];
       return errorFn ? errorFn(errors[errorKey]) : `Erro desconhecido`;
     });
   }
@@ -118,7 +123,6 @@ export class DynamicFormComponent implements OnInit {
         control.disable();
       }
     });
-    // Atualize isDisabled para refletir isso no template
     fieldNames.forEach(fieldName => this.isDisabled[fieldName] = true);
   }
 
@@ -129,7 +133,6 @@ export class DynamicFormComponent implements OnInit {
         control.enable();
       }
     });
-    // Atualize isDisabled para refletir isso no template
     fieldNames.forEach(fieldName => this.isDisabled[fieldName] = false);
   }
 
@@ -142,5 +145,28 @@ export class DynamicFormComponent implements OnInit {
 
     this.form.patchValue(clearValues);
     this.enableFields(fieldNames);
+  }
+
+  onTimeSelect(fieldName: string, type: 'start' | 'end', value: Date | null) {
+    const interval = this.tempTimeInterval[fieldName] ||= {};
+
+    if (value === null) {
+      interval[type] = undefined;
+    } else {
+      interval[type] = formatTime(value);
+    }
+
+    const start = interval.start;
+    const end = interval.end;
+    const formatted = start && end ? `${start}-${end}` : null;
+
+    this.form.patchValue({ [fieldName]: formatted });
+  }
+
+  onTimeInputClear(event: any, fieldName: string, type: 'start' | 'end') {
+    const value = event?.target?.value;
+    if (value === '') {
+      this.onTimeSelect(fieldName, type, null);
+    }
   }
 }

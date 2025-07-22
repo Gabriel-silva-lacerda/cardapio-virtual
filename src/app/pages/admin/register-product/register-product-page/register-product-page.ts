@@ -75,7 +75,7 @@ export class RegisterProductPage {
   public eCategoryLevel = eCategoryLevel;
 
   private destroy$ = new Subject<void>();
-  private searchSubject = new Subject<{ id: string; query: string; type: eCategoryLevel }>();
+   searchSubject = new Subject<{ id: string; query: string; type: eCategoryLevel }>();
 
   async ngOnInit() {
     await this.initializeData();
@@ -111,9 +111,7 @@ export class RegisterProductPage {
 
   private listenSearch(): void {
     this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy$)).subscribe(({ id, query, type }) => {
-      if (query?.trim()) {
-        this.getFoods(id, query, type);
-      }
+      if (query?.trim()) this.getFoods(id, query, type);
     });
   }
 
@@ -234,16 +232,18 @@ export class RegisterProductPage {
       data: { category, subcategory, food },
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(async (result: IFoodAdmin | null | undefined) => {
-      if (result) {
-        const containerId = result.subcategory_id || result.category_id;
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => this.handleProductDialogClose(result));
+  }
+
+  private async handleProductDialogClose(result: IFoodAdmin | null | undefined): Promise<void> {
+    if (result) {
+      const containerId = result.subcategory_id || result.category_id;
       const containerLevel = result.subcategory_id ? eCategoryLevel.Subcategory : eCategoryLevel.Category;
 
-        if (containerId) {
-          await this.getFoods(containerId as string, '', containerLevel);
-        }
+      if (containerId) {
+        await this.getFoods(containerId as string, '', containerLevel);
       }
-    });
+    }
   }
 
   private async removeFood(food: IFoodAdmin, dialogRef: MatDialogRef<ConfirmDialogComponent>): Promise<void> {

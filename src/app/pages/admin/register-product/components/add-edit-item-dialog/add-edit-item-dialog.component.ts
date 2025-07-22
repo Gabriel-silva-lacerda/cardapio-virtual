@@ -6,7 +6,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -25,16 +25,18 @@ import { iFood, IFoodAdmin } from '@shared/interfaces/food/food.interface';
 import { GenericDialogComponent } from '@shared/components/generic-dialog/generic-dialog.component';
 import { LoadingScreenComponent } from '@shared/components/loading-screen/loading-screen.component';
 import { SubcategoryService } from '../../../../client/home/services/subcategory.service';
-import { CompanyCategoryViewService } from '@shared/services/company/company-category-view.service';
 import { CategoryExtraService } from '@shared/services/extra/category-extra.service';
-import { FoodAdminViewService } from '@shared/services/food/food-admin-view.service';
 import { sanitizeFileName } from '@shared/utils/file-name/file-name.util';
 import { iCategory } from '@shared/interfaces/category/category.interface';
 import { ToastService } from '@shared/services/toast/toast.service';
 import { CategoryService } from 'src/app/pages/client/home/services/category.service';
-import { AddEditCategoryDialogComponent } from '../../../register-category/components/add-edit-category-dialog/add-edit-category-dialog.component';
 import { iSubcategory } from '@shared/interfaces/subcategory/subcategory.interface';
-import { AddEditSubcategoryDialogComponent } from '../../../register-subcategory/components/add-edit-subcategory-dialog/add-edit-subcategory-dialog.component';
+
+// Adiciona o campo na interface local para evitar erro de compilação
+interface IFoodAdminWithTime extends IFoodAdmin {
+  available_time?: string | null;
+  available_days?: any;
+}
 
 @Component({
   selector: 'app-add-edit-item-dialog',
@@ -47,7 +49,7 @@ import { AddEditSubcategoryDialogComponent } from '../../../register-subcategory
   templateUrl: './add-edit-item-dialog.component.html',
   styleUrl: './add-edit-item-dialog.component.scss',
 })
-export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
+export class AddEditItemDialogComponent implements AfterViewInit {
   @ViewChild(DynamicFormComponent) dynamicForm!: DynamicFormComponent;
   private localStorageService = inject(LocalStorageService);
   private foodApi = inject(FoodApi);
@@ -58,7 +60,6 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
   private categoryExtraService = inject(CategoryExtraService);
   private currentExtras: string[] = [];
   private currentSubcategoryId: string = '';
-  private foodAdminViewService = inject(FoodAdminViewService);
   private dialog = inject(MatDialog);
 
   public dialogRef = inject(MatDialogRef<AddEditItemDialogComponent>);
@@ -76,6 +77,8 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
     categories: false,
     default: false,
   });
+
+  checked: boolean = false;
 
   public foodFields: iDynamicField[] = [
     {
@@ -101,6 +104,64 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
       directive: 'onlyNumbers',
     },
     {
+      name: 'has_available_time',
+      label: 'Este produto tem horário específico?',
+      type: 'checkbox',
+      padding: '10px',
+      defaultValue: false,
+      onChange: (data: unknown, form: FormGroup) => {
+        const event = data as Event;
+        const target = event.target as HTMLInputElement;
+        this.checked = target.checked;
+        this.onHasAvailableTimeChange(target.checked, form);
+      }
+    },
+    {
+      name: 'available_time',
+      label: 'Horário disponível',
+      type: 'time-interval',
+      validators: this.checked ? [Validators.required, this.timeIntervalValidator] : [],
+      padding: '10px',
+      visibleIf: (form: FormGroup) => !!form.get('has_available_time')?.value
+    },
+    {
+      name: 'available_day_start',
+      label: 'Dia inicial',
+      type: 'select',
+        group: 'available_days',
+
+      options: [
+        { label: 'Segunda', value: 'Mon' },
+        { label: 'Terça', value: 'Tue' },
+        { label: 'Quarta', value: 'Wed' },
+        { label: 'Quinta', value: 'Thu' },
+        { label: 'Sexta', value: 'Fri' },
+        { label: 'Sábado', value: 'Sat' },
+        { label: 'Domingo', value: 'Sun' }
+      ],
+      validators: this.checked ? [Validators.required] : [],
+      padding: '10px',
+      visibleIf: (form: FormGroup) => !!form.get('has_available_time')?.value
+    },
+    {
+      name: 'available_day_end',
+      label: '',
+      group: 'available_days',
+      type: 'select',
+      options: [
+        { label: 'Segunda', value: 'Mon' },
+        { label: 'Terça', value: 'Tue' },
+        { label: 'Quarta', value: 'Wed' },
+        { label: 'Quinta', value: 'Thu' },
+        { label: 'Sexta', value: 'Fri' },
+        { label: 'Sábado', value: 'Sat' },
+        { label: 'Domingo', value: 'Sun' }
+      ],
+      validators: this.checked ? [Validators.required] : [],
+      padding: '10px',
+      visibleIf: (form: FormGroup) => !!form.get('has_available_time')?.value
+    },
+    {
       name: 'category_id',
       label: 'Categoria',
       type: 'select',
@@ -124,38 +185,58 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
     },
   ];
 
-  ngOnInit(): void {
+  // Validação customizada para garantir que o horário final seja maior que o inicial
+  timeIntervalValidator(control: AbstractControl): any {
+    const value = control.value;
+    if (!value) return null;
+    const [start, end] = value.split('-');
+    if (!start || !end) return { invalidTime: 'Horário inválido.' };
+    // Converte para minutos
+    const [startH, startM] = start.split(':').map(Number);
+    const [endH, endM] = end.split(':').map(Number);
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+    if (endMinutes <= startMinutes) {
+      return { invalidTimeOrder: 'O horário final deve ser maior que o inicial.' };
+    }
+    return null;
+  }
 
+  private onHasAvailableTimeChange(checked: boolean = false, form: FormGroup) {
+    const availableTimeControl = form.get('available_time');
+    if (checked) {
+      availableTimeControl?.setValidators([
+        Validators.required,
+        this.timeIntervalValidator
+      ]);
+
+    } else {
+      availableTimeControl?.clearValidators();
+      availableTimeControl?.setValue(null);
+    }
+
+    availableTimeControl?.updateValueAndValidity();
   }
 
   async ngAfterViewInit() {
     this.initializeForm();
+
+    this.dynamicForm.form.valueChanges.subscribe(value => {
+      console.log('Form value changed:', value);
+    });
   }
 
   private async initializeForm() {
     if (this.data.food) {
       await this.getFoodDataById(this.data.food);
     } else {
-      // await this.getAllCategories();
       this.populateFormFromFoodData();
     }
   }
 
-  // private async getAllCategories() {
-  //   this.setLoading('categories', true);
-  //   try {
-  //     const categories = await this.categoryService.getAllByField<iCategory>('company_id', this.companyId());
-  //     this.setFoodFieldOptions('category_id', categories);
-  //     this.dynamicForm.disableFields(['subcategory_id']);
-  //   } finally {
-  //     this.setLoading('categories', false);
-  //   }
-  // }
-
   private populateFormFromFoodData(): void {
     const category = this.data.category;
     const subcategory = this.data.subcategory;
-    console.log(category, subcategory);
 
     this.setFoodFieldOptions('category_id', [category as any]);
     this.setFoodFieldOptions('subcategory_id', [subcategory as any]);
@@ -250,14 +331,17 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
     this.dynamicForm.imagePreviewUrl = await this.imageService.getImageUrl(imageUrl);
   }
 
-  private populateForm(foodData: IFoodAdmin, extrasId: string[]): void {
+  private populateForm(foodData: IFoodAdminWithTime, extrasId: string[]): void {
     this.dynamicForm.form.patchValue({
       ...foodData,
-      category_id: foodData.category.id,
+      category_id: foodData.category_id,
       extras: extrasId,
-      has_day_of_week: foodData.day_of_week !== null,
-      day_of_week: foodData.day_of_week || null,
+      has_available_time: !!foodData.available_time,
+      available_time: foodData.available_time || '',
     });
+    if (!!foodData.available_time) {
+      this.onHasAvailableTimeChange(true, this.dynamicForm.form);
+    }
   }
 
   public onCancel(): void {
@@ -283,6 +367,7 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
         foods = await this.foodApi.updateFoodWithExtras(this.data.food.id, data);
         this.toast.success('Item atualizado com sucesso!');
       } else {
+        console.log('Creating new food with data:', data);
         foods = await this.foodApi.createFoodWithExtras(data);
         this.toast.success('Item criado com sucesso!');
       }
@@ -296,14 +381,35 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
   }
 
   private buildFoodPayload(formData: any, imageUrl: string | null = null): iFood {
-    return {
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    let available_days: string[] = [];
+    if (formData.has_available_time && formData.available_day_start && formData.available_day_end) {
+      const startIdx = weekDays.indexOf(formData.available_day_start);
+      const endIdx = weekDays.indexOf(formData.available_day_end);
+      if (startIdx !== -1 && endIdx !== -1) {
+        if (startIdx <= endIdx) {
+          available_days = weekDays.slice(startIdx, endIdx + 1);
+        } else {
+          available_days = [...weekDays.slice(startIdx), ...weekDays.slice(0, endIdx + 1)];
+        }
+      }
+    }
+    const payload: any = {
       ...formData,
       image_url: imageUrl || 'food-images/default-food.png',
       company_id: this.companyId(),
-      day_of_week: formData.day_of_week || null,
+      available_days,
     };
+    // Remove campos individuais do payload
+    delete payload.available_day_start;
+    delete payload.available_day_end;
+    delete payload.has_available_time;
+    if (!formData.has_available_time) {
+      payload.available_time = null;
+      payload.available_days = [];
+    }
+    return payload;
   }
-
 
   private async handleImageUpload(formData: any): Promise<string | null> {
     const file = formData.image_url;
@@ -344,29 +450,6 @@ export class AddEditItemDialogComponent implements OnInit, AfterViewInit {
         this.setLoading('default', false);
       }
     }
-
-  private addDayOfWeekField(form: FormGroup): void {
-    if (!form.contains('day_of_week') && form.get('has_day_of_week')?.value) {
-      form.addControl('day_of_week', new FormControl('', Validators.required));
-
-      const insertIndex = this.foodFields.findIndex(f => f.name === 'has_day_of_week') + 1;
-      this.foodFields.splice(insertIndex, 0, {
-        name: 'day_of_week',
-        label: 'Dia da Semana',
-        type: 'select',
-        options: WEEK_DAYS_OPTIONS,
-        validators: [Validators.required],
-        padding: '10px',
-      });
-    }
-  }
-
-  private removeDayOfWeekField(form: FormGroup): void {
-    if (form.contains('day_of_week')) {
-      form.removeControl('day_of_week');
-      this.foodFields = this.foodFields.filter(f => f.name !== 'day_of_week');
-    }
-  }
 
   // openCategoryDialog(category?: iCategory | undefined): void {
   //   const dialogRef = this.dialog.open(AddEditCategoryDialogComponent, {

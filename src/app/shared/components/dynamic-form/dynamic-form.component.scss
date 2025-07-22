@@ -22,3 +22,27 @@
   @apply bg-primary border border-gray-300 !important;
 }
 
+::ng-deep p-datepicker input  {
+  @apply bg-white border border-gray-300 text-black !important;
+}
+
+::ng-deep p-datepicker .p-datepicker-timeonly  {
+  @apply bg-white border border-gray-300 text-black !important;
+}
+
+::ng-deep p-datepicker .p-datepicker-timeonly button svg {
+  @apply text-black !important;
+}
+
+::ng-deep p-datepicker .p-component .p-inputwrapper {
+  @apply border border-red-500 rounded-lg !important;
+}
+
+::ng-deep p-datepicker.input-error input  {
+  @apply border border-transparent !important;
+}
+
+::ng-deep p-datepicker button.p-datepicker-dropdown {
+  @apply bg-primary border-primary;
+}
+

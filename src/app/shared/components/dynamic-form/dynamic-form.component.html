@@ -16,7 +16,8 @@
             field.type !== 'file' &&
             field.directive !== 'onlyNumbers' &&
             field.type !== 'multiselect' &&
-            field.type !== 'checkbox'
+            field.type !== 'checkbox' &&
+            field.type !== 'time-interval'
           "
           id="{{ field.name }}"
           [type]="field.type"
@@ -149,6 +150,35 @@
             (click)="field?.onClick(form)"
           />
         </div>
+
+        <!-- CUSTOM TIME INTERVAL -->
+        <div *ngIf="field.type === 'time-interval'" class="mb-2">
+          <div class="flex gap-2 items-center">
+            <p-datePicker
+              inputId="startTime"
+              [timeOnly]="true"
+              [showIcon]="true"
+              hourFormat="24"
+              (onSelect)="onTimeSelect(field.name, 'start', $event)"
+              (onBlur)="form.get(field.name)?.markAsTouched()"
+              (input)="onTimeInputClear($event, field.name, 'start')"
+              inputStyleClass="input-primary !mb-0"
+              [ngClass]="{'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched}"
+            />
+            <label for="endTime" class="text-gray-500 text-text4">Até:</label>
+            <p-datePicker
+              inputId="endTime"
+              [timeOnly]="true"
+              [showIcon]="true"
+              hourFormat="24"
+              (onSelect)="onTimeSelect(field.name, 'end', $event)"
+              (onBlur)="form.get(field.name)?.markAsTouched()"
+              (input)="onTimeInputClear($event, field.name, 'end')"
+              inputStyleClass="input-primary !mb-0"
+              [ngClass]="{'input-error': form.get(field.name)?.invalid && form.get(field.name)?.touched}"
+            />
+          </div>
+      </div>
 
         <!-- MENSAGEM DE ERRO -->
         <div

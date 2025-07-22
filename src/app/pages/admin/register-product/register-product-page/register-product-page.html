@@ -52,7 +52,7 @@
                     [itemCount]="container.itemCount"
                     [expanded]="container.expanded"
                     (novoProduto)="openProductDialog(category, sub)"
-                    (searchChange)="onSearchChange(sub.id, $event, eCategoryLevel.Subcategory)"
+                    (searchChange)="searchSubject.next({ id: sub.id, query: $event, type: eCategoryLevel.Subcategory })"
                     (openFoodDialog)="openProductDialog(category, sub, $event)"
                     (editFood)="openProductDialog(category, sub, $event)"
                     (removeFood)="openDialogConfirmRemoveFood($event)"
